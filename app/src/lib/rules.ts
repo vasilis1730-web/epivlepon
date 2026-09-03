@@ -1,0 +1,489 @@
+/**
+ * ΝΟΜΙΚΟΙ ΚΑΝΟΝΕΣ — ν. 4412/2016 όπως ισχύει (ν. 4782/2021)
+ *
+ * Οι ίδιοι κανόνες υλοποιούνται ΚΑΙ στη βάση (triggers/constraints), η οποία
+ * είναι η τελική αρχή. Εδώ αναπαράγονται ώστε το περιβάλλον χρήστη να μπορεί
+ * να εξηγήσει ΕΚ ΤΩΝ ΠΡΟΤΕΡΩΝ γιατί μια ενέργεια δεν επιτρέπεται, αντί να
+ * περιμένει σφάλμα από τον διακομιστή.
+ */
+import type {
+  Ape, Blocker, Contract, DiaryEntry, FinalMeasurement, Measurement,
+  PaymentCertificate, Completion, Guarantee,
+} from './types'
+import { daysUntil, today, workingDaysBetween } from './format'
+
+/* ------------------------------------------------------------------ */
+/* Άρθρο 151 §3 — δειγματοληπτικός έλεγχος επιμετρήσεων                */
+/* ------------------------------------------------------------------ */
+export function requiredAuditCount(submittedCount: number): number {
+  if (submittedCount === 0) return 0
+  if (submittedCount < 10) return Math.min(4, submittedCount)
+  return Math.ceil(submittedCount * 0.4)
+}
+
+/* ------------------------------------------------------------------ */
+/* Άρθρο 146 — ημέρες χωρίς εγγραφή ημερολογίου                        */
+/* ------------------------------------------------------------------ */
+export function missingDiaryDays(
+  entries: DiaryEntry[],
+  fromIso: string,
+  toIso: string = today(),
+): string[] {
+  const present = new Set(entries.map(e => e.entry_date))
+  return workingDaysBetween(fromIso, toIso).filter(d => !present.has(d))
+}
+
+export function diaryPenalty(missingDays: number, perDay: number): number {
+  return Math.round(missingDays * perDay * 100) / 100
+}
+
+/* ------------------------------------------------------------------ */
+/* Άρθρο 156 — έλεγχος ορίων ΑΠΕ                                       */
+/* ------------------------------------------------------------------ */
+export function apeViolations(
+  ape: Ape,
+  contract: Contract,
+  otherApprovedApes: Ape[] = [],
+): Blocker[] {
+  const out: Blocker[] = []
+  const base = contract.initial_value_net
+
+  // (1) Σωρευτικό όριο 50% (άρθρο 156 §1)
+  const cumulative =
+    otherApprovedApes.filter(a => a.delta_amount > 0).reduce((s, a) => s + a.delta_amount, 0) +
+    Math.max(0, ape.delta_amount)
+  if (base > 0 && cumulative > base * 0.5) {
+    out.push({
+      code: 'APE_LIMIT_50',
+      severity: 'hard',
+      legal_ref: 'N4412/156/1',
+      message: `Υπέρβαση του ανώτατου ορίου 50%: σωρευτική αύξηση ${fmt(cumulative)} έναντι ορίου ${fmt(base * 0.5)}.`,
+    })
+  }
+
+  // (2) Απρόβλεπτα 9% / 15% (άρθρο 156 §3β)
+  if (ape.contingency_used > contract.contingency_amount + 0.005) {
+    out.push({
+      code: 'APE_CONTINGENCY',
+      severity: 'hard',
+      legal_ref: 'N4412/156/3b',
+      message: `Η χρήση απροβλέπτων (${fmt(ape.contingency_used)}) υπερβαίνει το εγκεκριμένο κονδύλιο ${contract.contingency_pct}% (${fmt(contract.contingency_amount)}).`,
+    })
+  }
+
+  // (3) Επί έλασσον ≤ 20% ανά ομάδα εργασιών (άρθρο 156 §3γ)
+  const byGroup = new Map<string, { savings: number; initial: number }>()
+  for (const l of ape.lines) {
+    const g = byGroup.get(l.work_group) ?? { savings: 0, initial: 0 }
+    if (l.delta_amount < 0) g.savings += -l.delta_amount
+    g.initial += l.amount_initial
+    byGroup.set(l.work_group, g)
+  }
+  for (const [group, g] of byGroup) {
+    if (g.initial > 0 && g.savings > g.initial * 0.2) {
+      out.push({
+        code: `APE_SAVINGS_GROUP_20:${group}`,
+        severity: 'hard',
+        legal_ref: 'N4412/156/3c',
+        message: `Ομάδα «${group}»: οι επί έλασσον δαπάνες (${fmt(g.savings)}) υπερβαίνουν το 20% της συμβατικής δαπάνης της ομάδας (${fmt(g.initial * 0.2)}).`,
+      })
+    }
+  }
+
+  // (4) Επί έλασσον ≤ 10% συνολικά (άρθρο 156 §3γ)
+  const totalSavings = ape.lines.reduce((s, l) => s + (l.delta_amount < 0 ? -l.delta_amount : 0), 0)
+  if (base > 0 && totalSavings > base * 0.1) {
+    out.push({
+      code: 'APE_SAVINGS_TOTAL_10',
+      severity: 'hard',
+      legal_ref: 'N4412/156/3c',
+      message: `Οι επί έλασσον δαπάνες (${fmt(totalSavings)}) υπερβαίνουν το 10% της αξίας της αρχικής σύμβασης (${fmt(base * 0.1)}).`,
+    })
+  }
+
+  // (5) Απαγόρευση νέων άρθρων από επί έλασσον (άρθρο 156 §3γ)
+  if (ape.lines.some(l => l.is_new_item && l.funding_source === 'epi_elasson')) {
+    out.push({
+      code: 'APE_NEW_ITEM_FROM_SAVINGS',
+      severity: 'hard',
+      legal_ref: 'N4412/156/3c',
+      message:
+        'Δεν επιτρέπεται η κάλυψη ΝΕΩΝ άρθρων (μη περιλαμβανομένων στην αρχική σύμβαση) από επί έλασσον δαπάνες.',
+    })
+  }
+
+  // (6) Γνωμοδότηση Τεχνικού Συμβουλίου (άρθρο 156 §1ε, §3γ)
+  if ((ape.supplementary_needed || totalSavings > 0) && !ape.tc_opinion_id) {
+    out.push({
+      code: 'APE_TC_OPINION',
+      severity: 'hard',
+      legal_ref: 'N4412/156/1e',
+      message:
+        'Απαιτείται γνωμοδότηση Τεχνικού Συμβουλίου (συμπληρωματική σύμβαση ή χρήση επί έλασσον δαπανών).',
+    })
+  }
+
+  // (7) Π.Κ.Τ.Μ.Ν.Ε. όταν υπάρχουν νέα άρθρα (άρθρο 156 §5)
+  if (ape.lines.some(l => l.is_new_item) && ape.atype !== 'me_pktmne') {
+    out.push({
+      code: 'APE_PKTMNE_MISSING',
+      severity: 'hard',
+      legal_ref: 'N4412/156/5',
+      message: 'Ο ΑΠΕ περιλαμβάνει νέες εργασίες χωρίς συνοδευτικό Π.Κ.Τ.Μ.Ν.Ε.',
+    })
+  }
+
+  // (8) Υπογραφή / κοινοποίηση στον ανάδοχο (άρθρο 156 §7)
+  if (!ape.contractor_signature) {
+    out.push({
+      code: 'APE_SIGNATURE',
+      severity: 'soft',
+      legal_ref: 'N4412/156/7',
+      message: 'Ο ΑΠΕ δεν έχει υπογραφεί από τον ανάδοχο ούτε έχει κοινοποιηθεί κατ’ άρθρο 143.',
+    })
+  }
+
+  return out
+}
+
+/* ------------------------------------------------------------------ */
+/* Άρθρο 152 — προϋποθέσεις λογαριασμού                                */
+/* ------------------------------------------------------------------ */
+export function paymentViolations(
+  cert: PaymentCertificate,
+  measurement: Measurement | undefined,
+  hasApprovedAcceptance: boolean,
+): Blocker[] {
+  const out: Blocker[] = []
+
+  if (!cert.measurement_id) {
+    out.push({
+      code: 'PAY_NO_MEASUREMENT',
+      severity: 'hard',
+      legal_ref: 'N4412/151/2',
+      message:
+        'Δεν έχει συνδεθεί εγκεκριμένη επιμέτρηση. Η υποβολή επιμέτρησης αποτελεί προϋπόθεση πληρωμής.',
+    })
+  } else if (!measurement || !['approved', 'deemed_approved'].includes(measurement.status)) {
+    out.push({
+      code: 'PAY_MEASUREMENT_NOT_APPROVED',
+      severity: 'hard',
+      legal_ref: 'N4412/151/2',
+      message: 'Η συνδεδεμένη επιμέτρηση δεν έχει εγκριθεί.',
+    })
+  }
+
+  if (!cert.has_summary_table) {
+    out.push({
+      code: 'PAY_NO_SUMMARY',
+      severity: 'hard',
+      legal_ref: 'N4412/152',
+      message: 'Λείπει ο ανακεφαλαιωτικός συνοπτικός πίνακας των επιμετρήσεων εργασιών.',
+    })
+  }
+
+  if (cert.ptype === 'telikos' && !hasApprovedAcceptance) {
+    out.push({
+      code: 'PAY_FINAL_NO_ACCEPTANCE',
+      severity: 'hard',
+      legal_ref: 'N4412/152',
+      message:
+        'Ο τελικός λογαριασμός υποβάλλεται μετά την παραλαβή του έργου και την έγκριση του πρωτοκόλλου.',
+    })
+  }
+
+  return out
+}
+
+/** Υπολογισμός πληρωτέου ποσού λογαριασμού (άρθρο 152 — κρατήσεις 5%). */
+export function computePayment(input: {
+  gross_cumulative: number
+  previous_certified: number
+  previous_retentions: number
+  advance_amortization: number
+  penalties_amount: number
+  other_deductions?: number
+  retentions_pct?: number
+  vat_rate?: number
+}) {
+  const retPct = input.retentions_pct ?? 5
+  const vatRate = input.vat_rate ?? 24
+  const period = round2(input.gross_cumulative - input.previous_certified)
+  const retentions = round2((input.gross_cumulative * retPct) / 100 - input.previous_retentions)
+  const net = round2(
+    period -
+      input.advance_amortization -
+      input.penalties_amount -
+      retentions -
+      (input.other_deductions ?? 0),
+  )
+  const vat = round2((Math.max(net, 0) * vatRate) / 100)
+  return { period_amount: period, retentions_amount: retentions, net_payable: net, vat_amount: vat }
+}
+
+/* ------------------------------------------------------------------ */
+/* Άρθρο 72 §14β — μειώσεις εγγυήσεων                                  */
+/* ------------------------------------------------------------------ */
+export function guaranteeReduction70Blockers(fm: FinalMeasurement | undefined): Blocker[] {
+  if (fm?.approved_at) return []
+  return [
+    {
+      code: 'GUAR_RED_NO_FINAL',
+      severity: 'hard',
+      legal_ref: 'N4412/72/14b',
+      message:
+        'Η μείωση της εγγύησης κατά 70% προϋποθέτει ΕΓΚΕΚΡΙΜΕΝΗ ΤΕΛΙΚΗ ΕΠΙΜΕΤΡΗΣΗ (άρθρο 72 §14 περ. β΄ σε συνδυασμό με άρθρο 151 §9).',
+    },
+  ]
+}
+
+export function guaranteeReleaseBlockers(opts: {
+  acceptanceApproved: boolean
+  finalPaymentApproved: boolean
+}): Blocker[] {
+  const out: Blocker[] = []
+  if (!opts.acceptanceApproved) {
+    out.push({
+      code: 'GUAR_REL_NO_ACCEPTANCE',
+      severity: 'hard',
+      legal_ref: 'N4412/172',
+      message: 'Δεν έχει εγκριθεί το πρωτόκολλο παραλαβής.',
+    })
+  }
+  if (!opts.finalPaymentApproved) {
+    out.push({
+      code: 'GUAR_REL_NO_FINAL_PAYMENT',
+      severity: 'hard',
+      legal_ref: 'N4412/152',
+      message: 'Δεν έχει εγκριθεί ο τελικός λογαριασμός.',
+    })
+  }
+  return out
+}
+
+/* ------------------------------------------------------------------ */
+/* Άρθρο 151 §7 — αφανείς εργασίες                                     */
+/* ------------------------------------------------------------------ */
+export function hiddenWorkAlert(n: {
+  inspected_at: string | null
+  inspection_due: string
+  photos_count: number
+  approved_at: string | null
+  approval_due: string | null
+  covered_at: string | null
+}): { level: 'ok' | 'warn' | 'error'; text: string } {
+  if (!n.inspected_at && n.covered_at) {
+    return { level: 'error', text: 'Επικαλύφθηκε χωρίς έλεγχο επιβλέποντος' }
+  }
+  if (!n.inspected_at && (daysUntil(n.inspection_due) ?? 0) < 0) {
+    return { level: 'error', text: 'Υπερημερία κυρίου του έργου (άρθρο 151 §7)' }
+  }
+  if (!n.inspected_at) return { level: 'warn', text: 'Εκκρεμεί έλεγχος εντός 3ημέρου' }
+  if (n.photos_count === 0) return { level: 'error', text: 'Λείπει φωτογραφική τεκμηρίωση' }
+  if (!n.approved_at && n.approval_due && (daysUntil(n.approval_due) ?? 0) < 0) {
+    return { level: 'error', text: 'Εκπρόθεσμη εγκριτική πράξη (30 ημέρες)' }
+  }
+  if (!n.approved_at) return { level: 'warn', text: 'Εκκρεμεί εγκριτική πράξη' }
+  return { level: 'ok', text: 'Ολοκληρωμένο' }
+}
+
+/* ------------------------------------------------------------------ */
+/* Ειδικοί κανόνες σταδίων (αντιστοιχούν στα guard_fn της βάσης)       */
+/* ------------------------------------------------------------------ */
+export interface GuardContext {
+  contract: Contract
+  guarantees: Guarantee[]
+  scheduleSubmittedAt: string | null
+  scheduleApprovedAt: string | null
+  scheduleDeemedApproved: boolean
+  scheduleMethod: 'diktyoti_analysi' | 'grammiko' | null
+  diaryMissingDays: number
+  diaryUnreviewed: number
+  hiddenOverdue: number
+  hiddenCoveredUnchecked: number
+  measurementsSubmitted: number
+  measurementsAudited: number
+  apes: Ape[]
+  completion: Completion | undefined
+  finalMeasurement: FinalMeasurement | undefined
+  acceptanceApproved: boolean
+  acceptanceCommitteeSize: number
+  guaranteeReduced70: boolean
+  openDefects: number
+}
+
+export function guardBlockers(guardFn: string | null, ctx: GuardContext): Blocker[] {
+  switch (guardFn) {
+    case 'app.guard_guarantees': {
+      const active = ctx.guarantees
+        .filter(g => ['kalis_ektelesis', 'prosthetti'].includes(g.gtype))
+        .filter(g => ['energi', 'meiomeni_70'].includes(g.status))
+        .reduce((s, g) => s + g.current_amount, 0)
+      if (active === 0) {
+        return [{
+          code: 'GUAR_MISSING', severity: 'hard', legal_ref: 'N4412/72/4',
+          message: 'Δεν έχει καταχωρηθεί ενεργή εγγυητική επιστολή καλής εκτέλεσης.',
+        }]
+      }
+      const required = ctx.contract.initial_value_net * 0.05
+      if (active < required - 0.01) {
+        return [{
+          code: 'GUAR_UNDER_5PCT', severity: 'hard', legal_ref: 'N4412/72/4',
+          message: `Η κατατεθειμένη εγγύηση (${fmt(active)}) υπολείπεται του 5% της εκτιμώμενης αξίας (${fmt(required)}).`,
+        }]
+      }
+      return []
+    }
+
+    case 'app.guard_schedule': {
+      const out: Blocker[] = []
+      if (!ctx.scheduleSubmittedAt) {
+        out.push({
+          code: 'SCHED_NOT_SUBMITTED', severity: 'hard', legal_ref: 'N4412/145/1',
+          message: 'Το χρονοδιάγραμμα δεν έχει υποβληθεί από τον ανάδοχο.',
+        })
+      }
+      if (!ctx.scheduleApprovedAt && !ctx.scheduleDeemedApproved) {
+        out.push({
+          code: 'SCHED_PENDING', severity: 'hard', legal_ref: 'N4412/145/2',
+          message: 'Εκκρεμεί η έγκριση του χρονοδιαγράμματος από τη Διευθύνουσα Υπηρεσία (προθεσμία 15 ημερών).',
+        })
+      }
+      if (ctx.contract.initial_value_net > 1_000_000 && ctx.scheduleMethod !== 'diktyoti_analysi') {
+        out.push({
+          code: 'SCHED_METHOD', severity: 'hard', legal_ref: 'N4412/145/3',
+          message: 'Για έργα άνω του 1.000.000 € η μέθοδος δικτυωτής ανάλυσης είναι ΥΠΟΧΡΕΩΤΙΚΗ.',
+        })
+      }
+      return out
+    }
+
+    case 'app.guard_diary': {
+      const out: Blocker[] = []
+      if (ctx.diaryMissingDays > 0) {
+        out.push({
+          code: 'DIARY_MISSING', severity: 'hard', legal_ref: 'N4412/146',
+          message: `Λείπουν ${ctx.diaryMissingDays} ημέρες ημερολογίου. Η παράλειψη επισύρει ειδική ποινική ρήτρα ${ctx.contract.diary_penalty_per_day} € ανά ημέρα.`,
+        })
+      }
+      if (ctx.diaryUnreviewed > 0) {
+        out.push({
+          code: 'DIARY_UNREVIEWED', severity: 'soft', legal_ref: 'N4412/146',
+          message: `${ctx.diaryUnreviewed} εγγραφές δεν ελέγχθηκαν από τον επιβλέποντα εντός δύο (2) εργασίμων ημερών.`,
+        })
+      }
+      return out
+    }
+
+    case 'app.guard_hidden_works': {
+      const out: Blocker[] = []
+      if (ctx.hiddenOverdue > 0) {
+        out.push({
+          code: 'HW_OVERDUE', severity: 'hard', legal_ref: 'N4412/151/7',
+          message: `${ctx.hiddenOverdue} δηλώσεις αφανών εργασιών δεν ελέγχθηκαν εντός της 3ήμερης προθεσμίας — ΥΠΕΡΗΜΕΡΙΑ ΚΥΡΙΟΥ ΤΟΥ ΕΡΓΟΥ.`,
+        })
+      }
+      if (ctx.hiddenCoveredUnchecked > 0) {
+        out.push({
+          code: 'HW_COVERED_UNCHECKED', severity: 'hard', legal_ref: 'N4412/151/7',
+          message: `${ctx.hiddenCoveredUnchecked} αφανείς εργασίες επικαλύφθηκαν χωρίς προηγούμενο έλεγχο του επιβλέποντος.`,
+        })
+      }
+      return out
+    }
+
+    case 'app.guard_measurements': {
+      const required = requiredAuditCount(ctx.measurementsSubmitted)
+      if (ctx.measurementsAudited < required) {
+        return [{
+          code: 'MEAS_AUDIT_SHORTFALL', severity: 'hard', legal_ref: 'N4412/151/3',
+          message: `Ο υποχρεωτικός δειγματοληπτικός έλεγχος δεν καλύφθηκε: απαιτούνται ${required}, διενεργήθηκαν ${ctx.measurementsAudited}.`,
+        }]
+      }
+      return []
+    }
+
+    case 'app.guard_ape_stage': {
+      const out: Blocker[] = []
+      const approved = ctx.apes.filter(a => a.status === 'approved')
+      for (const a of ctx.apes.filter(a => a.status !== 'approved')) {
+        for (const b of apeViolations(a, ctx.contract, approved).filter(b => b.severity === 'hard')) {
+          out.push({ ...b, code: `APE${a.serial_no}_${b.code}`, message: `${a.serial_no}ος ΑΠΕ: ${b.message}` })
+        }
+      }
+      return out
+    }
+
+    case 'app.guard_completion': {
+      const out: Blocker[] = []
+      const c = ctx.completion
+      if (!c || !c.supervisor_report_at) {
+        return [{
+          code: 'COMP_NO_REPORT', severity: 'hard', legal_ref: 'N4412/168/1',
+          message: 'Δεν έχει συνταχθεί η έγγραφη αναφορά του επιβλέποντος περί περαίωσης (προθεσμία 30 ημερών από τη λήξη του εγκεκριμένου χρόνου).',
+        }]
+      }
+      if (!c.tests_completed) {
+        out.push({
+          code: 'COMP_NO_TESTS', severity: 'hard', legal_ref: 'N4412/168/1',
+          message: 'Δεν βεβαιώνεται η ολοκλήρωση των προβλεπόμενων από τη σύμβαση δοκιμών.',
+        })
+      }
+      if (ctx.openDefects > 0) {
+        out.push(
+          c.defects_severity === 'ousiodes'
+            ? {
+                code: 'COMP_MAJOR_DEFECTS', severity: 'hard', legal_ref: 'N4412/168/4',
+                message: 'Υφίστανται ΟΥΣΙΩΔΗ ελαττώματα: εφαρμόζονται τα άρθρα 159 και 160 και δεν εκδίδεται Βεβαίωση Περάτωσης.',
+              }
+            : {
+                code: 'COMP_MINOR_DEFECTS', severity: 'hard', legal_ref: 'N4412/168/3',
+                message: `Εκκρεμεί η αποκατάσταση ${ctx.openDefects} επουσιωδών ελαττωμάτων εντός της ταχθείσας προθεσμίας.`,
+              },
+        )
+      }
+      return out
+    }
+
+    case 'app.guard_guarantee_reduction': {
+      const out = guaranteeReduction70Blockers(ctx.finalMeasurement)
+      if (out.length === 0 && !ctx.guaranteeReduced70) {
+        out.push({
+          code: 'GUAR_RED_NOT_DONE', severity: 'hard', legal_ref: 'N4412/72/14b',
+          message: 'Δεν έχει καταχωρηθεί η πράξη μείωσης της εγγύησης καλής εκτέλεσης κατά 70%.',
+        })
+      }
+      return out
+    }
+
+    case 'app.guard_acceptance': {
+      const out: Blocker[] = []
+      if (ctx.acceptanceCommitteeSize === 0) {
+        out.push({
+          code: 'ACC_NO_COMMITTEE', severity: 'hard', legal_ref: 'N4412/172',
+          message: 'Δεν έχει οριστεί επιτροπή παραλαβής (ορίζεται τουλάχιστον 3 μήνες πριν τη λήξη της συντήρησης).',
+        })
+      } else if (ctx.acceptanceCommitteeSize < 5) {
+        out.push({
+          code: 'ACC_COMMITTEE_SIZE', severity: 'hard', legal_ref: 'N4412/172',
+          message: `Η επιτροπή παραλαβής έχει ${ctx.acceptanceCommitteeSize} μέλη — απαιτείται πενταμελής σύνθεση με δύο εκπροσώπους ΤΕΕ/ΓΕΩΤΕΕ.`,
+        })
+      }
+      if (!ctx.acceptanceApproved) {
+        out.push({
+          code: 'ACC_NOT_APPROVED', severity: 'hard', legal_ref: 'N4412/172',
+          message: 'Δεν έχει εγκριθεί το πρωτόκολλο παραλαβής.',
+        })
+      }
+      return out
+    }
+
+    default:
+      return []
+  }
+}
+
+/* ------------------------------------------------------------------ */
+const NF = new Intl.NumberFormat('el-GR', { style: 'currency', currency: 'EUR' })
+const fmt = (n: number) => NF.format(n)
+const round2 = (n: number) => Math.round(n * 100) / 100

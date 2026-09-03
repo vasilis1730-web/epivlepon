@@ -1,0 +1,902 @@
+[
+ {
+  "template_id": "APOFASI_ORISMOU",
+  "placeholder": "{{ergo.titlos}}",
+  "label": "Τίτλος έργου",
+  "source_kind": "field",
+  "source_path": "projects.title",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "EGKRISI_XRONOD",
+  "placeholder": "{{ergo.titlos}}",
+  "label": "Τίτλος έργου",
+  "source_kind": "field",
+  "source_path": "projects.title",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PPAE",
+  "placeholder": "{{ergo.titlos}}",
+  "label": "Τίτλος έργου",
+  "source_kind": "field",
+  "source_path": "projects.title",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "ANAL_EPIMETRISI",
+  "placeholder": "{{ergo.titlos}}",
+  "label": "Τίτλος έργου",
+  "source_kind": "field",
+  "source_path": "projects.title",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "BEBAIOSI_PERATOSIS",
+  "placeholder": "{{ergo.titlos}}",
+  "label": "Τίτλος έργου",
+  "source_kind": "field",
+  "source_path": "projects.title",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PRAXH_MEIWSHS_EGG",
+  "placeholder": "{{ergo.titlos}}",
+  "label": "Τίτλος έργου",
+  "source_kind": "field",
+  "source_path": "projects.title",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "APOFASI_ORISMOU",
+  "placeholder": "{{ergo.kodikos}}",
+  "label": "Κωδικός έργου",
+  "source_kind": "field",
+  "source_path": "projects.code",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "EGKRISI_XRONOD",
+  "placeholder": "{{ergo.kodikos}}",
+  "label": "Κωδικός έργου",
+  "source_kind": "field",
+  "source_path": "projects.code",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PPAE",
+  "placeholder": "{{ergo.kodikos}}",
+  "label": "Κωδικός έργου",
+  "source_kind": "field",
+  "source_path": "projects.code",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "ANAL_EPIMETRISI",
+  "placeholder": "{{ergo.kodikos}}",
+  "label": "Κωδικός έργου",
+  "source_kind": "field",
+  "source_path": "projects.code",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "BEBAIOSI_PERATOSIS",
+  "placeholder": "{{ergo.kodikos}}",
+  "label": "Κωδικός έργου",
+  "source_kind": "field",
+  "source_path": "projects.code",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PRAXH_MEIWSHS_EGG",
+  "placeholder": "{{ergo.kodikos}}",
+  "label": "Κωδικός έργου",
+  "source_kind": "field",
+  "source_path": "projects.code",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "APOFASI_ORISMOU",
+  "placeholder": "{{symvasi.arithmos}}",
+  "label": "Αριθμός σύμβασης",
+  "source_kind": "field",
+  "source_path": "contracts.contract_no",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "EGKRISI_XRONOD",
+  "placeholder": "{{symvasi.arithmos}}",
+  "label": "Αριθμός σύμβασης",
+  "source_kind": "field",
+  "source_path": "contracts.contract_no",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PPAE",
+  "placeholder": "{{symvasi.arithmos}}",
+  "label": "Αριθμός σύμβασης",
+  "source_kind": "field",
+  "source_path": "contracts.contract_no",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "ANAL_EPIMETRISI",
+  "placeholder": "{{symvasi.arithmos}}",
+  "label": "Αριθμός σύμβασης",
+  "source_kind": "field",
+  "source_path": "contracts.contract_no",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "BEBAIOSI_PERATOSIS",
+  "placeholder": "{{symvasi.arithmos}}",
+  "label": "Αριθμός σύμβασης",
+  "source_kind": "field",
+  "source_path": "contracts.contract_no",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PRAXH_MEIWSHS_EGG",
+  "placeholder": "{{symvasi.arithmos}}",
+  "label": "Αριθμός σύμβασης",
+  "source_kind": "field",
+  "source_path": "contracts.contract_no",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "APOFASI_ORISMOU",
+  "placeholder": "{{symvasi.imerominia_ypografis}}",
+  "label": "Ημερομηνία υπογραφής",
+  "source_kind": "field",
+  "source_path": "contracts.signed_at",
+  "data_type": "date",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "EGKRISI_XRONOD",
+  "placeholder": "{{symvasi.imerominia_ypografis}}",
+  "label": "Ημερομηνία υπογραφής",
+  "source_kind": "field",
+  "source_path": "contracts.signed_at",
+  "data_type": "date",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PPAE",
+  "placeholder": "{{symvasi.imerominia_ypografis}}",
+  "label": "Ημερομηνία υπογραφής",
+  "source_kind": "field",
+  "source_path": "contracts.signed_at",
+  "data_type": "date",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "ANAL_EPIMETRISI",
+  "placeholder": "{{symvasi.imerominia_ypografis}}",
+  "label": "Ημερομηνία υπογραφής",
+  "source_kind": "field",
+  "source_path": "contracts.signed_at",
+  "data_type": "date",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "BEBAIOSI_PERATOSIS",
+  "placeholder": "{{symvasi.imerominia_ypografis}}",
+  "label": "Ημερομηνία υπογραφής",
+  "source_kind": "field",
+  "source_path": "contracts.signed_at",
+  "data_type": "date",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PRAXH_MEIWSHS_EGG",
+  "placeholder": "{{symvasi.imerominia_ypografis}}",
+  "label": "Ημερομηνία υπογραφής",
+  "source_kind": "field",
+  "source_path": "contracts.signed_at",
+  "data_type": "date",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "APOFASI_ORISMOU",
+  "placeholder": "{{symvasi.aksia}}",
+  "label": "Αξία αρχικής σύμβασης",
+  "source_kind": "field",
+  "source_path": "contracts.initial_value_net",
+  "data_type": "currency",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "EGKRISI_XRONOD",
+  "placeholder": "{{symvasi.aksia}}",
+  "label": "Αξία αρχικής σύμβασης",
+  "source_kind": "field",
+  "source_path": "contracts.initial_value_net",
+  "data_type": "currency",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PPAE",
+  "placeholder": "{{symvasi.aksia}}",
+  "label": "Αξία αρχικής σύμβασης",
+  "source_kind": "field",
+  "source_path": "contracts.initial_value_net",
+  "data_type": "currency",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "ANAL_EPIMETRISI",
+  "placeholder": "{{symvasi.aksia}}",
+  "label": "Αξία αρχικής σύμβασης",
+  "source_kind": "field",
+  "source_path": "contracts.initial_value_net",
+  "data_type": "currency",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "BEBAIOSI_PERATOSIS",
+  "placeholder": "{{symvasi.aksia}}",
+  "label": "Αξία αρχικής σύμβασης",
+  "source_kind": "field",
+  "source_path": "contracts.initial_value_net",
+  "data_type": "currency",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PRAXH_MEIWSHS_EGG",
+  "placeholder": "{{symvasi.aksia}}",
+  "label": "Αξία αρχικής σύμβασης",
+  "source_kind": "field",
+  "source_path": "contracts.initial_value_net",
+  "data_type": "currency",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "APOFASI_ORISMOU",
+  "placeholder": "{{anadoxos.epwnymia}}",
+  "label": "Επωνυμία αναδόχου",
+  "source_kind": "field",
+  "source_path": "contractors.name",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "EGKRISI_XRONOD",
+  "placeholder": "{{anadoxos.epwnymia}}",
+  "label": "Επωνυμία αναδόχου",
+  "source_kind": "field",
+  "source_path": "contractors.name",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PPAE",
+  "placeholder": "{{anadoxos.epwnymia}}",
+  "label": "Επωνυμία αναδόχου",
+  "source_kind": "field",
+  "source_path": "contractors.name",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "ANAL_EPIMETRISI",
+  "placeholder": "{{anadoxos.epwnymia}}",
+  "label": "Επωνυμία αναδόχου",
+  "source_kind": "field",
+  "source_path": "contractors.name",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "BEBAIOSI_PERATOSIS",
+  "placeholder": "{{anadoxos.epwnymia}}",
+  "label": "Επωνυμία αναδόχου",
+  "source_kind": "field",
+  "source_path": "contractors.name",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PRAXH_MEIWSHS_EGG",
+  "placeholder": "{{anadoxos.epwnymia}}",
+  "label": "Επωνυμία αναδόχου",
+  "source_kind": "field",
+  "source_path": "contractors.name",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "APOFASI_ORISMOU",
+  "placeholder": "{{epivlepon.full_name}}",
+  "label": "Ονοματεπώνυμο επιβλέποντος",
+  "source_kind": "query",
+  "source_path": "supervisor.full_name",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "EGKRISI_XRONOD",
+  "placeholder": "{{epivlepon.full_name}}",
+  "label": "Ονοματεπώνυμο επιβλέποντος",
+  "source_kind": "query",
+  "source_path": "supervisor.full_name",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PPAE",
+  "placeholder": "{{epivlepon.full_name}}",
+  "label": "Ονοματεπώνυμο επιβλέποντος",
+  "source_kind": "query",
+  "source_path": "supervisor.full_name",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "ANAL_EPIMETRISI",
+  "placeholder": "{{epivlepon.full_name}}",
+  "label": "Ονοματεπώνυμο επιβλέποντος",
+  "source_kind": "query",
+  "source_path": "supervisor.full_name",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "BEBAIOSI_PERATOSIS",
+  "placeholder": "{{epivlepon.full_name}}",
+  "label": "Ονοματεπώνυμο επιβλέποντος",
+  "source_kind": "query",
+  "source_path": "supervisor.full_name",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PRAXH_MEIWSHS_EGG",
+  "placeholder": "{{epivlepon.full_name}}",
+  "label": "Ονοματεπώνυμο επιβλέποντος",
+  "source_kind": "query",
+  "source_path": "supervisor.full_name",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "APOFASI_ORISMOU",
+  "placeholder": "{{epivlepon.specialty}}",
+  "label": "Ειδικότητα επιβλέποντος",
+  "source_kind": "query",
+  "source_path": "supervisor.specialty",
+  "data_type": "text",
+  "is_required": false,
+  "format_mask": null
+ },
+ {
+  "template_id": "EGKRISI_XRONOD",
+  "placeholder": "{{epivlepon.specialty}}",
+  "label": "Ειδικότητα επιβλέποντος",
+  "source_kind": "query",
+  "source_path": "supervisor.specialty",
+  "data_type": "text",
+  "is_required": false,
+  "format_mask": null
+ },
+ {
+  "template_id": "PPAE",
+  "placeholder": "{{epivlepon.specialty}}",
+  "label": "Ειδικότητα επιβλέποντος",
+  "source_kind": "query",
+  "source_path": "supervisor.specialty",
+  "data_type": "text",
+  "is_required": false,
+  "format_mask": null
+ },
+ {
+  "template_id": "ANAL_EPIMETRISI",
+  "placeholder": "{{epivlepon.specialty}}",
+  "label": "Ειδικότητα επιβλέποντος",
+  "source_kind": "query",
+  "source_path": "supervisor.specialty",
+  "data_type": "text",
+  "is_required": false,
+  "format_mask": null
+ },
+ {
+  "template_id": "BEBAIOSI_PERATOSIS",
+  "placeholder": "{{epivlepon.specialty}}",
+  "label": "Ειδικότητα επιβλέποντος",
+  "source_kind": "query",
+  "source_path": "supervisor.specialty",
+  "data_type": "text",
+  "is_required": false,
+  "format_mask": null
+ },
+ {
+  "template_id": "PRAXH_MEIWSHS_EGG",
+  "placeholder": "{{epivlepon.specialty}}",
+  "label": "Ειδικότητα επιβλέποντος",
+  "source_kind": "query",
+  "source_path": "supervisor.specialty",
+  "data_type": "text",
+  "is_required": false,
+  "format_mask": null
+ },
+ {
+  "template_id": "APOFASI_ORISMOU",
+  "placeholder": "{{proistamenos.full_name}}",
+  "label": "Ονοματεπώνυμο Προϊσταμένου Δ.Υ.",
+  "source_kind": "query",
+  "source_path": "head.full_name",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "EGKRISI_XRONOD",
+  "placeholder": "{{proistamenos.full_name}}",
+  "label": "Ονοματεπώνυμο Προϊσταμένου Δ.Υ.",
+  "source_kind": "query",
+  "source_path": "head.full_name",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PPAE",
+  "placeholder": "{{proistamenos.full_name}}",
+  "label": "Ονοματεπώνυμο Προϊσταμένου Δ.Υ.",
+  "source_kind": "query",
+  "source_path": "head.full_name",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "ANAL_EPIMETRISI",
+  "placeholder": "{{proistamenos.full_name}}",
+  "label": "Ονοματεπώνυμο Προϊσταμένου Δ.Υ.",
+  "source_kind": "query",
+  "source_path": "head.full_name",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "BEBAIOSI_PERATOSIS",
+  "placeholder": "{{proistamenos.full_name}}",
+  "label": "Ονοματεπώνυμο Προϊσταμένου Δ.Υ.",
+  "source_kind": "query",
+  "source_path": "head.full_name",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PRAXH_MEIWSHS_EGG",
+  "placeholder": "{{proistamenos.full_name}}",
+  "label": "Ονοματεπώνυμο Προϊσταμένου Δ.Υ.",
+  "source_kind": "query",
+  "source_path": "head.full_name",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "APOFASI_ORISMOU",
+  "placeholder": "{{proistamenos.specialty}}",
+  "label": "Ειδικότητα Προϊσταμένου Δ.Υ.",
+  "source_kind": "query",
+  "source_path": "head.specialty",
+  "data_type": "text",
+  "is_required": false,
+  "format_mask": null
+ },
+ {
+  "template_id": "EGKRISI_XRONOD",
+  "placeholder": "{{proistamenos.specialty}}",
+  "label": "Ειδικότητα Προϊσταμένου Δ.Υ.",
+  "source_kind": "query",
+  "source_path": "head.specialty",
+  "data_type": "text",
+  "is_required": false,
+  "format_mask": null
+ },
+ {
+  "template_id": "PPAE",
+  "placeholder": "{{proistamenos.specialty}}",
+  "label": "Ειδικότητα Προϊσταμένου Δ.Υ.",
+  "source_kind": "query",
+  "source_path": "head.specialty",
+  "data_type": "text",
+  "is_required": false,
+  "format_mask": null
+ },
+ {
+  "template_id": "ANAL_EPIMETRISI",
+  "placeholder": "{{proistamenos.specialty}}",
+  "label": "Ειδικότητα Προϊσταμένου Δ.Υ.",
+  "source_kind": "query",
+  "source_path": "head.specialty",
+  "data_type": "text",
+  "is_required": false,
+  "format_mask": null
+ },
+ {
+  "template_id": "BEBAIOSI_PERATOSIS",
+  "placeholder": "{{proistamenos.specialty}}",
+  "label": "Ειδικότητα Προϊσταμένου Δ.Υ.",
+  "source_kind": "query",
+  "source_path": "head.specialty",
+  "data_type": "text",
+  "is_required": false,
+  "format_mask": null
+ },
+ {
+  "template_id": "PRAXH_MEIWSHS_EGG",
+  "placeholder": "{{proistamenos.specialty}}",
+  "label": "Ειδικότητα Προϊσταμένου Δ.Υ.",
+  "source_kind": "query",
+  "source_path": "head.specialty",
+  "data_type": "text",
+  "is_required": false,
+  "format_mask": null
+ },
+ {
+  "template_id": "EGKRISI_XRONOD",
+  "placeholder": "{{symvasi.prothesmia_imeres}}",
+  "label": "Συνολική προθεσμία (ημέρες)",
+  "source_kind": "field",
+  "source_path": "contracts.total_duration_days",
+  "data_type": "number",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "EGKRISI_XRONOD",
+  "placeholder": "{{symvasi.lixi_prothesmias}}",
+  "label": "Λήξη συνολικής προθεσμίας",
+  "source_kind": "field",
+  "source_path": "contracts.current_end_date",
+  "data_type": "date",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "EGKRISI_XRONOD",
+  "placeholder": "{{xronodiagramma.imerominia_ypovolis}}",
+  "label": "Ημερομηνία υποβολής χρονοδιαγράμματος",
+  "source_kind": "field",
+  "source_path": "schedules.submitted_at",
+  "data_type": "date",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PPAE",
+  "placeholder": "{{afaneis.aa}}",
+  "label": "Α/Α δήλωσης αφανών",
+  "source_kind": "field",
+  "source_path": "hidden_work_notices.serial_no",
+  "data_type": "number",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PPAE",
+  "placeholder": "{{afaneis.perigrafi}}",
+  "label": "Περιγραφή αφανών εργασιών",
+  "source_kind": "field",
+  "source_path": "hidden_work_notices.work_description",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PPAE",
+  "placeholder": "{{afaneis.thesi}}",
+  "label": "Θέση",
+  "source_kind": "field",
+  "source_path": "hidden_work_notices.location",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PPAE",
+  "placeholder": "{{afaneis.imerominia_prosklisis}}",
+  "label": "Ημερομηνία πρόσκλησης",
+  "source_kind": "field",
+  "source_path": "hidden_work_notices.invitation_sent_at",
+  "data_type": "date",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PPAE",
+  "placeholder": "{{afaneis.prothesmia_elegxou}}",
+  "label": "Προθεσμία ελέγχου (3 ημέρες)",
+  "source_kind": "field",
+  "source_path": "hidden_work_notices.inspection_due",
+  "data_type": "date",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PPAE",
+  "placeholder": "{{afaneis.imerominia_elegxou}}",
+  "label": "Ημερομηνία ελέγχου",
+  "source_kind": "field",
+  "source_path": "hidden_work_notices.inspected_at",
+  "data_type": "date",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PPAE",
+  "placeholder": "{{afaneis.imerominia_elegxou_pliris}}",
+  "label": "Ημερομηνία ελέγχου (ολογράφως)",
+  "source_kind": "computed",
+  "source_path": "inspection_date_long",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PPAE",
+  "placeholder": "{{afaneis.plithos_fotografion}}",
+  "label": "Πλήθος ψηφιακών φωτογραφιών",
+  "source_kind": "field",
+  "source_path": "hidden_work_notices.photos_count",
+  "data_type": "number",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "ANAL_EPIMETRISI",
+  "placeholder": "{{epimetrisi.aa}}",
+  "label": "Α/Α επιμέτρησης",
+  "source_kind": "field",
+  "source_path": "measurements.serial_no",
+  "data_type": "number",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "ANAL_EPIMETRISI",
+  "placeholder": "{{epimetrisi.periodos}}",
+  "label": "Περίοδος",
+  "source_kind": "computed",
+  "source_path": "measurement_period",
+  "data_type": "text",
+  "is_required": false,
+  "format_mask": null
+ },
+ {
+  "template_id": "ANAL_EPIMETRISI",
+  "placeholder": "{{epimetrisi.tmima}}",
+  "label": "Τμήμα έργου",
+  "source_kind": "field",
+  "source_path": "measurements.work_section",
+  "data_type": "text",
+  "is_required": false,
+  "format_mask": null
+ },
+ {
+  "template_id": "ANAL_EPIMETRISI",
+  "placeholder": "{{epimetrisi.imerominia_ypovolis}}",
+  "label": "Ημερομηνία υποβολής",
+  "source_kind": "field",
+  "source_path": "measurements.submitted_at",
+  "data_type": "date",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "ANAL_EPIMETRISI",
+  "placeholder": "{{epimetrisi.synolo_symvatikwn}}",
+  "label": "Σύνολο συμβατικών",
+  "source_kind": "field",
+  "source_path": "measurements.contractual_amount",
+  "data_type": "currency",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "ANAL_EPIMETRISI",
+  "placeholder": "{{epimetrisi.synolo_ektos}}",
+  "label": "Σύνολο εκτός σύμβασης",
+  "source_kind": "field",
+  "source_path": "measurements.extra_amount",
+  "data_type": "currency",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "ANAL_EPIMETRISI",
+  "placeholder": "{{epimetrisi.geniko_synolo}}",
+  "label": "Γενικό σύνολο",
+  "source_kind": "field",
+  "source_path": "measurements.total_amount",
+  "data_type": "currency",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "ANAL_EPIMETRISI",
+  "placeholder": "{{#each grammes}}",
+  "label": "Γραμμές επιμέτρησης (επαναλαμβανόμενη σειρά)",
+  "source_kind": "query",
+  "source_path": "measurement_lines",
+  "data_type": "table",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "BEBAIOSI_PERATOSIS",
+  "placeholder": "{{peraiosi.egkekrimenos_xronos}}",
+  "label": "Εγκεκριμένος χρόνος περαίωσης",
+  "source_kind": "field",
+  "source_path": "completions.approved_completion_date",
+  "data_type": "date",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "BEBAIOSI_PERATOSIS",
+  "placeholder": "{{peraiosi.ekthesi_epivleponta}}",
+  "label": "Ημ/νία έκθεσης επιβλέποντος",
+  "source_kind": "field",
+  "source_path": "completions.supervisor_report_at",
+  "data_type": "date",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "BEBAIOSI_PERATOSIS",
+  "placeholder": "{{peraiosi.pragmatiki_imerominia}}",
+  "label": "Πραγματική ημερομηνία περαίωσης",
+  "source_kind": "field",
+  "source_path": "completions.actual_completion_date",
+  "data_type": "date",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "BEBAIOSI_PERATOSIS",
+  "placeholder": "{{peraiosi.enarksi_syntirisis}}",
+  "label": "Έναρξη χρόνου συντήρησης",
+  "source_kind": "computed",
+  "source_path": "maintenance_start",
+  "data_type": "date",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "BEBAIOSI_PERATOSIS",
+  "placeholder": "{{symvasi.mines_syntirisis}}",
+  "label": "Μήνες υποχρεωτικής συντήρησης",
+  "source_kind": "field",
+  "source_path": "contracts.maintenance_months",
+  "data_type": "number",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PRAXH_MEIWSHS_EGG",
+  "placeholder": "{{eggyisi.arithmos}}",
+  "label": "Αριθμός εγγυητικής",
+  "source_kind": "field",
+  "source_path": "guarantees.guarantee_no",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PRAXH_MEIWSHS_EGG",
+  "placeholder": "{{eggyisi.ekdotis}}",
+  "label": "Εκδότης εγγυητικής",
+  "source_kind": "field",
+  "source_path": "guarantees.issuer",
+  "data_type": "text",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PRAXH_MEIWSHS_EGG",
+  "placeholder": "{{eggyisi.arxiko_poso}}",
+  "label": "Αρχικό ποσό εγγύησης",
+  "source_kind": "field",
+  "source_path": "guarantees.current_amount",
+  "data_type": "currency",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PRAXH_MEIWSHS_EGG",
+  "placeholder": "{{eggyisi.poso_meiosis}}",
+  "label": "Ποσό μείωσης (70%)",
+  "source_kind": "computed",
+  "source_path": "guarantee_reduction",
+  "data_type": "currency",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PRAXH_MEIWSHS_EGG",
+  "placeholder": "{{eggyisi.ypoloipo}}",
+  "label": "Υπόλοιπο μετά τη μείωση",
+  "source_kind": "computed",
+  "source_path": "guarantee_remaining",
+  "data_type": "currency",
+  "is_required": true,
+  "format_mask": null
+ },
+ {
+  "template_id": "PRAXH_MEIWSHS_EGG",
+  "placeholder": "{{teliki.imerominia_egkrisis}}",
+  "label": "Ημ/νία έγκρισης τελικής επιμέτρησης",
+  "source_kind": "field",
+  "source_path": "final_measurement.approved_at",
+  "data_type": "date",
+  "is_required": true,
+  "format_mask": null
+ }
+]

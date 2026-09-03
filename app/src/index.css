@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --c-paper: 247 245 239;
+    --c-surface: 255 253 248;
+    --c-raised: 240 237 228;
+    --c-ink: 20 28 26;
+    --c-ink2: 64 74 71;
+    --c-ink3: 108 118 113;
+    --c-rule: 220 213 198;
+    --c-rule2: 200 191 171;
+    --c-accent: 15 94 82;
+    --c-accent-soft: 221 234 229;
+    --c-brass: 138 96 9;
+    --c-brass-soft: 242 231 206;
+    --c-oxide: 142 49 32;
+    --c-oxide-soft: 245 224 218;
+    color-scheme: light;
+  }
+
+  html.dark {
+    --c-paper: 13 18 17;
+    --c-surface: 20 29 27;
+    --c-raised: 27 37 35;
+    --c-ink: 231 229 220;
+    --c-ink2: 182 191 187;
+    --c-ink3: 139 149 145;
+    --c-rule: 40 50 47;
+    --c-rule2: 58 70 67;
+    --c-accent: 76 191 166;
+    --c-accent-soft: 18 49 43;
+    --c-brass: 210 163 64;
+    --c-brass-soft: 46 39 22;
+    --c-oxide: 222 120 96;
+    --c-oxide-soft: 51 25 20;
+    color-scheme: dark;
+  }
+
+  html, body, #root { height: 100%; }
+
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+  }
+
+  h1, h2, h3, h4 { @apply font-serif; text-wrap: balance; }
+
+  ::selection { background: rgb(var(--c-accent) / 0.22); }
+
+  *:focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-2;
+    --tw-ring-offset-color: rgb(var(--c-paper));
+  }
+
+  /* Αριθμοί σε στήλες ευθυγραμμισμένοι */
+  .tnum { font-variant-numeric: tabular-nums; }
+}
+
+@layer components {
+  .label-xs {
+    @apply font-mono text-2xs uppercase tracking-[0.12em] text-ink3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

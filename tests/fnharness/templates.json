@@ -1,0 +1,114 @@
+[
+ {
+  "id": "APOFASI_ORISMOU",
+  "doc_code": "APOFASI_ORISMOU",
+  "title": "Απόφαση ορισμού επιβλέποντος",
+  "legal_ref_id": "N4412/136/2",
+  "file_type": "html",
+  "storage_path": null,
+  "body_html": "<p class=\"intro\">Έχοντας υπόψη:</p>\n<ol class=\"grounds\">\n  <li>Τις διατάξεις του άρθρου 136 του ν. 4412/2016, όπως αντικαταστάθηκε με το άρθρο 57 του ν. 4782/2021, περί διοίκησης, παρακολούθησης και επίβλεψης δημοσίων έργων.</li>\n  <li>Τη με αριθμό {{symvasi.arithmos}} σύμβαση εκτέλεσης του έργου, που υπογράφηκε την {{symvasi.imerominia_ypografis}}.</li>\n  <li>Τις υπηρεσιακές ανάγκες και τα προσόντα του τεχνικού προσωπικού της Υπηρεσίας.</li>\n</ol>\n<p class=\"declare\">Α Π Ο Φ Α Σ Ι Ζ Ο Υ Μ Ε</p>\n<p>Ορίζουμε ως <strong>επιβλέποντα</strong> του έργου <strong>«{{ergo.titlos}}»</strong>, αναδόχου {{anadoxos.epwnymia}}, τον/την <strong>{{epivlepon.full_name}}</strong>, {{epivlepon.specialty}}, υπάλληλο της Διεύθυνσης Τεχνικών Έργων &amp; Υποδομών του Δήμου Ρόδου.</p>\n<p>Ο επιβλέπων ασκεί τα καθήκοντα που προβλέπονται στα άρθρα 136 επ. του ν. 4412/2016 και ιδίως: την παρακολούθηση και τον έλεγχο της ποιότητας και ποσότητας των εργασιών, την τήρηση των όρων της σύμβασης, τον έλεγχο του ημερολογίου του έργου (άρθρο 146), τον έλεγχο των αφανών εργασιών πριν από την επικάλυψή τους (άρθρο 151 §7), τον έλεγχο και τη θεώρηση των επιμετρήσεων και των λογαριασμών, καθώς και τη σύνταξη των προβλεπόμενων εκθέσεων.</p>\n<p class=\"note\">Η παρούσα κοινοποιείται στον ανάδοχο σύμφωνα με το άρθρο 143 του ν. 4412/2016 και αναρτάται στο πρόγραμμα ΔΙΑΥΓΕΙΑ.</p>",
+  "subject_template": "Ορισμός επιβλέποντος μηχανικού του έργου «{{ergo.titlos}}»",
+  "signatories": [
+   {
+    "label": "Ο Προϊστάμενος της Διευθύνουσας Υπηρεσίας",
+    "name": "{{proistamenos.full_name}}",
+    "capacity": "{{proistamenos.specialty}}"
+   }
+  ]
+ },
+ {
+  "id": "EGKRISI_XRONOD",
+  "doc_code": "EGKRISI_XRONOD",
+  "title": "Απόφαση έγκρισης χρονοδιαγράμματος",
+  "legal_ref_id": "N4412/145/2",
+  "file_type": "html",
+  "storage_path": null,
+  "body_html": "<p class=\"intro\">Έχοντας υπόψη:</p>\n<ol class=\"grounds\">\n  <li>Το άρθρο 145 του ν. 4412/2016, όπως αντικαταστάθηκε με το άρθρο 65 του ν. 4782/2021.</li>\n  <li>Τη με αριθμό {{symvasi.arithmos}} σύμβαση εκτέλεσης του έργου, που υπογράφηκε την {{symvasi.imerominia_ypografis}}, με συνολική προθεσμία {{symvasi.prothesmia_imeres}} ημερών.</li>\n  <li>Το με ημερομηνία {{xronodiagramma.imerominia_ypovolis}} υποβληθέν από τον ανάδοχο χρονοδιάγραμμα κατασκευής.</li>\n  <li>Την εισήγηση του επιβλέποντος μηχανικού επί της αλληλουχίας των εργασιών, της μεθοδολογίας κατασκευής και της τήρησης των συμβατικών οροσήμων.</li>\n</ol>\n<p class=\"declare\">Α Π Ο Φ Α Σ Ι Ζ Ο Υ Μ Ε</p>\n<p>Εγκρίνουμε το χρονοδιάγραμμα κατασκευής του έργου <strong>«{{ergo.titlos}}»</strong>, αναδόχου <strong>{{anadoxos.epwnymia}}</strong>, με λήξη της συνολικής προθεσμίας την <strong>{{symvasi.lixi_prothesmias}}</strong>.</p>\n<p>Το εγκεκριμένο χρονοδιάγραμμα αποτελεί συμβατικό στοιχείο του έργου. Κάθε αναπροσαρμογή του εγκρίνεται όταν μεταβάλλονται οι προθεσμίες, το αντικείμενο ή οι ποσότητες των εργασιών.</p>\n<p class=\"note\">Η παρούσα κοινοποιείται στον ανάδοχο σύμφωνα με το άρθρο 143 του ν. 4412/2016.</p>",
+  "subject_template": "Έγκριση χρονοδιαγράμματος κατασκευής του έργου «{{ergo.titlos}}»",
+  "signatories": [
+   {
+    "label": "Ο Προϊστάμενος της Διευθύνουσας Υπηρεσίας",
+    "name": "{{proistamenos.full_name}}",
+    "capacity": "{{proistamenos.specialty}}"
+   }
+  ]
+ },
+ {
+  "id": "PPAE",
+  "doc_code": "PPAE",
+  "title": "Έκθεση Παραλαβής Αφανών Εργασιών (Π.Π.Α.Ε.)",
+  "legal_ref_id": "N4412/151/7",
+  "file_type": "html",
+  "storage_path": null,
+  "body_html": "<p>Σήμερα, {{afaneis.imerominia_elegxou_pliris}}, ο υπογράφων επιβλέπων μηχανικός του έργου <strong>«{{ergo.titlos}}»</strong>, ύστερα από τη με ημερομηνία {{afaneis.imerominia_prosklisis}} πρόσκληση του αναδόχου <strong>{{anadoxos.epwnymia}}</strong>, μετέβη επιτόπου και προέβη στον έλεγχο των κατωτέρω αφανών εργασιών <strong>πριν από την επικάλυψή τους</strong>, σύμφωνα με την παρ. 7 του άρθρου 151 του ν. 4412/2016.</p>\n<table class=\"data\">\n  <tr><th>Περιγραφή εργασιών</th><td>{{afaneis.perigrafi}}</td></tr>\n  <tr><th>Θέση</th><td>{{afaneis.thesi}}</td></tr>\n  <tr><th>Ημερομηνία πρόσκλησης</th><td>{{afaneis.imerominia_prosklisis}}</td></tr>\n  <tr><th>Προθεσμία ελέγχου (3 ημέρες)</th><td>{{afaneis.prothesmia_elegxou}}</td></tr>\n  <tr><th>Ημερομηνία ελέγχου</th><td>{{afaneis.imerominia_elegxou}}</td></tr>\n  <tr><th>Ψηφιακές φωτογραφίες</th><td>{{afaneis.plithos_fotografion}} — εντάσσονται στο Μητρώο του Έργου</td></tr>\n</table>\n<p class=\"declare\">Δ Ι Α Π Ι Σ Τ Ω Θ Η Κ Ε</p>\n<p>ότι οι ανωτέρω εργασίες εκτελέστηκαν σύμφωνα με τη μελέτη, τις ισχύουσες τεχνικές προδιαγραφές (ΕΤΕΠ/ΕΛΟΤ) και τους όρους της σύμβασης, στις ποσότητες που αναγράφονται στη συνοδευτική διακριτή επιμέτρηση αφανών εργασιών, η οποία συνοδεύεται από δήλωση του αναδόχου περί της αλήθειας των στοιχείων.</p>\n<p class=\"note\">Η παρούσα έκθεση συνοδεύει υποχρεωτικά την επιμέτρηση των αφανών εργασιών, δεν έχει εκτελεστό χαρακτήρα και δεν προσβάλλεται αυτοτελώς, παρά μόνο από κοινού με την εγκριτική πράξη της επιμέτρησης, που εκδίδει η Διευθύνουσα Υπηρεσία εντός προθεσμίας τριάντα (30) ημερών από την υποβολή της.</p>",
+  "subject_template": "Έκθεση παραλαβής αφανών εργασιών Νο {{afaneis.aa}} — «{{ergo.titlos}}»",
+  "signatories": [
+   {
+    "label": "Ο Επιβλέπων Μηχανικός",
+    "name": "{{epivlepon.full_name}}",
+    "capacity": "{{epivlepon.specialty}}"
+   },
+   {
+    "label": "Για τον Ανάδοχο",
+    "name": "{{anadoxos.epwnymia}}",
+    "capacity": "Ο νόμιμος εκπρόσωπος"
+   }
+  ]
+ },
+ {
+  "id": "ANAL_EPIMETRISI",
+  "doc_code": "ANAL_EPIMETRISI",
+  "title": "Αναλυτική επιμέτρηση",
+  "legal_ref_id": "N4412/151/2",
+  "file_type": "html",
+  "storage_path": null,
+  "body_html": "<table class=\"data\">\n  <tr><th>Α/Α επιμέτρησης</th><td>{{epimetrisi.aa}}</td><th>Περίοδος</th><td>{{epimetrisi.periodos}}</td></tr>\n  <tr><th>Τμήμα έργου</th><td>{{epimetrisi.tmima}}</td><th>Ημ/νία υποβολής</th><td>{{epimetrisi.imerominia_ypovolis}}</td></tr>\n</table>\n<table class=\"grid\">\n  <thead>\n    <tr><th>Α/Α</th><th>Άρθρο</th><th>Περιγραφή εργασίας</th><th>Μον.</th>\n        <th class=\"num\">Τιμή</th><th class=\"num\">Ποσότητα</th><th class=\"num\">Δαπάνη</th></tr>\n  </thead>\n  <tbody>\n    <tr>{{#each grammes}}<td>{{grammes.aa}}</td><td>{{grammes.arthro}}</td><td>{{grammes.perigrafi}}</td>\n        <td>{{grammes.monada}}</td><td class=\"num\">{{grammes.timi}}</td>\n        <td class=\"num\">{{grammes.posotita}}</td><td class=\"num\">{{grammes.dapani}}</td></tr>\n  </tbody>\n  <tfoot>\n    <tr><td colspan=\"6\">Σύνολο συμβατικών εργασιών</td><td class=\"num\">{{epimetrisi.synolo_symvatikwn}}</td></tr>\n    <tr><td colspan=\"6\">Εργασίες πέραν των συμβατικών ποσοτήτων</td><td class=\"num\">{{epimetrisi.synolo_ektos}}</td></tr>\n    <tr class=\"total\"><td colspan=\"6\">ΓΕΝΙΚΟ ΣΥΝΟΛΟ</td><td class=\"num\">{{epimetrisi.geniko_synolo}}</td></tr>\n  </tfoot>\n</table>\n<p class=\"note\">Η παρούσα συνοδεύεται από τα επιτόπια επιμετρητικά στοιχεία και τα επιμετρητικά σχέδια, και υποβάλλεται σε έντυπη και ηλεκτρονική μορφή σύμφωνα με την παρ. 2 του άρθρου 151 του ν. 4412/2016. Ο ανάδοχος δηλώνει υπεύθυνα ότι τα αναγραφόμενα στοιχεία είναι αληθή.</p>",
+  "subject_template": "Αναλυτική επιμέτρηση Νο {{epimetrisi.aa}} — «{{ergo.titlos}}»",
+  "signatories": [
+   {
+    "label": "Ο Ανάδοχος",
+    "name": "{{anadoxos.epwnymia}}",
+    "capacity": "Δήλωση περί της αλήθειας των στοιχείων"
+   },
+   {
+    "label": "Ο Επιβλέπων Μηχανικός",
+    "name": "{{epivlepon.full_name}}",
+    "capacity": "{{epivlepon.specialty}}"
+   }
+  ]
+ },
+ {
+  "id": "BEBAIOSI_PERATOSIS",
+  "doc_code": "BEBAIOSI_PERATOSIS",
+  "title": "Βεβαίωση Περάτωσης Εργασιών",
+  "legal_ref_id": "N4412/168/2",
+  "file_type": "html",
+  "storage_path": null,
+  "body_html": "<p class=\"intro\">Έχοντας υπόψη:</p>\n<ol class=\"grounds\">\n  <li>Τις διατάξεις του ν. 4412/2016 «Δημόσιες Συμβάσεις Έργων, Προμηθειών και Υπηρεσιών» (Α΄ 147), όπως ισχύει μετά τον ν. 4782/2021 (Α΄ 36), και ιδίως το άρθρο 168.</li>\n  <li>Τη με αριθμό {{symvasi.arithmos}} σύμβαση εκτέλεσης του έργου, που υπογράφηκε την {{symvasi.imerominia_ypografis}}, συνολικής δαπάνης {{symvasi.aksia}} (χωρίς Φ.Π.Α.).</li>\n  <li>Το εγκεκριμένο χρονοδιάγραμμα κατασκευής και τις χορηγηθείσες παρατάσεις, βάσει των οποίων ο εγκεκριμένος χρόνος περαίωσης έληγε την {{peraiosi.egkekrimenos_xronos}}.</li>\n  <li>Τη με ημερομηνία {{peraiosi.ekthesi_epivleponta}} έγγραφη αναφορά του επιβλέποντος μηχανικού, η οποία υποβλήθηκε εντός της τριακονθήμερης προθεσμίας της παρ. 1 του άρθρου 168 και βεβαιώνει ότι οι εργασίες περατώθηκαν και ότι διενεργήθηκαν οι προβλεπόμενες από τη σύμβαση δοκιμές.</li>\n</ol>\n<p class=\"declare\">Β Ε Β Α Ι Ω Ν Ο Υ Μ Ε</p>\n<p>ότι οι εργασίες του έργου <strong>«{{ergo.titlos}}»</strong>, αναδόχου <strong>{{anadoxos.epwnymia}}</strong>, <strong>περατώθηκαν την {{peraiosi.pragmatiki_imerominia}}</strong>, εμπροθέσμως και σύμφωνα με τους όρους της σύμβασης και τα εγκεκριμένα σχέδια και τεύχη.</p>\n<p>Στον χρόνο περαίωσης δεν προσμετράται ο χρόνος που απαιτήθηκε για την αποκατάσταση τυχόν επουσιωδών ελαττωμάτων, σύμφωνα με την παρ. 3 του άρθρου 168.</p>\n<p>Ο χρόνος υποχρεωτικής συντήρησης του έργου, διάρκειας <strong>{{symvasi.mines_syntirisis}} μηνών</strong>, αρχίζει από την επομένη της έκδοσης της παρούσας, ήτοι την <strong>{{peraiosi.enarksi_syntirisis}}</strong>, σύμφωνα με το άρθρο 171 του ν. 4412/2016.</p>\n<p class=\"note\">Η παρούσα κοινοποιείται στον ανάδοχο κατά το άρθρο 143 του ν. 4412/2016.</p>",
+  "subject_template": "Βεβαίωση περάτωσης των εργασιών του έργου «{{ergo.titlos}}»",
+  "signatories": [
+   {
+    "label": "Ο Προϊστάμενος της Διευθύνουσας Υπηρεσίας",
+    "name": "{{proistamenos.full_name}}",
+    "capacity": "{{proistamenos.specialty}}"
+   }
+  ]
+ },
+ {
+  "id": "PRAXH_MEIWSHS_EGG",
+  "doc_code": "PRAXH_MEIWSHS_EGG",
+  "title": "Πράξη μείωσης εγγύησης καλής εκτέλεσης κατά 70%",
+  "legal_ref_id": "N4412/72/14b",
+  "file_type": "html",
+  "storage_path": null,
+  "body_html": "<p class=\"intro\">Έχοντας υπόψη:</p>\n<ol class=\"grounds\">\n  <li>Την περ. β΄ της παρ. 14 του άρθρου 72 του ν. 4412/2016, κατά την οποία η εγγύηση καλής εκτέλεσης μειώνεται κατά ποσοστό εβδομήντα τοις εκατό (70%) της συνολικής αξίας της, αμέσως μετά την έγκριση της τελικής επιμέτρησης.</li>\n  <li>Την παρ. 9 του άρθρου 151 του ν. 4412/2016 περί τελικής επιμέτρησης.</li>\n  <li>Τη με ημερομηνία {{teliki.imerominia_egkrisis}} πράξη έγκρισης της τελικής επιμέτρησης του έργου.</li>\n</ol>\n<p class=\"declare\">Α Π Ο Φ Α Σ Ι Ζ Ο Υ Μ Ε</p>\n<p>Τη μείωση κατά εβδομήντα τοις εκατό (70%) της υπ’ αριθμ. <strong>{{eggyisi.arithmos}}</strong> εγγυητικής επιστολής καλής εκτέλεσης, εκδόσεως <strong>{{eggyisi.ekdotis}}</strong>, του αναδόχου <strong>{{anadoxos.epwnymia}}</strong>, για το έργο «{{ergo.titlos}}».</p>\n<table class=\"data\">\n  <tr><th>Αρχικό ποσό εγγύησης</th><td class=\"num\">{{eggyisi.arxiko_poso}}</td></tr>\n  <tr><th>Ποσοστό μείωσης</th><td class=\"num\">70%</td></tr>\n  <tr><th>Ποσό μείωσης</th><td class=\"num\">{{eggyisi.poso_meiosis}}</td></tr>\n  <tr><th>Υπόλοιπο εγγύησης μετά τη μείωση</th><td class=\"num\"><strong>{{eggyisi.ypoloipo}}</strong></td></tr>\n</table>\n<p>Το υπόλοιπο της εγγύησης επιστρέφεται στο σύνολό του μετά την έγκριση του πρωτοκόλλου παραλαβής του έργου και του τελικού λογαριασμού.</p>\n<p class=\"note\">Η παρούσα κοινοποιείται στον εκδότη της εγγυητικής επιστολής και στον ανάδοχο.</p>",
+  "subject_template": "Μείωση εγγυητικής επιστολής καλής εκτέλεσης του έργου «{{ergo.titlos}}»",
+  "signatories": [
+   {
+    "label": "Ο Προϊστάμενος της Διευθύνουσας Υπηρεσίας",
+    "name": "{{proistamenos.full_name}}",
+    "capacity": "{{proistamenos.specialty}}"
+   }
+  ]
+ }
+]
