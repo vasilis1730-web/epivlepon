@@ -5,13 +5,11 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Δικαιώματα που χρειάζεται η δημοσίευση σελίδων
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Μία δημοσίευση τη φορά· οι παλαιότερες ακυρώνονται
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -37,6 +35,10 @@ jobs:
 
       - name: Έλεγχος τύπων & build
         working-directory: app
+        env:
+          VITE_SUPABASE_URL: 'https://nubxaclmwuhqkvuvmvos.supabase.co'
+          VITE_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51YnhhY2xtd3VocWt2dXZtdm9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzOTY0MDEsImV4cCI6MjEwMzk3MjQwMX0.5NDvyQfTQt2vrIuSLkKOEL5aHqsz5X_soSYCsAetCvs'
+          VITE_HASH_ROUTER: '1'
         run: npm run build
 
       - name: Ρύθμιση GitHub Pages
