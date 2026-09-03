@@ -1,0 +1,62 @@
+name: Δημοσίευση στο GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Δικαιώματα που χρειάζεται η δημοσίευση σελίδων
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Μία δημοσίευση τη φορά· οι παλαιότερες ακυρώνονται
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Κατασκευή
+    runs-on: ubuntu-latest
+    steps:
+      - name: Λήψη κώδικα
+        uses: actions/checkout@v4
+
+      - name: Εγκατάσταση Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Εγκατάσταση εξαρτήσεων
+        working-directory: app
+        run: npm ci
+
+      - name: Έλεγχος τύπων & build
+        working-directory: app
+        run: npm run build
+
+      - name: Ρύθμιση GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Ανέβασμα προϊόντος
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: app/dist
+
+  deploy:
+    name: Δημοσίευση
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Ανάπτυξη στο GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
