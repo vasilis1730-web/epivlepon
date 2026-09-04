@@ -11,13 +11,15 @@ import * as store from './store'
 import * as docgen from './docgen'
 import { DEMO_ORG, DEMO_PROFILE } from './demoData'
 import type {
-  Ape, Blocker, Completion, Contract, DiaryEntry, DocumentRow, FinalMeasurement,
-  Guarantee, HiddenWorkNotice, Measurement, PaymentCertificate, Profile,
+  Ape, Blocker, BudgetItem, BudgetItemDraft, BudgetVersion, Completion, Contract,
+  DiaryEntry, DocumentRow, FinalMeasurement, Guarantee, HiddenWorkNotice,
+  Measurement, NewApeInput, NewPaymentInput, PaymentCertificate, Profile,
   Project, ProjectFinancials, ProjectStage, ProjectStageTask,
 } from './types'
-import { daysUntil } from './format'
+import { addMonths, daysUntil } from './format'
 import { STAGES } from './catalogue'
 import { derive, type NewProjectInput } from './newProject'
+import { apeTotals, paymentTotals } from './rules'
 
 const sb = () => {
   if (!supabase) throw new Error('Δεν υπάρχει σύνδεση Supabase.')
@@ -421,9 +423,21 @@ export async function approvePayment(id: string) {
 export async function getApes(projectId: string): Promise<Ape[]> {
   if (DEMO_MODE) return store.state.apes.filter(a => a.project_id === projectId)
   const rows = await pick<any[]>(
-    await sb().from('ape').select('*, ape_lines(*)').eq('project_id', projectId).order('serial_no'),
+    await sb().from('ape')
+      .select('*, ape_lines(*, work_groups(code, title))')
+      .eq('project_id', projectId).order('serial_no'),
   )
-  return rows.map(r => ({ ...r, lines: r.ape_lines ?? [] }))
+  // Η βάση τηρεί `work_group_id`· ο έλεγχος του ορίου 20% ανά ομάδα
+  // (άρθρο 156 §3γ) χρειάζεται τον ΤΙΤΛΟ της ομάδας. Χωρίς αυτή την
+  // αντιστοίχιση όλες οι γραμμές θα ομαδοποιούνταν σε μία «undefined»
+  // ομάδα και το όριο δεν θα ελεγχόταν ποτέ πραγματικά.
+  return rows.map(r => ({
+    ...r,
+    lines: (r.ape_lines ?? []).map((l: any) => ({
+      ...l,
+      work_group: l.work_groups?.title ?? l.work_groups?.code ?? '—',
+    })),
+  }))
 }
 
 export async function approveApe(id: string) {
@@ -450,6 +464,230 @@ export async function signApe(apeId: string, kind: 'anepifylakta' | 'me_epifylax
   const { error } = await sb().from('ape')
     .update({ contractor_signature: kind, status }).eq('id', apeId)
   if (error) throw new Error(error.message)
+}
+
+/* ================================================================== */
+/* Προϋπολογισμός μελέτης                                              */
+/* ================================================================== */
+
+/**
+ * Αντιστοίχιση ομάδας εργασιών → id της βάσης, ανά κατηγορία έργου.
+ * Το front-end μεταφέρει τον ΤΙΤΛΟ της ομάδας (ώστε ο έλεγχος του ορίου 20%
+ * ανά ομάδα να διαβάζεται από άνθρωπο), αλλά ο χάρτης δέχεται και τον κωδικό
+ * — μια γραμμή που προσυμπληρώθηκε από παλαιότερη εγγραφή μπορεί να φέρει
+ * οποιοδήποτε από τα δύο.
+ */
+async function workGroupIds(category: string): Promise<Map<string, number>> {
+  const rows = await pick<{ id: number; code: string; title: string }[]>(
+    await sb().from('work_groups').select('id, code, title').eq('category', category),
+  )
+  const m = new Map<string, number>()
+  for (const r of rows) {
+    m.set(r.code, r.id)
+    m.set(r.title, r.id)
+  }
+  return m
+}
+
+export async function getBudget(
+  projectId: string,
+): Promise<{ version: BudgetVersion; items: BudgetItem[] } | undefined> {
+  if (DEMO_MODE) return store.getBudget(projectId)
+  const versions = await pick<BudgetVersion[]>(
+    await sb().from('budget_versions').select('*')
+      .eq('project_id', projectId).order('version_no'),
+  )
+  const version = versions.find(v => v.version_no === 0)
+  if (!version) return undefined
+  const rows = await pick<any[]>(
+    await sb().from('budget_items')
+      .select('*, work_groups(code, title)')
+      .eq('version_id', version.id).order('line_no'),
+  )
+  return {
+    version,
+    items: rows.map(r => ({ ...r, work_group: r.work_groups?.title ?? '—' })),
+  }
+}
+
+/** Καταχώριση του ΑΡΧΙΚΟΥ (συμβατικού) προϋπολογισμού — έκδοση 0. */
+export async function saveBudget(
+  projectId: string,
+  lines: BudgetItemDraft[],
+): Promise<{ versionId: string; itemCount: number; totalNet: number }> {
+  if (DEMO_MODE) return store.saveBudget(projectId, lines)
+
+  const totalNet =
+    Math.round(lines.reduce((s, l) => s + l.unit_price * l.quantity, 0) * 100) / 100
+
+  const project = await pick<{ category: string }[]>(
+    await sb().from('projects').select('category').eq('id', projectId),
+  )
+  const groups = await workGroupIds(project[0]?.category ?? '')
+
+  // Μία έκδοση 0 ανά έργο: αν υπάρχει, αντικαθίστανται οι γραμμές της.
+  const existing = await pick<BudgetVersion[]>(
+    await sb().from('budget_versions').select('*')
+      .eq('project_id', projectId).eq('version_no', 0),
+  )
+
+  let versionId: string
+  if (existing[0]) {
+    versionId = existing[0].id
+    const { error } = await sb().from('budget_versions')
+      .update({ total_net: totalNet }).eq('id', versionId)
+    if (error) throw new Error(error.message)
+    const del = await sb().from('budget_items').delete().eq('version_id', versionId)
+    if (del.error) throw new Error(del.error.message)
+  } else {
+    const { data, error } = await sb().from('budget_versions').insert({
+      project_id: projectId, version_no: 0, label: 'Αρχική Σύμβαση',
+      is_current: true, total_net: totalNet,
+    }).select('id').single()
+    if (error) throw new Error(error.message)
+    versionId = data!.id
+  }
+
+  const { error: insErr } = await sb().from('budget_items').insert(
+    lines.map(l => ({
+      project_id: projectId,
+      version_id: versionId,
+      line_no: l.line_no,
+      item_code: l.item_code,
+      description: l.description,
+      unit: l.unit,
+      work_group_id: groups.get(l.work_group) ?? null,
+      unit_price: l.unit_price,
+      quantity: l.quantity,
+    })),
+  )
+  if (insErr) throw new Error(insErr.message)
+
+  return { versionId, itemCount: lines.length, totalNet }
+}
+
+/* ================================================================== */
+/* Σύνταξη ΑΠΕ (άρθρο 156 §2) — συντάσσει η Υπηρεσία                   */
+/* ================================================================== */
+export async function createApe(input: NewApeInput): Promise<{ apeId: string; serialNo: number }> {
+  if (DEMO_MODE) return store.createApe(input)
+
+  const contract = await getContract(input.project_id)
+  if (!contract) throw new Error('Δεν βρέθηκε σύμβαση για το έργο.')
+
+  const existing = await pick<{ serial_no: number }[]>(
+    await sb().from('ape').select('serial_no')
+      .eq('project_id', input.project_id).order('serial_no', { ascending: false }),
+  )
+  const serialNo = (existing[0]?.serial_no ?? 0) + 1
+
+  const t = apeTotals(input.lines, contract.initial_value_net)
+
+  const project = await pick<{ category: string }[]>(
+    await sb().from('projects').select('category').eq('id', input.project_id),
+  )
+  const groups = await workGroupIds(project[0]?.category ?? '')
+
+  const { data, error } = await sb().from('ape').insert({
+    project_id: input.project_id,
+    serial_no: serialNo,
+    atype: input.atype,
+    reason: input.reason,
+    drafted_at: input.drafted_at,
+    initial_contract_value: contract.initial_value_net,
+    previous_ape_value: t.previousValue,
+    contingency_used: t.contingencyUsed,
+    contingency_remaining:
+      Math.round((contract.contingency_amount - t.contingencyUsed) * 100) / 100,
+    savings_used: t.savings,
+    new_total_value: t.newTotal,
+    delta_pct: contract.initial_value_net
+      ? Math.round((t.delta / contract.initial_value_net) * 1_000_000) / 10_000
+      : null,
+    supplementary_needed: input.supplementary_needed,
+    status: 'draft',
+    legal_ref_id: 'N4412/156/2',
+  }).select('id').single()
+  if (error) throw new Error(error.message)
+
+  const apeId = data!.id
+  // amount_initial / amount_new / delta_amount είναι ΠΑΡΑΓΟΜΕΝΕΣ στήλες —
+  // δεν αποστέλλονται.
+  const { error: linesErr } = await sb().from('ape_lines').insert(
+    input.lines.map(l => ({
+      ape_id: apeId,
+      work_group_id: groups.get(l.work_group) ?? null,
+      item_code: l.item_code,
+      description: l.description,
+      unit: l.unit,
+      unit_price: l.unit_price,
+      qty_initial: l.qty_initial,
+      qty_previous: l.qty_previous,
+      qty_new: l.qty_new,
+      funding_source: l.funding_source,
+      is_new_item: l.is_new_item,
+    })),
+  )
+  if (linesErr) throw new Error(linesErr.message)
+
+  return { apeId, serialNo }
+}
+
+/* ================================================================== */
+/* Σύνταξη λογαριασμού (άρθρο 152)                                     */
+/* ================================================================== */
+export async function createPayment(
+  input: NewPaymentInput,
+): Promise<{ paymentId: string; serialNo: number }> {
+  if (DEMO_MODE) return store.createPayment(input)
+
+  const existing = await pick<{ serial_no: number }[]>(
+    await sb().from('payment_certificates').select('serial_no')
+      .eq('project_id', input.project_id).eq('ptype', input.ptype)
+      .order('serial_no', { ascending: false }),
+  )
+  const serialNo = (existing[0]?.serial_no ?? 0) + 1
+
+  const prior = await pick<any[]>(
+    await sb().from('payment_certificates')
+      .select('gross_cumulative, retentions_amount')
+      .eq('project_id', input.project_id),
+  )
+  const t = paymentTotals(input, prior)
+
+  const { data, error } = await sb().from('payment_certificates').insert({
+    project_id: input.project_id,
+    ptype: input.ptype,
+    serial_no: serialNo,
+    period_from: input.period_from,
+    period_to: input.period_to,
+    measurement_id: input.measurement_id,
+    submitted_at: input.submitted_at,
+    // Άρθρο 152: η Δ.Υ. εγκρίνει εντός ΕΝΟΣ ΜΗΝΟΣ από την υποβολή.
+    approval_due: addMonths(input.submitted_at, 1),
+    status: 'submitted',
+    works_cumulative: input.works_cumulative,
+    ge_oe_amount: input.ge_oe_amount,
+    apologistika_amount: input.apologistika_amount,
+    revision_amount: input.revision_amount,
+    compensations: input.compensations,
+    gross_cumulative: t.gross,
+    previous_certified: t.previousCertified,
+    advance_amortization: input.advance_amortization,
+    penalties_amount: input.penalties_amount,
+    other_deductions: input.other_deductions,
+    retentions_pct: input.retentions_pct,
+    retentions_amount: t.retentions,
+    vat_rate: input.vat_rate,
+    vat_amount: t.vat,
+    net_payable: t.net,
+    has_summary_table: input.has_summary_table,
+    has_revision_calc: input.has_revision_calc,
+    legal_ref_id: 'N4412/152',
+  }).select('id').single()
+  if (error) throw new Error(error.message)
+
+  return { paymentId: data!.id, serialNo }
 }
 
 /* ================================================================== */
@@ -496,6 +734,19 @@ export async function getCompletion(projectId: string): Promise<Completion | und
     await sb().from('completions').select('*').eq('project_id', projectId),
   )
   return rows[0]
+}
+
+/**
+ * Έγκριση πρωτοκόλλου παραλαβής (άρθρο 172). ΔΙΑΦΟΡΕΤΙΚΗ από τη Βεβαίωση
+ * Περάτωσης του άρθρου 168: μόνο η εγκεκριμένη παραλαβή θεμελιώνει τον
+ * ΤΕΛΙΚΟ λογαριασμό και την επιστροφή των εγγυήσεων.
+ */
+export async function isAcceptanceApproved(projectId: string): Promise<boolean> {
+  if (DEMO_MODE) return Boolean(store.state.acceptance[projectId]?.approved_at)
+  const rows = await pick<{ approved_at: string | null }[]>(
+    await sb().from('acceptances').select('approved_at').eq('project_id', projectId),
+  )
+  return Boolean(rows[0]?.approved_at)
 }
 
 export async function getDocuments(projectId: string): Promise<DocumentRow[]> {

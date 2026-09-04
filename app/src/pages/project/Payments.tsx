@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@/hooks/useQuery'
 import { useToast } from '@/hooks/useToast'
 import * as api from '@/lib/api'
@@ -11,6 +11,7 @@ import { paymentViolations } from '@/lib/rules'
 
 export default function Payments() {
   const { projectId = '' } = useParams()
+  const nav = useNavigate()
   const toast = useToast()
 
   const { data, loading } = useQuery(async () => {
@@ -29,13 +30,18 @@ export default function Payments() {
 
   return (
     <div className="space-y-5">
-      <header>
-        <div className="label-xs">Άρθρο 152 ν. 4412/2016</div>
-        <h1 className="mt-1 font-serif text-2xl font-bold">Λογαριασμοί</h1>
-        <p className="mt-1 max-w-3xl text-sm text-ink2">
-          Η Διευθύνουσα Υπηρεσία ελέγχει, διορθώνει και εγκρίνει εντός ενός μηνός. Άπρακτη
-          πάροδος της προθεσμίας καθιστά τον λογαριασμό εγκεκριμένο και πληρωτέο.
-        </p>
+      <header className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="label-xs">Άρθρο 152 ν. 4412/2016</div>
+          <h1 className="mt-1 font-serif text-2xl font-bold">Λογαριασμοί</h1>
+          <p className="mt-1 max-w-3xl text-sm text-ink2">
+            Η Διευθύνουσα Υπηρεσία ελέγχει, διορθώνει και εγκρίνει εντός ενός μηνός. Άπρακτη
+            πάροδος της προθεσμίας καθιστά τον λογαριασμό εγκεκριμένο και πληρωτέο.
+          </p>
+        </div>
+        <Button className="shrink-0" onClick={() => nav(`/erga/${projectId}/logariasmoi/neos`)}>
+          Νέος λογαριασμός
+        </Button>
       </header>
 
       <div className="grid gap-4 md:grid-cols-3">

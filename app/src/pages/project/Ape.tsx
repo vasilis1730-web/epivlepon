@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@/hooks/useQuery'
 import { useToast } from '@/hooks/useToast'
 import * as api from '@/lib/api'
@@ -17,6 +17,7 @@ const FUNDING: Record<string, string> = {
 
 export default function ApePage() {
   const { projectId = '' } = useParams()
+  const nav = useNavigate()
   const toast = useToast()
 
   const { data, loading } = useQuery(async () => {
@@ -31,13 +32,21 @@ export default function ApePage() {
 
   return (
     <div className="space-y-5">
-      <header>
-        <div className="label-xs">Άρθρο 156 ν. 4412/2016</div>
-        <h1 className="mt-1 font-serif text-2xl font-bold">Ανακεφαλαιωτικοί Πίνακες Εργασιών</h1>
-        <p className="mt-1 max-w-3xl text-sm text-ink2">
-          Κάθε τροποποίηση ελέγχεται ως προς τα τέσσερα όρια: 50% σωρευτικά, 9%/15%
-          απρόβλεπτα, 20% ανά ομάδα εργασιών και 10% συνολικά για τις επί έλασσον δαπάνες.
-        </p>
+      <header className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="label-xs">Άρθρο 156 ν. 4412/2016</div>
+          <h1 className="mt-1 font-serif text-2xl font-bold">Ανακεφαλαιωτικοί Πίνακες Εργασιών</h1>
+          <p className="mt-1 max-w-3xl text-sm text-ink2">
+            Κάθε τροποποίηση ελέγχεται ως προς τα τέσσερα όρια: 50% σωρευτικά, 9%/15%
+            απρόβλεπτα, 20% ανά ομάδα εργασιών και 10% συνολικά για τις επί έλασσον δαπάνες.
+          </p>
+        </div>
+        <div className="flex shrink-0 gap-2">
+          <Button variant="secondary" onClick={() => nav(`/erga/${projectId}/proypologismos`)}>
+            Προϋπολογισμός
+          </Button>
+          <Button onClick={() => nav(`/erga/${projectId}/ape/neos`)}>Νέος ΑΠΕ</Button>
+        </div>
       </header>
 
       <Card>

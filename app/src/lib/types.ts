@@ -289,7 +289,11 @@ export interface PaymentCertificate {
 
 export interface ApeLine {
   id: string
+  /** Τίτλος ομάδας εργασιών. Στη βάση τηρείται ως `work_group_id` (FK προς
+   *  `work_groups`)· η αντιστοίχιση γίνεται στο `api.getApes`. Ο έλεγχος του
+   *  ορίου 20% ανά ομάδα (άρθρο 156 §3γ) στηρίζεται σε αυτό το πεδίο. */
   work_group: string
+  work_group_id?: number | null
   item_code: string
   description: string
   unit: string
@@ -408,4 +412,101 @@ export interface DocumentRow {
   ada: string | null
   status: string
   created_at: string
+}
+
+/* ==================================================================== */
+/* Προϋπολογισμός μελέτης (άρθρο 53 §7 — τιμολόγιο & προμέτρηση)        */
+/* ==================================================================== */
+
+/** Έκδοση προϋπολογισμού. Η έκδοση `version_no = 0` αποτυπώνει τα ΣΥΜΒΑΤΙΚΑ
+ *  μεγέθη της αρχικής σύμβασης και αποτελεί τη βάση προσυμπλήρωσης του 1ου ΑΠΕ. */
+export interface BudgetVersion {
+  id: string
+  project_id: string
+  version_no: number
+  label: string
+  is_current: boolean
+  ape_id: string | null
+  approved_at: string | null
+  total_net: number
+  created_at: string
+}
+
+export interface BudgetItem {
+  id: string
+  version_id: string
+  line_no: number
+  item_code: string
+  description: string
+  unit: string
+  /** Τίτλος ομάδας εργασιών (work_groups.title). */
+  work_group: string
+  unit_price: number
+  quantity: number
+  amount: number
+  is_new_price: boolean
+  is_apologistiki: boolean
+}
+
+/** Μία γραμμή όπως την επεξεργάζεται ο χρήστης στη φόρμα προϋπολογισμού. */
+export interface BudgetItemDraft {
+  line_no: number
+  item_code: string
+  description: string
+  unit: string
+  work_group: string
+  unit_price: number
+  quantity: number
+}
+
+/* ==================================================================== */
+/* Είσοδοι φορμών ΑΠΕ / λογαριασμού                                     */
+/* ==================================================================== */
+
+/** Γραμμή ΑΠΕ υπό σύνταξη. Τα ποσά ΔΕΝ αποθηκεύονται: είναι παραγόμενες
+ *  στήλες στη βάση (amount_initial/amount_new/delta_amount). */
+export interface ApeLineDraft {
+  item_code: string
+  description: string
+  unit: string
+  work_group: string
+  unit_price: number
+  /** Ποσότητα αρχικής σύμβασης (από τον προϋπολογισμό). */
+  qty_initial: number
+  /** Ποσότητα προηγούμενου εγκεκριμένου ΑΠΕ. */
+  qty_previous: number
+  /** Νέα προτεινόμενη ποσότητα — το μόνο που μεταβάλλει ο μηχανικός. */
+  qty_new: number
+  funding_source: ApeLine['funding_source']
+  is_new_item: boolean
+}
+
+export interface NewApeInput {
+  project_id: string
+  atype: ApeType
+  reason: string
+  drafted_at: string
+  supplementary_needed: boolean
+  lines: ApeLineDraft[]
+}
+
+export interface NewPaymentInput {
+  project_id: string
+  ptype: PaymentCertificate['ptype']
+  period_from: string | null
+  period_to: string | null
+  measurement_id: string | null
+  submitted_at: string
+  works_cumulative: number
+  ge_oe_amount: number
+  apologistika_amount: number
+  revision_amount: number
+  compensations: number
+  advance_amortization: number
+  penalties_amount: number
+  other_deductions: number
+  retentions_pct: number
+  vat_rate: number
+  has_summary_table: boolean
+  has_revision_calc: boolean
 }

@@ -222,6 +222,101 @@ export function computePayment(input: {
 }
 
 /* ------------------------------------------------------------------ */
+/* Σύνολα ΑΠΕ (άρθρο 156 §2)                                           */
+/* ------------------------------------------------------------------ */
+/**
+ * Μοντέλο: οι γραμμές του ΑΠΕ αποτυπώνουν τη ΔΑΠΑΝΗ ΕΡΓΑΣΙΩΝ. Η νέα
+ * συνολική δαπάνη προκύπτει ως η αξία της αρχικής σύμβασης προσαυξημένη
+ * κατά την ΚΑΘΑΡΗ μεταβολή των εργασιών· τα κονδύλια ΓΕ & ΟΕ και
+ * απροβλέπτων της αρχικής σύμβασης παραμένουν ενσωματωμένα στη βάση
+ * `initialContractValue` και δεν ανακεφαλαιώνονται εκ νέου.
+ */
+export function apeTotals(
+  lines: Array<{
+    unit_price: number
+    qty_initial: number
+    qty_previous: number
+    qty_new: number
+    funding_source: string
+  }>,
+  initialContractValue: number,
+) {
+  const worksInitial = round2(lines.reduce((s, l) => s + l.unit_price * l.qty_initial, 0))
+  const worksPrevious = round2(lines.reduce((s, l) => s + l.unit_price * l.qty_previous, 0))
+  const worksNew = round2(lines.reduce((s, l) => s + l.unit_price * l.qty_new, 0))
+
+  const delta = round2(worksNew - worksInitial)
+  const newTotal = round2(initialContractValue + delta)
+  const previousValue = round2(initialContractValue + (worksPrevious - worksInitial))
+
+  // Χρήση απροβλέπτων: μόνο οι ΑΥΞΗΣΕΙΣ γραμμών που χρηματοδοτούνται από
+  // το κονδύλιο απροβλέπτων (άρθρο 156 §3β).
+  const contingencyUsed = round2(
+    lines
+      .filter(l => l.funding_source === 'apravlepta')
+      .reduce((s, l) => s + Math.max(0, (l.qty_new - l.qty_initial) * l.unit_price), 0),
+  )
+
+  // Επί έλασσον δαπάνες: το άθροισμα των ΜΕΙΩΣΕΩΝ (άρθρο 156 §3γ).
+  const savings = round2(
+    lines.reduce(
+      (s, l) => s + Math.max(0, (l.qty_initial - l.qty_new) * l.unit_price), 0),
+  )
+
+  return { worksInitial, worksPrevious, worksNew, delta, newTotal, previousValue, contingencyUsed, savings }
+}
+
+/* ------------------------------------------------------------------ */
+/* Σύνολα λογαριασμού (άρθρο 152)                                      */
+/* ------------------------------------------------------------------ */
+export function paymentTotals(
+  input: {
+    works_cumulative: number
+    ge_oe_amount: number
+    apologistika_amount: number
+    revision_amount: number
+    compensations: number
+    advance_amortization: number
+    penalties_amount: number
+    other_deductions: number
+    retentions_pct: number
+    vat_rate: number
+  },
+  priorCertificates: Array<{ gross_cumulative: number; retentions_amount: number }>,
+) {
+  const gross = round2(
+    input.works_cumulative + input.ge_oe_amount + input.apologistika_amount +
+    input.revision_amount + input.compensations,
+  )
+  // Σωρευτική λογική: αφαιρείται ό,τι έχει ήδη πιστοποιηθεί και κρατηθεί.
+  const previousCertified = priorCertificates.reduce(
+    (m, p) => Math.max(m, p.gross_cumulative), 0)
+  const previousRetentions = round2(
+    priorCertificates.reduce((s, p) => s + p.retentions_amount, 0))
+
+  const c = computePayment({
+    gross_cumulative: gross,
+    previous_certified: previousCertified,
+    previous_retentions: previousRetentions,
+    advance_amortization: input.advance_amortization,
+    penalties_amount: input.penalties_amount,
+    other_deductions: input.other_deductions,
+    retentions_pct: input.retentions_pct,
+    vat_rate: input.vat_rate,
+  })
+
+  return {
+    gross,
+    previousCertified,
+    previousRetentions,
+    period: c.period_amount,
+    retentions: c.retentions_amount,
+    net: c.net_payable,
+    vat: c.vat_amount,
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /* Άρθρο 72 §14β — μειώσεις εγγυήσεων                                  */
 /* ------------------------------------------------------------------ */
 export function guaranteeReduction70Blockers(fm: FinalMeasurement | undefined): Blocker[] {

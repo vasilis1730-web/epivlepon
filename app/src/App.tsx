@@ -16,6 +16,9 @@ import HiddenWorks from './pages/project/HiddenWorks'
 import Measurements from './pages/project/Measurements'
 import Payments from './pages/project/Payments'
 import ApePage from './pages/project/Ape'
+import NewApe from './pages/project/NewApe'
+import Budget from './pages/project/Budget'
+import NewPayment from './pages/project/NewPayment'
 import Guarantees from './pages/project/Guarantees'
 import CompletionPage from './pages/project/Completion'
 import Documents from './pages/project/Documents'
@@ -53,7 +56,10 @@ export default function App() {
         <Route path="/erga/:projectId/afaneis" element={<Shell><HiddenWorks /></Shell>} />
         <Route path="/erga/:projectId/epimetriseis" element={<Shell><Measurements /></Shell>} />
         <Route path="/erga/:projectId/logariasmoi" element={<Shell><Payments /></Shell>} />
+        <Route path="/erga/:projectId/logariasmoi/neos" element={<Shell><NewPayment /></Shell>} />
         <Route path="/erga/:projectId/ape" element={<Shell><ApePage /></Shell>} />
+        <Route path="/erga/:projectId/ape/neos" element={<Shell><NewApe /></Shell>} />
+        <Route path="/erga/:projectId/proypologismos" element={<Shell><Budget /></Shell>} />
         <Route path="/erga/:projectId/eggyiseis" element={<Shell><Guarantees /></Shell>} />
         <Route path="/erga/:projectId/peraiosi" element={<Shell><CompletionPage /></Shell>} />
         <Route path="/erga/:projectId/eggrafa" element={<Shell><Documents /></Shell>} />

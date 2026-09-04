@@ -12,14 +12,15 @@ import {
 } from './demoData'
 import { computeStageDue, DOCS_BY_STAGE, STAGES, TASKS_BY_STAGE } from './catalogue'
 import type {
-  Ape, Blocker, Completion, Contract, DiaryEntry, DocumentRow, FinalMeasurement,
-  Guarantee, HiddenWorkNotice, Measurement, PaymentCertificate, Project,
+  Ape, ApeLine, Blocker, BudgetItem, BudgetItemDraft, BudgetVersion, Completion,
+  Contract, DiaryEntry, DocumentRow, FinalMeasurement, Guarantee, HiddenWorkNotice,
+  Measurement, NewApeInput, NewPaymentInput, PaymentCertificate, Project,
   ProjectStage, ProjectStageTask, StageStatus,
 } from './types'
 import { addDays, addMonths, daysUntil, today } from './format'
 import {
-  apeViolations, guardBlockers, guaranteeReduction70Blockers, guaranteeReleaseBlockers,
-  missingDiaryDays, type GuardContext,
+  apeTotals, apeViolations, guardBlockers, guaranteeReduction70Blockers,
+  guaranteeReleaseBlockers, missingDiaryDays, paymentTotals, type GuardContext,
 } from './rules'
 import { derive, type NewProjectInput } from './newProject'
 
@@ -39,6 +40,8 @@ export interface DemoState {
   acceptance: typeof DEMO_ACCEPTANCE
   schedules: typeof DEMO_SCHEDULES
   documents: DocumentRow[]
+  budgetVersions: BudgetVersion[]
+  budgetItems: BudgetItem[]
 }
 
 let version = 0
@@ -131,6 +134,8 @@ export const state: DemoState = {
   acceptance: DEMO_ACCEPTANCE,
   schedules: DEMO_SCHEDULES,
   documents: DEMO_DOCUMENTS,
+  budgetVersions: [],
+  budgetItems: [],
 }
 
 /* ------------------------------------------------------------------ */
@@ -414,6 +419,158 @@ export function releaseGuarantee(guaranteeId: string) {
   g.current_amount = 0
   g.status = 'apodesmevmeni'
   notify()
+}
+
+/* ------------------------------------------------------------------ */
+/* Προϋπολογισμός μελέτης                                              */
+/* ------------------------------------------------------------------ */
+export function getBudget(projectId: string) {
+  const version = state.budgetVersions.find(
+    v => v.project_id === projectId && v.version_no === 0)
+  if (!version) return undefined
+  return {
+    version,
+    items: state.budgetItems.filter(i => i.version_id === version.id)
+      .sort((a, b) => a.line_no - b.line_no),
+  }
+}
+
+export function saveBudget(projectId: string, lines: BudgetItemDraft[]) {
+  const totalNet =
+    Math.round(lines.reduce((s, l) => s + l.unit_price * l.quantity, 0) * 100) / 100
+
+  let version = state.budgetVersions.find(
+    v => v.project_id === projectId && v.version_no === 0)
+
+  if (version) {
+    const v = version
+    state.budgetVersions = state.budgetVersions.map(
+      x => (x.id === v.id ? { ...x, total_net: totalNet } : x))
+    state.budgetItems = state.budgetItems.filter(i => i.version_id !== v.id)
+  } else {
+    version = {
+      id: `bv-${Date.now().toString(36)}`,
+      project_id: projectId, version_no: 0, label: 'Αρχική Σύμβαση',
+      is_current: true, ape_id: null, approved_at: null,
+      total_net: totalNet, created_at: today(),
+    }
+    state.budgetVersions = [...state.budgetVersions, version]
+  }
+
+  const vid = version.id
+  state.budgetItems = [
+    ...state.budgetItems,
+    ...lines.map((l, i) => ({
+      id: `bi-${Date.now().toString(36)}-${i}`,
+      version_id: vid,
+      line_no: l.line_no,
+      item_code: l.item_code,
+      description: l.description,
+      unit: l.unit,
+      work_group: l.work_group,
+      unit_price: l.unit_price,
+      quantity: l.quantity,
+      amount: Math.round(l.unit_price * l.quantity * 100) / 100,
+      is_new_price: false,
+      is_apologistiki: false,
+    })),
+  ]
+  notify()
+  return { versionId: vid, itemCount: lines.length, totalNet }
+}
+
+/* ------------------------------------------------------------------ */
+/* Σύνταξη ΑΠΕ (άρθρο 156 §2)                                          */
+/* ------------------------------------------------------------------ */
+export function createApe(input: NewApeInput) {
+  const contract = state.contracts[input.project_id]
+  if (!contract) throw new Error('Δεν βρέθηκε σύμβαση για το έργο.')
+
+  const serialNo = state.apes
+    .filter(a => a.project_id === input.project_id)
+    .reduce((m, a) => Math.max(m, a.serial_no), 0) + 1
+
+  const t = apeTotals(input.lines, contract.initial_value_net)
+  const id = `ape-${Date.now().toString(36)}`
+
+  const lines: ApeLine[] = input.lines.map((l, i) => ({
+    id: `${id}-l${i}`,
+    work_group: l.work_group,
+    item_code: l.item_code,
+    description: l.description,
+    unit: l.unit,
+    unit_price: l.unit_price,
+    qty_initial: l.qty_initial,
+    qty_new: l.qty_new,
+    amount_initial: Math.round(l.qty_initial * l.unit_price * 100) / 100,
+    amount_new: Math.round(l.qty_new * l.unit_price * 100) / 100,
+    delta_amount: Math.round((l.qty_new - l.qty_initial) * l.unit_price * 100) / 100,
+    funding_source: l.funding_source,
+    is_new_item: l.is_new_item,
+  }))
+
+  state.apes = [...state.apes, {
+    id,
+    project_id: input.project_id,
+    serial_no: serialNo,
+    atype: input.atype,
+    reason: input.reason,
+    drafted_at: input.drafted_at,
+    initial_contract_value: contract.initial_value_net,
+    new_total_value: t.newTotal,
+    delta_amount: t.delta,
+    contingency_used: t.contingencyUsed,
+    savings_used: t.savings,
+    supplementary_needed: input.supplementary_needed,
+    tc_opinion_id: null,
+    contractor_signature: null,
+    status: 'draft',
+    approved_at: null,
+    lines,
+  }]
+  notify()
+  return { apeId: id, serialNo }
+}
+
+/* ------------------------------------------------------------------ */
+/* Σύνταξη λογαριασμού (άρθρο 152)                                     */
+/* ------------------------------------------------------------------ */
+export function createPayment(input: NewPaymentInput) {
+  const prior = state.payments.filter(p => p.project_id === input.project_id)
+  const serialNo = prior
+    .filter(p => p.ptype === input.ptype)
+    .reduce((m, p) => Math.max(m, p.serial_no), 0) + 1
+
+  const t = paymentTotals(input, prior)
+  const id = `pc-${Date.now().toString(36)}`
+
+  state.payments = [...state.payments, {
+    id,
+    project_id: input.project_id,
+    ptype: input.ptype,
+    serial_no: serialNo,
+    period_from: input.period_from,
+    period_to: input.period_to,
+    measurement_id: input.measurement_id,
+    submitted_at: input.submitted_at,
+    // Άρθρο 152: έγκριση εντός ενός μηνός από την υποβολή.
+    approval_due: addMonths(input.submitted_at, 1),
+    approved_at: null,
+    status: 'submitted',
+    gross_cumulative: t.gross,
+    previous_certified: t.previousCertified,
+    period_amount: t.period,
+    advance_amortization: input.advance_amortization,
+    penalties_amount: input.penalties_amount,
+    retentions_amount: t.retentions,
+    net_payable: t.net,
+    vat_amount: t.vat,
+    has_summary_table: input.has_summary_table,
+    has_revision_calc: input.has_revision_calc,
+    paid_at: null,
+  }]
+  notify()
+  return { paymentId: id, serialNo }
 }
 
 export function addDiaryEntry(entry: DiaryEntry) {
