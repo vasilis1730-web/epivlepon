@@ -273,4 +273,53 @@ from v_project_financials where project_id='55555555-5555-5555-5555-555555555555
 select table_name, action, count(*) from audit_log
 group by 1,2 order by 1,2;
 
+\echo '=============================================================='
+\echo 'ΔΟΚΙΜΗ 13 — RLS: τι φτάνει σε χρήστη χωρίς υπηρεσιακό ρόλο'
+\echo '=============================================================='
+\echo '--- 13α. Κάθε πίνακας με RLS διαβάζεται ΧΩΡΙΣ σφάλμα policy ---'
+\echo '--- (αμοιβαία αναδρομή στα documents ματαίωνε ΟΛΟ το ερώτημα) ---'
+do $$
+declare r record; n bigint; bad text := '';
+begin
+  perform set_config('request.jwt.claim.sub','00000000-0000-0000-0000-00000000e002', true);
+  set local role authenticated;
+  for r in select tablename from pg_tables
+           where schemaname='public' and rowsecurity order by 1 loop
+    begin
+      execute format('select count(*) from public.%I', r.tablename) into n;
+    exception when others then
+      bad := bad || r.tablename || ' (' || sqlerrm || '); ';
+    end;
+  end loop;
+  reset role;
+  if bad <> '' then
+    raise exception 'Πίνακες που δεν διαβάζονται: %', bad;
+  end if;
+  raise notice 'όλοι οι πίνακες με RLS διαβάζονται καθαρά';
+end $$;
+
+\echo '--- 13β. Εγγραφή εκτός λίστας δεν αποκτά προφίλ ---'
+insert into auth.users (id, email, confirmation_token, recovery_token,
+                        email_change_token_new, email_change)
+values ('cccccccc-cccc-cccc-cccc-cccccccccccc','xenos@example.com','','','','');
+
+select count(*) as profil_agnostou from public.profiles
+where id='cccccccc-cccc-cccc-cccc-cccccccccccc';
+
+\echo '--- 13γ. Ο άγνωστος δεν βλέπει ούτε προσωπικό ούτε φορέα ---'
+do $$
+declare v_prof bigint; v_org bigint; v_proj bigint;
+begin
+  perform set_config('request.jwt.claim.sub','cccccccc-cccc-cccc-cccc-cccccccccccc', true);
+  set local role authenticated;
+  select count(*) into v_prof from public.profiles;
+  select count(*) into v_org  from public.organizations;
+  select count(*) into v_proj from public.projects;
+  reset role;
+  if v_prof <> 0 or v_org <> 0 or v_proj <> 0 then
+    raise exception 'Διαρροή: προφίλ=% φορείς=% έργα=%', v_prof, v_org, v_proj;
+  end if;
+  raise notice 'ο άγνωστος βλέπει 0 προφίλ, 0 φορείς, 0 έργα';
+end $$;
+
 rollback;
