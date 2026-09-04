@@ -22,6 +22,17 @@ export type StageStatus =
 
 export type RecurrenceType = 'once' | 'repeating' | 'continuous' | 'conditional'
 
+/**
+ * Αφετηρία της προθεσμίας ενός σταδίου. Οι τρεις τελευταίες τιμές αφορούν
+ * γεγονότα που συμβαίνουν ανά έγγραφο ή ανά πράξη: η προθεσμία τηρείται
+ * στην ίδια την εγγραφή (approval_due, inspection_due, decision_due) και
+ * όχι στο στάδιο, γι' αυτό το στάδιο μένει χωρίς ημερομηνία.
+ */
+export type DeadlineBasis =
+  | 'ypografi_symvasis' | 'enarxi_ergasion' | 'lixi_prothesmias'
+  | 'bebaiosi_peratosis' | 'lixi_syntirisis'
+  | 'ypovoli_eggrafou' | 'koinopoiisi_praxis' | 'custom'
+
 export type MeasurementStatus =
   | 'draft' | 'submitted' | 'sampled' | 'under_check'
   | 'returned_for_fix' | 'approved' | 'deemed_approved' | 'rejected'
@@ -138,6 +149,8 @@ export interface WorkflowStage {
   legal_ref_id: string | null
   deadline_days: number | null
   deadline_months: number | null
+  /** Από ποιο γεγονός αρχίζει να τρέχει η προθεσμία του σταδίου. */
+  deadline_basis: DeadlineBasis | null
   tacit_approval: boolean
   tacit_effect: string | null
   guard_fn: string | null

@@ -33,7 +33,7 @@ begin
     ('00000000-0000-0000-0000-000000000000', v_epiv, 'authenticated', 'authenticated',
      'epivlepon@dimosrodou.demo', v_pw, now(),
      '{"provider":"email","providers":["email"]}'::jsonb,
-     '{"full_name":"Βασίλειος Διακολιός","specialty":"Πολιτικός Μηχανικός"}'::jsonb, now(), now()),
+     '{"full_name":"Βασίλειος Διακολιός","specialty":"ΠΕ Μηχανολόγος Μηχανικός"}'::jsonb, now(), now()),
     ('00000000-0000-0000-0000-000000000000', v_proi, 'authenticated', 'authenticated',
      'proistamenos@dimosrodou.demo', v_pw, now(),
      '{"provider":"email","providers":["email"]}'::jsonb,
@@ -50,8 +50,24 @@ begin
      'email', now(), now(), now())
   on conflict (provider, provider_id) do nothing;
 
-  -- Ασφάλεια δικτύου: το trigger app.handle_new_user() έχει ήδη
-  -- δημιουργήσει τα profiles· εδώ μόνο συμπληρώνουμε στοιχεία.
+  -- ΚΡΙΣΙΜΟ: οι στήλες κειμένου confirmation_token, recovery_token,
+  -- email_change_token_new και email_change ΔΕΝ έχουν προεπιλογή. Αν μείνουν
+  -- NULL, η υπηρεσία Auth τις διαβάζει σε μη-μηδενίσιμα πεδία και κάθε
+  -- σύνδεση αποτυγχάνει με «Database error querying schema». Το GoTrue
+  -- αποθηκεύει κενό κείμενο — κάνουμε το ίδιο.
+  update auth.users
+     set confirmation_token         = coalesce(confirmation_token, ''),
+         recovery_token             = coalesce(recovery_token, ''),
+         email_change_token_new     = coalesce(email_change_token_new, ''),
+         email_change               = coalesce(email_change, ''),
+         email_change_token_current = coalesce(email_change_token_current, ''),
+         phone_change               = coalesce(phone_change, ''),
+         phone_change_token         = coalesce(phone_change_token, ''),
+         reauthentication_token     = coalesce(reauthentication_token, '')
+   where id in (v_epiv, v_proi);
+
+  -- Το trigger trg_handle_new_user έχει ήδη δημιουργήσει τα profiles·
+  -- εδώ μόνο συμπληρώνουμε στοιχεία.
   update public.profiles set grade = 'Α΄', registry_no = 'ΤΕΕ 98765'
    where id = v_epiv;
   update public.profiles set grade = 'Α΄', registry_no = 'ΤΕΕ 45321'

@@ -10,7 +10,7 @@ import {
   DEMO_INPROGRESS_STAGES, DEMO_MEASUREMENTS, DEMO_NA_STAGES, DEMO_PAYMENTS,
   DEMO_PROJECTS, DEMO_SCHEDULES,
 } from './demoData'
-import { DOCS_BY_STAGE, STAGES, TASKS_BY_STAGE } from './catalogue'
+import { computeStageDue, DOCS_BY_STAGE, STAGES, TASKS_BY_STAGE } from './catalogue'
 import type {
   Ape, Blocker, Completion, Contract, DiaryEntry, DocumentRow, FinalMeasurement,
   Guarantee, HiddenWorkNotice, Measurement, PaymentCertificate, Project,
@@ -21,6 +21,7 @@ import {
   apeViolations, guardBlockers, guaranteeReduction70Blockers, guaranteeReleaseBlockers,
   missingDiaryDays, type GuardContext,
 } from './rules'
+import { derive, type NewProjectInput } from './newProject'
 
 export interface DemoState {
   projects: Project[]
@@ -79,12 +80,16 @@ function buildStages(): { stages: ProjectStage[]; tasks: ProjectStageTask[] } {
       else if (na.has(s.code)) status = 'not_applicable'
       else if (running.has(s.code)) status = 'in_progress'
 
-      const due =
-        s.deadline_days != null
-          ? addDays(contract.signed_at, s.deadline_days)
-          : s.deadline_months != null
-            ? addMonths(contract.signed_at, s.deadline_months)
-            : null
+      const completion = DEMO_COMPLETIONS[p.id]
+      const due = computeStageDue(s, {
+        signedAt: contract.signed_at,
+        worksStartDeadline: contract.works_start_deadline,
+        currentEndDate: contract.current_end_date,
+        certificateIssuedAt: completion?.certificate_issued_at ?? null,
+        maintenanceEndsOn: completion?.certificate_issued_at
+          ? addMonths(completion.certificate_issued_at, contract.maintenance_months)
+          : null,
+      })
 
       stages.push({
         id, project_id: p.id, stage_code: s.code, cycle_no: 1, status,
@@ -442,4 +447,112 @@ export function addDocument(projectId: string, docCode: string, title: string): 
   state.documents = [row, ...state.documents]
   notify()
   return row
+}
+
+/* ------------------------------------------------------------------ */
+/* Νέο έργο (επίδειξη)                                                 */
+/* ------------------------------------------------------------------ */
+/**
+ * Αντίγραφο της public.create_project_full() για τη λειτουργία επίδειξης:
+ * δημιουργεί έργο, σύμβαση, εγγύηση και ολόκληρη τη ροή των σταδίων με
+ * τους ίδιους υπολογισμούς και τις ίδιες προθεσμίες που εφαρμόζει η βάση.
+ */
+export function createProject(input: NewProjectInput): { projectId: string; stages: number } {
+  const d = derive(input.contract)
+  const code = input.project.code.trim()
+
+  if (state.projects.some(p => p.code === code)) {
+    throw new Error(`Υπάρχει ήδη έργο με κωδικό «${code}».`)
+  }
+
+  const id = `p-${Date.now().toString(36)}`
+
+  const project: Project = {
+    id, code,
+    title: input.project.title.trim(),
+    category: input.project.category,
+    location: input.project.location.trim() || null,
+    funding_source: input.project.funding_source.trim() || null,
+    study_budget_net: d.studyBudgetNet,
+    estimated_value_net: d.studyBudgetNet,
+  }
+
+  const c = input.contract
+  const contract: Contract = {
+    project_id: id,
+    contractor_name: input.contractor.name.trim(),
+    contractor_afm: input.contractor.afm.trim(),
+    contract_no: c.contract_no.trim(),
+    signed_at: c.signed_at,
+    discount_pct: c.discount_pct,
+    initial_value_net: d.initialValueNet,
+    contingency_pct: c.contingency_pct,
+    contingency_amount: d.contingency,
+    vat_rate: c.vat_rate,
+    total_duration_days: c.total_duration_days,
+    original_end_date: d.originalEndDate!,
+    current_end_date: d.originalEndDate!,
+    works_start_deadline: d.worksStartDue,
+    maintenance_months: c.maintenance_months,
+    supervision_mode: c.supervision_mode,
+    diary_mode: c.diary_mode,
+    diary_penalty_per_day: c.diary_penalty_per_day,
+    status: 'active',
+  }
+
+  // Ροή σταδίων — ίδιοι κανόνες εφαρμογής με την app.stage_applies()
+  const stages: ProjectStage[] = []
+  const tasks: ProjectStageTask[] = []
+  for (const s of STAGES) {
+    if (s.code === 'S01B_IFE' && c.supervision_mode !== 'ife') continue
+    if (s.code === 'S12_HMEROLOGIO' && c.diary_mode !== 'imerisio') continue
+
+    const sid = `${id}:${s.code}`
+    // Νέο έργο: υπάρχουν μόνο οι αφετηρίες της σύμβασης. Τα στάδια που
+    // μετρούν από μεταγενέστερο γεγονός μένουν χωρίς προθεσμία.
+    const due = computeStageDue(s, {
+      signedAt: c.signed_at,
+      worksStartDeadline: d.worksStartDue,
+      currentEndDate: d.originalEndDate,
+    })
+
+    stages.push({
+      id: sid, project_id: id, stage_code: s.code, cycle_no: 1,
+      status: 'locked', due_date: due, completed_at: null,
+      override_reason: null, na_reason: null,
+      hard_blockers: 0, soft_blockers: 0, tasks_total: 0, tasks_done: 0,
+    })
+    for (const t of TASKS_BY_STAGE[s.code] ?? []) {
+      tasks.push({
+        id: `${sid}:${t.id}`, project_stage_id: sid, stage_task_id: t.id,
+        is_done: false, done_at: null, waived: false, waive_reason: null, evidence_doc_id: null,
+      })
+    }
+  }
+
+  state.projects = [...state.projects, project]
+  state.contracts[id] = contract
+  state.stages = [...state.stages, ...stages]
+  state.stageTasks = [...state.stageTasks, ...tasks]
+  state.diary[id] = []
+
+  const g = input.guarantee
+  if (g.guarantee_no.trim() && g.original_amount > 0) {
+    state.guarantees = [...state.guarantees, {
+      id: `g-${Date.now().toString(36)}`,
+      project_id: id, gtype: 'kalis_ektelesis',
+      issuer: g.issuer.trim(), guarantee_no: g.guarantee_no.trim(),
+      issued_at: g.issued_at || c.signed_at,
+      valid_to: g.valid_to || null,
+      original_amount: g.original_amount, current_amount: g.original_amount,
+      pct_of_contract: d.initialValueNet
+        ? Math.round((g.original_amount / d.initialValueNet) * 100_000) / 1000 : null,
+      status: 'energi', events: [],
+    } as Guarantee]
+  }
+
+  // Ξεκλείδωμα των σταδίων χωρίς προαπαιτούμενα (app.recompute_availability)
+  recomputeAvailability(id)
+  notify()
+  return { projectId: id, stages: stages.length }
 }

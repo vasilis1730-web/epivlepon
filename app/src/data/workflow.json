@@ -1,2985 +1,3021 @@
 {
-"stages": [
-{
-"code": "S00_FAKELOS",
-"phase": "f0_systasi",
-"ordinal": 0,
-"title": "Σύσταση φακέλου έργου & καταχώριση σύμβασης",
-"purpose": "Καταχώριση όλων των στοιχείων της σύμβασης που τροφοδοτούν κάθε μετέπειτα έλεγχο: ανάδοχος, ποσά, έκπτωση, απρόβλεπτα, προθεσμίες, ΑΔΑΜ/ΑΔΑ.",
-"responsible": "dieuthynousa_ypiresia",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "N4412/135",
-"deadline_days": null,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Λανθασμένη αρχική καταχώριση αλλοιώνει όλους τους ελέγχους ορίων (50%, 15%, 9%/15%, 10%).",
-"applies_when": null,
-"prerequisites": []
-},
-{
-"code": "S01_ORISMOS",
-"phase": "f0_systasi",
-"ordinal": 1,
-"title": "Ορισμός Επιβλέποντος / ομάδας επίβλεψης",
-"purpose": "Ρητή απόφαση της Διευθύνουσας Υπηρεσίας για τον ορισμό επιβλέποντος, βοηθών και συντονιστή, με σαφή κατανομή καθηκόντων.",
-"responsible": "dieuthynousa_ypiresia",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "N4412/136/2",
-"deadline_days": null,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Χωρίς νόμιμο ορισμό, οι πράξεις επίβλεψης πάσχουν αρμοδιότητας.",
-"applies_when": null,
-"prerequisites": [
-"S00_FAKELOS"
-]
-},
-{
-"code": "S01B_IFE",
-"phase": "f0_systasi",
-"ordinal": 2,
-"title": "Σύμβαση Ιδιωτικού Φορέα Επίβλεψης (Ι.Φ.Ε.)",
-"purpose": "Έλεγχος πιστοποίησης, σύναψη σύμβασης Ι.Φ.Ε. και οριοθέτηση των υπηρεσιακών ελέγχων της Δ.Υ.",
-"responsible": "dieuthynousa_ypiresia",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "N4412/136/3",
-"deadline_days": null,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Η αμοιβή του Ι.Φ.Ε. βαρύνει αποκλειστικά τον ανάδοχο· η Δ.Υ. διατηρεί δικαίωμα εναντίωσης σε 15 ημέρες.",
-"applies_when": {
-"supervision_mode": "ife"
-},
-"prerequisites": [
-"S00_FAKELOS"
-]
-},
-{
-"code": "S02_GNOSTOPOIHSH",
-"phase": "f0_systasi",
-"ordinal": 3,
-"title": "Γνωστοποίηση ορισμού & στοιχείων επικοινωνίας",
-"purpose": "Κοινοποίηση στον ανάδοχο του ορισμού επίβλεψης και των στοιχείων επικοινωνίας — αφετηρία εγκύρων κοινοποιήσεων.",
-"responsible": "dieuthynousa_ypiresia",
-"approver": null,
-"recurrence": "once",
-"legal_ref_id": "N4412/143",
-"deadline_days": null,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Άκυρη κοινοποίηση = μη έναρξη προθεσμιών ένστασης και υποβολών.",
-"applies_when": null,
-"prerequisites": [
-"S01_ORISMOS"
-]
-},
-{
-"code": "S03_EGGYHSEIS",
-"phase": "f1_egkatastasi",
-"ordinal": 4,
-"title": "Έλεγχος & καταχώριση εγγυητικών επιστολών",
-"purpose": "Επαλήθευση γνησιότητας, ποσού (5%) και ισχύος της εγγύησης καλής εκτέλεσης· καταχώριση πρόσθετων εγγυήσεων.",
-"responsible": "dieuthynousa_ypiresia",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "N4412/72/4",
-"deadline_days": null,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": "app.guard_guarantees",
-"risk_note": "Η μη κατάθεση/ανεπάρκεια εγγύησης θέτει σε κίνδυνο την εξασφάλιση του κυρίου του έργου.",
-"applies_when": null,
-"prerequisites": [
-"S00_FAKELOS"
-]
-},
-{
-"code": "S04_TEXNIKOI",
-"phase": "f1_egkatastasi",
-"ordinal": 5,
-"title": "Δήλωση τεχνικών αναδόχου & τηρούντος το ημερολόγιο",
-"purpose": "Γνωστοποίηση προϊσταμένου εργοταξίου, τεχνικού ασφαλείας και του τεχνικού που τηρεί καθημερινά το ημερολόγιο.",
-"responsible": "anadochos",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "N4412/139",
-"deadline_days": null,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Χωρίς ορισμένο τηρούντα δεν υπάρχει νόμιμο ημερολόγιο — γεννάται ποινική ρήτρα.",
-"applies_when": null,
-"prerequisites": [
-"S02_GNOSTOPOIHSH"
-]
-},
-{
-"code": "S05_ELEGXOS_MELETHS",
-"phase": "f1_egkatastasi",
-"ordinal": 6,
-"title": "Έλεγχος της μελέτης δημοπράτησης από τον ανάδοχο",
-"purpose": "Ο ανάδοχος ελέγχει τη μελέτη και γνωστοποιεί σφάλματα/παραλείψεις εντός της τασσόμενης προθεσμίας (20-60 ημέρες).",
-"responsible": "anadochos",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "N4412/138/2",
-"deadline_days": 60,
-"deadline_months": null,
-"tacit_approval": true,
-"tacit_effect": "Η σιωπή του αναδόχου εκλαμβάνεται ως αποδοχή της μελέτης.",
-"guard_fn": null,
-"risk_note": "Παράλειψη γνωστοποίησης αποκλείει μεταγενέστερες αξιώσεις για σφάλματα μελέτης (άρθρο 138 §18).",
-"applies_when": null,
-"prerequisites": [
-"S02_GNOSTOPOIHSH"
-]
-},
-{
-"code": "S06_XRONODIAGRAMMA",
-"phase": "f1_egkatastasi",
-"ordinal": 7,
-"title": "Υποβολή & έγκριση χρονοδιαγράμματος κατασκευής",
-"purpose": "Υποβολή από τον ανάδοχο εντός 15-30 ημερών· έγκριση από τη Δ.Υ. εντός 15 ημερών, άλλως τεκμαίρεται εγκεκριμένο.",
-"responsible": "anadochos",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "N4412/145/1",
-"deadline_days": 30,
-"deadline_months": null,
-"tacit_approval": true,
-"tacit_effect": "Άπρακτη πάροδος 15 ημερών χωρίς έγκριση ή αίτημα διευκρινίσεων = τεκμήριο έγκρισης.",
-"guard_fn": "app.guard_schedule",
-"risk_note": "Το εγκεκριμένο χρονοδιάγραμμα αποτελεί συμβατικό στοιχείο και βάση των τμηματικών προθεσμιών και των ρητρών.",
-"applies_when": null,
-"prerequisites": [
-"S03_EGGYHSEIS",
-"S04_TEXNIKOI"
-]
-},
-{
-"code": "S07_ORGANOGRAMMA",
-"phase": "f1_egkatastasi",
-"ordinal": 8,
-"title": "Οργανόγραμμα εργοταξίου",
-"purpose": "Υποβολή οργανογράμματος με προσωπικό, εξοπλισμό και μηχανήματα του εργοταξίου.",
-"responsible": "anadochos",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "N4412/145/4",
-"deadline_days": null,
-"deadline_months": 1,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Ελλιπής στελέχωση τεκμηριώνει υπαιτιότητα αναδόχου σε καθυστερήσεις.",
-"applies_when": null,
-"prerequisites": [
-"S06_XRONODIAGRAMMA"
-]
-},
-{
-"code": "S08_PPE",
-"phase": "f1_egkatastasi",
-"ordinal": 9,
-"title": "Πρόγραμμα Ποιότητας Έργου (ΠΠΕ)",
-"purpose": "Σύνταξη, υποβολή και έγκριση του ΠΠΕ και των σχεδίων ελέγχων/δοκιμών.",
-"responsible": "anadochos",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "N4412/158",
-"deadline_days": null,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Χωρίς ΠΠΕ δεν τεκμηριώνεται η ποιοτική συμμόρφωση κατά την παραλαβή.",
-"applies_when": null,
-"prerequisites": [
-"S06_XRONODIAGRAMMA"
-]
-},
-{
-"code": "S09_SAY_FAY",
-"phase": "f1_egkatastasi",
-"ordinal": 10,
-"title": "ΣΑΥ / ΦΑΥ & μέτρα ασφάλειας",
-"purpose": "Επικαιροποίηση ΣΑΥ/ΦΑΥ, ορισμός τεχνικού ασφαλείας, εκ των προτέρων γνωστοποίηση έναρξης εργασιών.",
-"responsible": "anadochos",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "PD305/1996",
-"deadline_days": null,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Παράλειψη επισύρει διοικητικές και ποινικές ευθύνες και διακοπή εργασιών.",
-"applies_when": null,
-"prerequisites": [
-"S04_TEXNIKOI"
-]
-},
-{
-"code": "S10_EGKATASTASH",
-"phase": "f1_egkatastasi",
-"ordinal": 11,
-"title": "Εγκατάσταση εργοταξίου & έναρξη εργασιών",
-"purpose": "Παράδοση χώρου, εγκατάσταση εργοταξίου και έναρξη εργασιών — το αργότερο 30 ημέρες από την υπογραφή.",
-"responsible": "anadochos",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "N4412/145/2",
-"deadline_days": 30,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Καθυστέρηση έναρξης από υπαιτιότητα αναδόχου συνιστά λόγο έκπτωσης.",
-"applies_when": null,
-"prerequisites": [
-"S06_XRONODIAGRAMMA",
-"S09_SAY_FAY"
-]
-},
-{
-"code": "S11_PROKATAVOLH",
-"phase": "f1_egkatastasi",
-"ordinal": 12,
-"title": "Χορήγηση προκαταβολής (προαιρετικό)",
-"purpose": "Έγκριση προκαταβολής έως 15%, κατάθεση ισόποσης εγγυητικής και ορισμός τρόπου απόσβεσης.",
-"responsible": "anadochos",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "conditional",
-"legal_ref_id": "N4412/150",
-"deadline_days": null,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Χορήγηση χωρίς εγγυητική επιστολή είναι παράνομη· η μη απόσβεση δημιουργεί δημοσιονομική ζημία.",
-"applies_when": null,
-"prerequisites": [
-"S03_EGGYHSEIS"
-]
-},
-{
-"code": "S12_HMEROLOGIO",
-"phase": "f2_ektelesi",
-"ordinal": 13,
-"title": "Τήρηση & έλεγχος ημερολογίου έργου",
-"purpose": "Καθημερινή ηλεκτρονική τήρηση από τον ανάδοχο· έλεγχος και διόρθωση από τον επιβλέποντα εντός 2 εργασίμων ημερών· έγκριση από τον προϊστάμενο Δ.Υ.",
-"responsible": "anadochos",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "continuous",
-"legal_ref_id": "N4412/146",
-"deadline_days": null,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": "app.guard_diary",
-"risk_note": "Κάθε ημέρα χωρίς εγγραφή γεννά ειδική ποινική ρήτρα 100-500 € και αποδυναμώνει την απόδειξη πραγματικών περιστατικών.",
-"applies_when": {
-"diary_mode": "imerisio"
-},
-"prerequisites": [
-"S10_EGKATASTASH"
-]
-},
-{
-"code": "S13_YLIKA",
-"phase": "f2_ektelesi",
-"ordinal": 14,
-"title": "Έγκριση υλικών & πηγών λήψης",
-"purpose": "Υποβολή δειγμάτων/πιστοποιητικών CE και έγκριση πηγών λήψης εντός 30 ημερών από τη γνωστοποίηση.",
-"responsible": "anadochos",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "repeating",
-"legal_ref_id": "N4412/138/12",
-"deadline_days": 30,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Ενσωμάτωση μη εγκεκριμένων υλικών οδηγεί σε καθαίρεση με δαπάνη του αναδόχου (άρθρο 159).",
-"applies_when": null,
-"prerequisites": [
-"S10_EGKATASTASH"
-]
-},
-{
-"code": "S14_POIOTIKOI",
-"phase": "f2_ektelesi",
-"ordinal": 15,
-"title": "Ποιοτικοί & εργαστηριακοί έλεγχοι",
-"purpose": "Δειγματοληψίες και δοκιμές κατά ΕΤΕΠ/ΕΛΟΤ, καταγραφή αποτελεσμάτων και συσχέτιση με το ημερολόγιο.",
-"responsible": "epivlepon",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "repeating",
-"legal_ref_id": "N4412/158",
-"deadline_days": null,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Ελλιπείς έλεγχοι καθιστούν αδύνατη την τεκμηρίωση ποιότητας στην παραλαβή.",
-"applies_when": null,
-"prerequisites": [
-"S08_PPE"
-]
-},
-{
-"code": "S15_PPAE",
-"phase": "f2_ektelesi",
-"ordinal": 16,
-"title": "Αφανείς εργασίες — δήλωση, έλεγχος & εγκριτική πράξη (ΠΠΑΕ)",
-"purpose": "Ο ανάδοχος δηλώνει τις αφανείς εργασίες και καλεί τον επιβλέποντα ΠΡΙΝ την επικάλυψη· έλεγχος εντός 3 ημερών με ψηφιακές φωτογραφίες· εγκριτική πράξη Δ.Υ. εντός 30 ημερών.",
-"responsible": "anadochos",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "repeating",
-"legal_ref_id": "N4412/151/7",
-"deadline_days": 3,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": "app.guard_hidden_works",
-"risk_note": "Επικάλυψη χωρίς έλεγχο καθιστά αδύνατη την επιμέτρηση· παράλειψη ελέγχου εντός 3 ημερών συνιστά υπερημερία του κυρίου του έργου.",
-"applies_when": null,
-"prerequisites": [
-"S12_HMEROLOGIO"
-]
-},
-{
-"code": "S16_EPIMETRHSEIS",
-"phase": "f2_ektelesi",
-"ordinal": 17,
-"title": "Τμηματικές επιμετρήσεις & δειγματοληπτικός έλεγχος",
-"purpose": "Υποβολή επιμετρήσεων ανά τμηματική προθεσμία ή μηνιαίως, με δήλωση αληθείας και επιμετρητικά σχέδια· υποχρεωτικός δειγματοληπτικός έλεγχος 40% (ή ≥4).",
-"responsible": "anadochos",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "repeating",
-"legal_ref_id": "N4412/151/2",
-"deadline_days": 30,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": "app.guard_measurements",
-"risk_note": "Η επιμέτρηση είναι προϋπόθεση πληρωμής· ανακριβείς/ψευδείς επιμετρήσεις οδηγούν σε έκπτωση και κατάπτωση εγγύησης.",
-"applies_when": null,
-"prerequisites": [
-"S15_PPAE"
-]
-},
-{
-"code": "S17_LOGARIASMOI",
-"phase": "f2_ektelesi",
-"ordinal": 18,
-"title": "Λογαριασμοί — έλεγχος & έγκριση",
-"purpose": "Υποβολή λογαριασμού με τα προβλεπόμενα συνημμένα· έλεγχος, διόρθωση και έγκριση από τη Δ.Υ. εντός ενός μηνός.",
-"responsible": "anadochos",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "repeating",
-"legal_ref_id": "N4412/152",
-"deadline_days": null,
-"deadline_months": 1,
-"tacit_approval": true,
-"tacit_effect": "Άπρακτη πάροδος ενός μηνός: ο λογαριασμός θεωρείται εγκεκριμένος και καθίσταται πληρωτέος.",
-"guard_fn": null,
-"risk_note": "Η άπρακτη πάροδος δημιουργεί πληρωτέο λογαριασμό χωρίς έλεγχο — κίνδυνος αχρεωστήτως καταβληθέντων.",
-"applies_when": null,
-"prerequisites": [
-"S16_EPIMETRHSEIS"
-]
-},
-{
-"code": "S18_TRIMHNIAIES",
-"phase": "f2_ektelesi",
-"ordinal": 19,
-"title": "Τριμηνιαίες εκθέσεις πορείας",
-"purpose": "Σύνταξη τριμηνιαίας έκθεσης από τη Δ.Υ. με εντοπισμό σφαλμάτων προμέτρησης και απρόβλεπτων περιστάσεων· αντίστοιχη αναφορά αναδόχου.",
-"responsible": "dieuthynousa_ypiresia",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "repeating",
-"legal_ref_id": "N4412/136/10",
-"deadline_days": null,
-"deadline_months": 3,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Η μη τήρηση συνιστά ΠΕΙΘΑΡΧΙΚΟ ΠΑΡΑΠΤΩΜΑ των αρμοδίων οργάνων.",
-"applies_when": null,
-"prerequisites": [
-"S10_EGKATASTASH"
-]
-},
-{
-"code": "S19_APE",
-"phase": "f2_ektelesi",
-"ordinal": 20,
-"title": "Ανακεφαλαιωτικοί Πίνακες Εργασιών & ΠΚΤΜΝΕ",
-"purpose": "Σύνταξη ΑΠΕ με έλεγχο των ορίων 50% / 9%-15% / 20% ανά ομάδα / 10% συνολικά· κανονισμός νέων τιμών· γνωμοδότηση Τεχνικού Συμβουλίου όπου απαιτείται.",
-"responsible": "dieuthynousa_ypiresia",
-"approver": "proistameni_arxi",
-"recurrence": "repeating",
-"legal_ref_id": "N4412/156/2",
-"deadline_days": null,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": "app.guard_ape_stage",
-"risk_note": "Υπέρβαση ορίων ή παράλειψη γνωμοδότησης καθιστά την τροποποίηση παράνομη και μη πληρωτέα.",
-"applies_when": null,
-"prerequisites": [
-"S16_EPIMETRHSEIS"
-]
-},
-{
-"code": "S20_PARATASEIS",
-"phase": "f2_ektelesi",
-"ordinal": 21,
-"title": "Παρατάσεις προθεσμιών",
-"purpose": "Υποβολή αιτήματος πριν τη λήξη της προθεσμίας· απόφαση εντός 30 ημερών· καταλογισμός ευθύνης και χαρακτηρισμός «με/χωρίς αναθεώρηση».",
-"responsible": "anadochos",
-"approver": "proistameni_arxi",
-"recurrence": "conditional",
-"legal_ref_id": "N4412/147/5",
-"deadline_days": 30,
-"deadline_months": null,
-"tacit_approval": true,
-"tacit_effect": "Άπρακτη πάροδος 30 ημερών: η παράταση θεωρείται εγκριθείσα αναδρομικά.",
-"guard_fn": null,
-"risk_note": "Λήξη προθεσμίας χωρίς παράταση οδηγεί σε ποινικές ρήτρες και, μετά την οριακή, σε λύση της σύμβασης.",
-"applies_when": null,
-"prerequisites": [
-"S06_XRONODIAGRAMMA"
-]
-},
-{
-"code": "S21_ANWTERA_BIA",
-"phase": "f2_ektelesi",
-"ordinal": 22,
-"title": "Αναστολή προθεσμιών λόγω ανωτέρας βίας",
-"purpose": "Αίτημα εντός 10 ημερών από το γεγονός· απόφαση εντός 10 ημερών· τήρηση του ανώτατου ορίου αναστολής.",
-"responsible": "anadochos",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "conditional",
-"legal_ref_id": "N4412/147/7",
-"deadline_days": 10,
-"deadline_months": null,
-"tacit_approval": true,
-"tacit_effect": "Άπρακτη πάροδος 10 ημερών: το αίτημα θεωρείται αποδεκτό.",
-"guard_fn": null,
-"risk_note": "Εκπρόθεσμο αίτημα απορρίπτεται και ο χρόνος προσμετράται εις βάρος του αναδόχου.",
-"applies_when": null,
-"prerequisites": []
-},
-{
-"code": "S22_POINIKES",
-"phase": "f2_ektelesi",
-"ordinal": 23,
-"title": "Ποινικές ρήτρες & πρόστιμα",
-"purpose": "Υπολογισμός και επιβολή ρητρών υπέρβασης προθεσμιών, παράλειψης ημερολογίου και καθυστέρησης τελικής επιμέτρησης· παρακράτηση στον επόμενο λογαριασμό.",
-"responsible": "dieuthynousa_ypiresia",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "conditional",
-"legal_ref_id": "N4412/148",
-"deadline_days": null,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Μη επιβολή οφειλόμενων ρητρών συνιστά παράβαση καθήκοντος και δημοσιονομική ζημία.",
-"applies_when": null,
-"prerequisites": [
-"S12_HMEROLOGIO"
-]
-},
-{
-"code": "S23_ENSTASEIS",
-"phase": "f2_ektelesi",
-"ordinal": 24,
-"title": "Ενστάσεις — διοικητική επίλυση διαφορών",
-"purpose": "Παραλαβή ένστασης εντός 15 ημερών από την κοινοποίηση· εισήγηση, γνωμοδότηση Τεχνικού Συμβουλίου, απόφαση εντός 60 ημερών.",
-"responsible": "anadochos",
-"approver": "proistameni_arxi",
-"recurrence": "conditional",
-"legal_ref_id": "N4412/174",
-"deadline_days": 60,
-"deadline_months": null,
-"tacit_approval": true,
-"tacit_effect": "Άπρακτη πάροδος 60 ημερών: τεκμαίρεται σιωπηρή αποδοχή της γνωμοδότησης.",
-"guard_fn": null,
-"risk_note": "Παράλειψη τήρησης της διαδικασίας γεννά ακυρότητες και δικαστικές διαφορές.",
-"applies_when": null,
-"prerequisites": []
-},
-{
-"code": "S24_DHLWSH_PERAIWSHS",
-"phase": "f3_peraiosi",
-"ordinal": 25,
-"title": "Δήλωση περαίωσης / λήξη εγκεκριμένου χρόνου",
-"purpose": "Καταγραφή της δήλωσης περαίωσης του αναδόχου ή της λήξης του εγκεκριμένου χρόνου περαίωσης.",
-"responsible": "anadochos",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "N4412/168/1",
-"deadline_days": null,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Λανθασμένη ημερομηνία περαίωσης μετατοπίζει όλες τις επόμενες προθεσμίες (συντήρηση, παραλαβή).",
-"applies_when": null,
-"prerequisites": [
-"S10_EGKATASTASH"
-]
-},
-{
-"code": "S25_EKTHESI_EPIVL",
-"phase": "f3_peraiosi",
-"ordinal": 26,
-"title": "Έκθεση επιβλέποντος περί περαίωσης",
-"purpose": "Έγγραφη αναφορά στη Δ.Υ. εντός 30 ημερών από τη λήξη του εγκεκριμένου χρόνου: ολοκλήρωση εργασιών, δοκιμές, ελαττώματα.",
-"responsible": "epivlepon",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "N4412/168/1",
-"deadline_days": 30,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": "app.guard_completion",
-"risk_note": "Η καθυστέρηση της έκθεσης επισύρει πειθαρχική ευθύνη (άρθρο 141 §3).",
-"applies_when": null,
-"prerequisites": [
-"S12_HMEROLOGIO",
-"S24_DHLWSH_PERAIWSHS"
-]
-},
-{
-"code": "S26_BEBAIWSH",
-"phase": "f3_peraiosi",
-"ordinal": 27,
-"title": "Έκδοση Βεβαίωσης Περάτωσης Εργασιών",
-"purpose": "Έκδοση από τον προϊστάμενο της Δ.Υ. εντός 10 ημερών από τη λήψη της έκθεσης, με αναγραφή της πραγματικής ημερομηνίας περαίωσης.",
-"responsible": "dieuthynousa_ypiresia",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "N4412/168/2",
-"deadline_days": 10,
-"deadline_months": null,
-"tacit_approval": true,
-"tacit_effect": "Αν δεν εκδοθεί, τεκμαίρεται εκδοθείσα 30 ημέρες μετά την έγγραφη όχληση του αναδόχου.",
-"guard_fn": null,
-"risk_note": "Η Βεβαίωση εκκινεί τον χρόνο υποχρεωτικής συντήρησης και δεσμεύει το χρονοδιάγραμμα παραλαβής.",
-"applies_when": null,
-"prerequisites": [
-"S25_EKTHESI_EPIVL"
-]
-},
-{
-"code": "S27_TELIKH_EPIM",
-"phase": "f3_peraiosi",
-"ordinal": 28,
-"title": "Τελική επιμέτρηση",
-"purpose": "Υποβολή τελικής επιμέτρησης εντός 2 μηνών από την περαίωση· έκθεση επιβλέποντος εντός 2 μηνών· έγκριση Δ.Υ. εντός 2 μηνών.",
-"responsible": "anadochos",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "N4412/151/9",
-"deadline_days": null,
-"deadline_months": 2,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Καθυστέρηση επισύρει ποινική ρήτρα 2‰/μήνα (έως 6 μήνες) και δυνατότητα σύνταξης από την υπηρεσία σε βάρος του αναδόχου.",
-"applies_when": null,
-"prerequisites": [
-"S16_EPIMETRHSEIS",
-"S26_BEBAIWSH"
-]
-},
-{
-"code": "S28_MEIWSH_EGG",
-"phase": "f3_peraiosi",
-"ordinal": 29,
-"title": "Μείωση εγγύησης καλής εκτέλεσης κατά 70%",
-"purpose": "Έκδοση πράξης μείωσης της εγγύησης καλής εκτέλεσης κατά 70%, αμέσως μετά την έγκριση της τελικής επιμέτρησης.",
-"responsible": "dieuthynousa_ypiresia",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "N4412/72/14b",
-"deadline_days": null,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": "app.guard_guarantee_reduction",
-"risk_note": "Πρόωρη μείωση εκθέτει τον κύριο του έργου· καθυστερημένη μείωση επιβαρύνει αδικαιολόγητα τον ανάδοχο.",
-"applies_when": null,
-"prerequisites": [
-"S27_TELIKH_EPIM"
-]
-},
-{
-"code": "S29_SYNTHRHSH",
-"phase": "f4_paralavi",
-"ordinal": 30,
-"title": "Χρόνος υποχρεωτικής συντήρησης",
-"purpose": "Παρακολούθηση της υποχρεωτικής συντήρησης (γενικά 15 μήνες) με περιοδικές επιθεωρήσεις και αποκατάσταση ελαττωμάτων.",
-"responsible": "anadochos",
-"approver": "epivlepon",
-"recurrence": "continuous",
-"legal_ref_id": "N4412/171",
-"deadline_days": null,
-"deadline_months": 15,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Παράλειψη συντήρησης ενεργοποιεί το άρθρο 159 (έκπτωση/εκτέλεση σε βάρος του αναδόχου).",
-"applies_when": null,
-"prerequisites": [
-"S26_BEBAIWSH"
-]
-},
-{
-"code": "S30_EPITROPH",
-"phase": "f4_paralavi",
-"ordinal": 31,
-"title": "Ορισμός Επιτροπής Παραλαβής",
-"purpose": "Ορισμός πενταμελούς επιτροπής (με δύο εκπροσώπους ΤΕΕ/ΓΕΩΤΕΕ) τουλάχιστον 3 μήνες πριν τη λήξη της συντήρησης.",
-"responsible": "proistameni_arxi",
-"approver": "proistameni_arxi",
-"recurrence": "once",
-"legal_ref_id": "N4412/172",
-"deadline_days": null,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Καθυστερημένος ορισμός οδηγεί σε αυτοδίκαιη παραλαβή χωρίς ουσιαστικό έλεγχο.",
-"applies_when": null,
-"prerequisites": [
-"S29_SYNTHRHSH"
-]
-},
-{
-"code": "S31_PARALABH",
-"phase": "f4_paralavi",
-"ordinal": 32,
-"title": "Παραλαβή έργου & πρωτόκολλο",
-"purpose": "Διενέργεια παραλαβής εντός 3 μηνών από τη λήξη της συντήρησης και σύνταξη/έγκριση πρωτοκόλλου.",
-"responsible": "epitropi",
-"approver": "proistameni_arxi",
-"recurrence": "once",
-"legal_ref_id": "N4412/172",
-"deadline_days": null,
-"deadline_months": 3,
-"tacit_approval": true,
-"tacit_effect": "Αν η επιτροπή δεν ενεργήσει εντός 3 μηνών, η παραλαβή θεωρείται αυτοδικαίως συντελεσμένη.",
-"guard_fn": "app.guard_acceptance",
-"risk_note": "Η αυτοδίκαιη παραλαβή στερεί από την υπηρεσία τη δυνατότητα καταγραφής ελαττωμάτων.",
-"applies_when": null,
-"prerequisites": [
-"S29_SYNTHRHSH",
-"S30_EPITROPH"
-]
-},
-{
-"code": "S32_TELIKOS_LOG",
-"phase": "f4_paralavi",
-"ordinal": 33,
-"title": "Τελικός λογαριασμός & εκκαθάριση",
-"purpose": "Υποβολή και έγκριση τελικού λογαριασμού μετά την παραλαβή — εκκαθάριση των εκατέρωθεν απαιτήσεων.",
-"responsible": "anadochos",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "N4412/152",
-"deadline_days": null,
-"deadline_months": 1,
-"tacit_approval": true,
-"tacit_effect": "Άπρακτη πάροδος ενός μηνός: ο τελικός λογαριασμός θεωρείται εγκεκριμένος.",
-"guard_fn": null,
-"risk_note": "Χωρίς εγκεκριμένο τελικό λογαριασμό δεν επιτρέπεται η επιστροφή των εγγυήσεων.",
-"applies_when": null,
-"prerequisites": [
-"S19_APE",
-"S31_PARALABH"
-]
-},
-{
-"code": "S33_APODESMEVSH",
-"phase": "f4_paralavi",
-"ordinal": 34,
-"title": "Επιστροφή εγγυητικών επιστολών",
-"purpose": "Ολική επιστροφή των εγγυήσεων καλής εκτέλεσης μετά την έγκριση του πρωτοκόλλου παραλαβής και του τελικού λογαριασμού.",
-"responsible": "dieuthynousa_ypiresia",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "N4412/72/14b",
-"deadline_days": null,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Πρόωρη επιστροφή αποστερεί τον κύριο του έργου από κάθε εξασφάλιση.",
-"applies_when": null,
-"prerequisites": [
-"S31_PARALABH",
-"S32_TELIKOS_LOG"
-]
-},
-{
-"code": "S34_MHTRWO",
-"phase": "f4_paralavi",
-"ordinal": 35,
-"title": "Μητρώο Έργου & αρχειοθέτηση",
-"purpose": "Ολοκλήρωση του Μητρώου Έργου (σχέδια «as built», φωτογραφικό υλικό αφανών, εγχειρίδια λειτουργίας & συντήρησης) και οριστική αρχειοθέτηση.",
-"responsible": "anadochos",
-"approver": "dieuthynousa_ypiresia",
-"recurrence": "once",
-"legal_ref_id": "N4412/170",
-"deadline_days": null,
-"deadline_months": null,
-"tacit_approval": false,
-"tacit_effect": null,
-"guard_fn": null,
-"risk_note": "Ελλιπές Μητρώο καθιστά αδύνατη τη μελλοντική συντήρηση και τεκμηρίωση του έργου.",
-"applies_when": null,
-"prerequisites": [
-"S31_PARALABH"
-]
-}
-],
-"tasks": [
-{
-"id": 1,
-"stage_code": "S00_FAKELOS",
-"ordinal": 1,
-"party": "dieuthynousa_ypiresia",
-"title": "Καταχώριση στοιχείων σύμβασης",
-"detail": "Αριθμός & ημερομηνία σύμβασης, ΑΔΑΜ/ΑΔΑ, ανάδοχος, ΑΦΜ, νόμιμος εκπρόσωπος.",
-"legal_ref_id": "N4412/135",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 2,
-"stage_code": "S00_FAKELOS",
-"ordinal": 2,
-"party": "dieuthynousa_ypiresia",
-"title": "Καταχώριση οικονομικών στοιχείων",
-"detail": "Δαπάνη εργασιών, ΓΕ&ΟΕ 18%, απρόβλεπτα (9% ή 15%), αναθεώρηση, ΦΠΑ, μέση τεκμαρτή έκπτωση.",
-"legal_ref_id": "N4412/156/3b",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 3,
-"stage_code": "S00_FAKELOS",
-"ordinal": 3,
-"party": "dieuthynousa_ypiresia",
-"title": "Καταχώριση προθεσμιών",
-"detail": "Συνολική προθεσμία, τμηματικές (αποκλειστικές/ενδεικτικές), υπολογισμός οριακής προθεσμίας.",
-"legal_ref_id": "N4412/147/1",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 4,
-"stage_code": "S00_FAKELOS",
-"ordinal": 4,
-"party": "dieuthynousa_ypiresia",
-"title": "Εισαγωγή προϋπολογισμού & τιμολογίου",
-"detail": "Άρθρα, μονάδες, τιμές μονάδος, ποσότητες και αντιστοίχιση σε Ομάδες Εργασιών.",
-"legal_ref_id": "YA38107/2017",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 5,
-"stage_code": "S00_FAKELOS",
-"ordinal": 5,
-"party": "dieuthynousa_ypiresia",
-"title": "Επιβεβαίωση καταχώρισης στο Κ.Η.Μ.ΔΗ.Σ.",
-"detail": "Ανάρτηση συμφωνητικού και λήψη ΑΔΑΜ.",
-"legal_ref_id": "N4412/38",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 9,
-"stage_code": "S01B_IFE",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Δήλωση Ιδιωτικού Φορέα Επίβλεψης",
-"detail": "Δηλώνεται με την προσφορά· σε απόρριψη προτείνεται νέος εντός της τασσόμενης προθεσμίας.",
-"legal_ref_id": "N4412/136/3",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 10,
-"stage_code": "S01B_IFE",
-"ordinal": 2,
-"party": "dieuthynousa_ypiresia",
-"title": "Έλεγχος πιστοποίησης & ασυμβιβάστων",
-"detail": "Επαλήθευση εγγραφής στο μητρώο πιστοποιημένων φορέων και ανεξαρτησίας.",
-"legal_ref_id": "N4412/136/3",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 11,
-"stage_code": "S01B_IFE",
-"ordinal": 3,
-"party": "dieuthynousa_ypiresia",
-"title": "Έλεγχος σχεδίου σύμβασης Ι.Φ.Ε.",
-"detail": "Η αμοιβή βαρύνει αποκλειστικά τον ανάδοχο.",
-"legal_ref_id": "N4412/136/3",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 6,
-"stage_code": "S01_ORISMOS",
-"ordinal": 1,
-"party": "dieuthynousa_ypiresia",
-"title": "Έκδοση απόφασης ορισμού επιβλέποντος",
-"detail": "Ορισμός επιβλέποντος, βοηθών και —εφόσον συγκροτείται ομάδα— συντονιστή, με σαφή κατανομή καθηκόντων.",
-"legal_ref_id": "N4412/136/2",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 7,
-"stage_code": "S01_ORISMOS",
-"ordinal": 2,
-"party": "dieuthynousa_ypiresia",
-"title": "Έλεγχος καταλληλότητας προσόντων",
-"detail": "Αντιστοιχία ειδικότητας/κατηγορίας με τη φύση του έργου.",
-"legal_ref_id": "N4412/136/2",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 8,
-"stage_code": "S01_ORISMOS",
-"ordinal": 3,
-"party": "dieuthynousa_ypiresia",
-"title": "Ανάρτηση απόφασης στη ΔΙΑΥΓΕΙΑ",
-"detail": "Λήψη ΑΔΑ.",
-"legal_ref_id": "N4727/2020",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 12,
-"stage_code": "S02_GNOSTOPOIHSH",
-"ordinal": 1,
-"party": "dieuthynousa_ypiresia",
-"title": "Κοινοποίηση ορισμού επίβλεψης στον ανάδοχο",
-"detail": "Έγγραφη/ηλεκτρονική κοινοποίηση με αποδεικτικό.",
-"legal_ref_id": "N4412/143",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 13,
-"stage_code": "S02_GNOSTOPOIHSH",
-"ordinal": 2,
-"party": "anadochos",
-"title": "Δήλωση αντικλήτου & στοιχείων επικοινωνίας",
-"detail": "Ορισμός εκπροσώπου και διεύθυνσης επιδόσεων.",
-"legal_ref_id": "N4412/143",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 14,
-"stage_code": "S03_EGGYHSEIS",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Κατάθεση εγγύησης καλής εκτέλεσης",
-"detail": "Ποσοστό 5% επί της εκτιμώμενης αξίας, πριν την υπογραφή του συμφωνητικού.",
-"legal_ref_id": "N4412/72/4",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 15,
-"stage_code": "S03_EGGYHSEIS",
-"ordinal": 2,
-"party": "dieuthynousa_ypiresia",
-"title": "Επαλήθευση γνησιότητας εγγυητικής",
-"detail": "Επιβεβαίωση από τον εκδότη (τράπεζα/ΤΜΕΔΕ).",
-"legal_ref_id": "N4412/72/4",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 16,
-"stage_code": "S03_EGGYHSEIS",
-"ordinal": 3,
-"party": "dieuthynousa_ypiresia",
-"title": "Έλεγχος πρόσθετης εγγύησης λόγω έκπτωσης",
-"detail": "Όπου προβλέπεται όριο ποσοστού έκπτωσης με απόφαση Υπουργού Υποδομών & Μεταφορών.",
-"legal_ref_id": "N4412/72/4",
-"is_mandatory": false,
-"needs_evidence": false
-},
-{
-"id": 17,
-"stage_code": "S04_TEXNIKOI",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Γνωστοποίηση προϊσταμένου εργοταξίου",
-"detail": "Στοιχεία, ειδικότητα και δήλωση αποδοχής.",
-"legal_ref_id": "N4412/139",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 18,
-"stage_code": "S04_TEXNIKOI",
-"ordinal": 2,
-"party": "anadochos",
-"title": "Ορισμός τεχνικού τήρησης ημερολογίου",
-"detail": "Ο τεχνικός υπογράφει ψηφιακά το ημερολόγιο.",
-"legal_ref_id": "N4412/146",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 19,
-"stage_code": "S04_TEXNIKOI",
-"ordinal": 3,
-"party": "anadochos",
-"title": "Ορισμός τεχνικού ασφαλείας / συντονιστή ασφάλειας",
-"detail": "Κατά τις κείμενες διατάξεις ασφάλειας & υγείας.",
-"legal_ref_id": "PD305/1996",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 20,
-"stage_code": "S04_TEXNIKOI",
-"ordinal": 4,
-"party": "epivlepon",
-"title": "Έλεγχος επάρκειας τεχνικού προσωπικού",
-"detail": "Αντιστοιχία με το ελάχιστο απαιτούμενο των τευχών.",
-"legal_ref_id": "N4412/138/10",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 21,
-"stage_code": "S05_ELEGXOS_MELETHS",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Έλεγχος μελέτης & γνωστοποίηση ευρημάτων",
-"detail": "Εντός της τασσόμενης προθεσμίας (20-60 ημέρες)· η σιωπή ισοδυναμεί με αποδοχή.",
-"legal_ref_id": "N4412/138/2",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 22,
-"stage_code": "S05_ELEGXOS_MELETHS",
-"ordinal": 2,
-"party": "epivlepon",
-"title": "Αξιολόγηση ευρημάτων αναδόχου",
-"detail": "Εισήγηση για διόρθωση μελέτης ή απόρριψη ισχυρισμών.",
-"legal_ref_id": "N4412/138/2",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 23,
-"stage_code": "S06_XRONODIAGRAMMA",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Υποβολή χρονοδιαγράμματος",
-"detail": "Εντός της συμβατικής προθεσμίας (15-30 ημέρες από την υπογραφή), σε έντυπη και ηλεκτρονική μορφή.",
-"legal_ref_id": "N4412/145/1",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 24,
-"stage_code": "S06_XRONODIAGRAMMA",
-"ordinal": 2,
-"party": "anadochos",
-"title": "Δικτυωτή ανάλυση (έργα > 1.000.000 €)",
-"detail": "Υποχρεωτική μέθοδος για έργα άνω του ορίου.",
-"legal_ref_id": "N4412/145/3",
-"is_mandatory": false,
-"needs_evidence": true
-},
-{
-"id": 25,
-"stage_code": "S06_XRONODIAGRAMMA",
-"ordinal": 3,
-"party": "epivlepon",
-"title": "Έλεγχος αλληλουχίας & μεθοδολογίας",
-"detail": "Έλεγχος ρεαλιστικότητας, τμηματικών προθεσμιών και τετραγωνικού πίνακα ποσοτήτων.",
-"legal_ref_id": "N4412/145/2",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 26,
-"stage_code": "S06_XRONODIAGRAMMA",
-"ordinal": 4,
-"party": "dieuthynousa_ypiresia",
-"title": "Έγκριση ή αίτημα διευκρινίσεων εντός 15 ημερών",
-"detail": "Άπρακτη πάροδος = τεκμήριο έγκρισης· απαιτείται ρητή καταχώριση της σιωπηρής έγκρισης.",
-"legal_ref_id": "N4412/145/2",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 27,
-"stage_code": "S07_ORGANOGRAMMA",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Υποβολή οργανογράμματος εργοταξίου",
-"detail": "Προσωπικό, εξοπλισμός, μηχανήματα.",
-"legal_ref_id": "N4412/145/4",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 28,
-"stage_code": "S07_ORGANOGRAMMA",
-"ordinal": 2,
-"party": "epivlepon",
-"title": "Έλεγχος επάρκειας μέσων",
-"detail": "Συσχέτιση με το εγκεκριμένο χρονοδιάγραμμα.",
-"legal_ref_id": "N4412/145/4",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 29,
-"stage_code": "S08_PPE",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Υποβολή Προγράμματος Ποιότητας Έργου",
-"detail": "Σχέδια ελέγχων και δοκιμών, υπεύθυνοι ποιότητας.",
-"legal_ref_id": "N4412/158",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 30,
-"stage_code": "S08_PPE",
-"ordinal": 2,
-"party": "epivlepon",
-"title": "Έλεγχος & εισήγηση έγκρισης ΠΠΕ",
-"detail": "Συμβατότητα με ΕΤΕΠ/ΕΛΟΤ και τη μελέτη.",
-"legal_ref_id": "N4412/158",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 31,
-"stage_code": "S09_SAY_FAY",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Επικαιροποίηση ΣΑΥ & ΦΑΥ",
-"detail": "Προσαρμογή στις πραγματικές συνθήκες του εργοταξίου.",
-"legal_ref_id": "PD305/1996",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 32,
-"stage_code": "S09_SAY_FAY",
-"ordinal": 2,
-"party": "anadochos",
-"title": "Εκ των προτέρων γνωστοποίηση έναρξης εργασιών",
-"detail": "Υποβολή στην αρμόδια Επιθεώρηση Εργασίας.",
-"legal_ref_id": "PD305/1996",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 33,
-"stage_code": "S09_SAY_FAY",
-"ordinal": 3,
-"party": "epivlepon",
-"title": "Έλεγχος μέτρων ασφάλειας & σήμανσης",
-"detail": "Καταγραφή στο ημερολόγιο.",
-"legal_ref_id": "N4412/138/9",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 34,
-"stage_code": "S10_EGKATASTASH",
-"ordinal": 1,
-"party": "dieuthynousa_ypiresia",
-"title": "Παράδοση χώρου εκτέλεσης εργασιών",
-"detail": "Πρωτόκολλο παράδοσης-παραλαβής χώρου.",
-"legal_ref_id": "N4412/137",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 35,
-"stage_code": "S10_EGKATASTASH",
-"ordinal": 2,
-"party": "anadochos",
-"title": "Εγκατάσταση εργοταξίου & έναρξη εργασιών",
-"detail": "Το αργότερο 30 ημέρες από την υπογραφή της σύμβασης.",
-"legal_ref_id": "N4412/145/2",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 36,
-"stage_code": "S10_EGKATASTASH",
-"ordinal": 3,
-"party": "epivlepon",
-"title": "Καταγραφή ημερομηνίας έναρξης",
-"detail": "Πρώτη εγγραφή στο ημερολόγιο έργου.",
-"legal_ref_id": "N4412/146",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 37,
-"stage_code": "S11_PROKATAVOLH",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Αίτημα προκαταβολής & κατάθεση εγγυητικής",
-"detail": "Ισόποση εγγυητική επιστολή προκαταβολής.",
-"legal_ref_id": "N4412/72/7",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 38,
-"stage_code": "S11_PROKATAVOLH",
-"ordinal": 2,
-"party": "dieuthynousa_ypiresia",
-"title": "Έλεγχος ορίων & έγκριση",
-"detail": "Έως 15% συνολικά (έως 5%/7% εγκατάστασης, έως 10% υλικών).",
-"legal_ref_id": "N4412/150",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 39,
-"stage_code": "S11_PROKATAVOLH",
-"ordinal": 3,
-"party": "dieuthynousa_ypiresia",
-"title": "Ορισμός τρόπου απόσβεσης & τόκων",
-"detail": "Παρακράτηση σε κάθε επόμενο λογαριασμό.",
-"legal_ref_id": "N4412/150",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 40,
-"stage_code": "S12_HMEROLOGIO",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Καθημερινή συμπλήρωση ημερολογίου",
-"detail": "Καιρικές συνθήκες, προσωπικό ανά ειδικότητα, μηχανήματα, εργασίες, δοκιμές, συμβάντα, εντολές.",
-"legal_ref_id": "N4412/146",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 41,
-"stage_code": "S12_HMEROLOGIO",
-"ordinal": 2,
-"party": "anadochos",
-"title": "Ηλεκτρονική αποστολή σε επιβλέποντα & προϊστάμενο Δ.Υ.",
-"detail": "Με ψηφιακή υπογραφή του τηρούντος.",
-"legal_ref_id": "N4412/146",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 42,
-"stage_code": "S12_HMEROLOGIO",
-"ordinal": 3,
-"party": "epivlepon",
-"title": "Έλεγχος & διόρθωση εντός 2 εργασίμων ημερών",
-"detail": "Υποβολή προς έγκριση στον προϊστάμενο της Δ.Υ.",
-"legal_ref_id": "N4412/146",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 43,
-"stage_code": "S12_HMEROLOGIO",
-"ordinal": 4,
-"party": "dieuthynousa_ypiresia",
-"title": "Επιβολή ειδικής ποινικής ρήτρας επί παραλείψεων",
-"detail": "100-500 € ανά ημέρα, αναλόγως του μεγέθους της σύμβασης.",
-"legal_ref_id": "N4412/146",
-"is_mandatory": false,
-"needs_evidence": true
-},
-{
-"id": 44,
-"stage_code": "S13_YLIKA",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Υποβολή πηγών λήψης & πιστοποιητικών",
-"detail": "Δείγματα, δηλώσεις επιδόσεων, σήμανση CE.",
-"legal_ref_id": "N4412/138/12",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 45,
-"stage_code": "S13_YLIKA",
-"ordinal": 2,
-"party": "epivlepon",
-"title": "Έλεγχος συμμόρφωσης με ΕΤΕΠ/ΕΛΟΤ",
-"detail": "Εισήγηση έγκρισης ή απόρριψης.",
-"legal_ref_id": "N4412/158",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 46,
-"stage_code": "S13_YLIKA",
-"ordinal": 3,
-"party": "dieuthynousa_ypiresia",
-"title": "Απόφαση εντός 30 ημερών",
-"detail": "Όταν η πηγή αποκλίνει από τη μελέτη.",
-"legal_ref_id": "N4412/138/12",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 47,
-"stage_code": "S14_POIOTIKOI",
-"ordinal": 1,
-"party": "epivlepon",
-"title": "Πρόγραμμα δειγματοληψιών & δοκιμών",
-"detail": "Σύμφωνα με το εγκεκριμένο ΠΠΕ.",
-"legal_ref_id": "N4412/158",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 48,
-"stage_code": "S14_POIOTIKOI",
-"ordinal": 2,
-"party": "anadochos",
-"title": "Διενέργεια εργαστηριακών ελέγχων",
-"detail": "Υποβολή εκθέσεων δοκιμών.",
-"legal_ref_id": "N4412/158",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 49,
-"stage_code": "S14_POIOTIKOI",
-"ordinal": 3,
-"party": "epivlepon",
-"title": "Αξιολόγηση αποτελεσμάτων & εντολές συμμόρφωσης",
-"detail": "Επί μη συμμόρφωσης εφαρμόζεται το άρθρο 159.",
-"legal_ref_id": "N4412/159",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 50,
-"stage_code": "S15_PPAE",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Δήλωση γνωστοποίησης αφανών εργασιών",
-"detail": "Διακριτή επιμέτρηση με δήλωση αληθείας, υπογεγραμμένη και από τους τεχνικούς του άρθρου 139.",
-"legal_ref_id": "N4412/151/7",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 51,
-"stage_code": "S15_PPAE",
-"ordinal": 2,
-"party": "anadochos",
-"title": "Πρόσκληση επιβλέποντος πριν την επικάλυψη",
-"detail": "Ημερομηνία ελέγχου που δεν απέχει περισσότερο από 3 ημέρες από την κοινοποίηση.",
-"legal_ref_id": "N4412/151/7",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 52,
-"stage_code": "S15_PPAE",
-"ordinal": 3,
-"party": "epivlepon",
-"title": "Αυτοψία & έλεγχος αφανών εργασιών",
-"detail": "Υποχρεωτική ανταπόκριση· η παράλειψη συνιστά υπερημερία του κυρίου του έργου.",
-"legal_ref_id": "N4412/151/7",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 53,
-"stage_code": "S15_PPAE",
-"ordinal": 4,
-"party": "epivlepon",
-"title": "Σύνταξη έκθεσης με ψηφιακές φωτογραφίες",
-"detail": "Επαρκής αριθμός φωτογραφιών, οι οποίες εντάσσονται στο Μητρώο του Έργου.",
-"legal_ref_id": "N4412/151/7",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 54,
-"stage_code": "S15_PPAE",
-"ordinal": 5,
-"party": "dieuthynousa_ypiresia",
-"title": "Εγκριτική πράξη επιμέτρησης αφανών εντός 30 ημερών",
-"detail": "Η έκθεση δεν προσβάλλεται αυτοτελώς, παρά μόνο μαζί με την εγκριτική πράξη.",
-"legal_ref_id": "N4412/151/7",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 55,
-"stage_code": "S16_EPIMETRHSEIS",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Λήψη επιτόπιων επιμετρητικών στοιχείων",
-"detail": "Υποβολή στον επιβλέποντα με δήλωση περί της αλήθειας των στοιχείων.",
-"legal_ref_id": "N4412/151/1",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 56,
-"stage_code": "S16_EPIMETRHSEIS",
-"ordinal": 2,
-"party": "anadochos",
-"title": "Σύνταξη επιμέτρησης ανά διακριτό τμήμα",
-"detail": "Περιγραφή εργασιών, άρθρα τιμολογίου, επιμετρητικά σχέδια· έντυπη & ηλεκτρονική μορφή.",
-"legal_ref_id": "N4412/151/2",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 57,
-"stage_code": "S16_EPIMETRHSEIS",
-"ordinal": 3,
-"party": "anadochos",
-"title": "Διάκριση συμβατικών & εκτός σύμβασης ποσοτήτων",
-"detail": "Ρητή επισήμανση ποσοτήτων πέραν των συμβατικών.",
-"legal_ref_id": "N4412/151/1",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 58,
-"stage_code": "S16_EPIMETRHSEIS",
-"ordinal": 4,
-"party": "epivlepon",
-"title": "Έλεγχος & θεώρηση επιμέτρησης",
-"detail": "Διασταύρωση με ημερολόγιο, ΠΠΑΕ και εγκεκριμένο χρονοδιάγραμμα.",
-"legal_ref_id": "N4412/151/2",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 59,
-"stage_code": "S16_EPIMETRHSEIS",
-"ordinal": 5,
-"party": "dieuthynousa_ypiresia",
-"title": "Δειγματοληπτικός έλεγχος 40% (ή ≥4)",
-"detail": "Υποχρεωτικός έλεγχος του 40% των υποβληθεισών ή τουλάχιστον τεσσάρων, αν είναι λιγότερες από δέκα.",
-"legal_ref_id": "N4412/151/3",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 60,
-"stage_code": "S16_EPIMETRHSEIS",
-"ordinal": 6,
-"party": "dieuthynousa_ypiresia",
-"title": "Χειρισμός ανακριβειών",
-"detail": "Εντολή διόρθωσης, πλήρης έλεγχος, και επί ψευδών δηλώσεων εφαρμογή κυρώσεων.",
-"legal_ref_id": "N4412/151/5",
-"is_mandatory": false,
-"needs_evidence": true
-},
-{
-"id": 61,
-"stage_code": "S17_LOGARIASMOI",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Υποβολή λογαριασμού",
-"detail": "Με βάση εγκεκριμένες επιμετρήσεις και δηλώσεις αφανών εργασιών.",
-"legal_ref_id": "N4412/152",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 62,
-"stage_code": "S17_LOGARIASMOI",
-"ordinal": 2,
-"party": "anadochos",
-"title": "Επισύναψη ανακεφαλαιωτικού συνοπτικού πίνακα επιμετρήσεων",
-"detail": "Υποχρεωτικό συνοδευτικό.",
-"legal_ref_id": "N4412/152",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 63,
-"stage_code": "S17_LOGARIASMOI",
-"ordinal": 3,
-"party": "anadochos",
-"title": "Επισύναψη υπολογισμού αναθεώρησης & δικαιολογητικών απολογιστικών",
-"detail": "Όπου συντρέχει περίπτωση.",
-"legal_ref_id": "N4412/153",
-"is_mandatory": false,
-"needs_evidence": true
-},
-{
-"id": 64,
-"stage_code": "S17_LOGARIASMOI",
-"ordinal": 4,
-"party": "epivlepon",
-"title": "Έλεγχος ποσοτήτων, τιμών & κρατήσεων",
-"detail": "Έλεγχος απόσβεσης προκαταβολής, ρητρών και κρατήσεων 5%.",
-"legal_ref_id": "N4412/152",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 65,
-"stage_code": "S17_LOGARIASMOI",
-"ordinal": 5,
-"party": "dieuthynousa_ypiresia",
-"title": "Έλεγχος, διόρθωση & έγκριση εντός 1 μηνός",
-"detail": "Επί ελλείψεων επιστρέφεται για συμπλήρωση και η προθεσμία εκκινεί εκ νέου.",
-"legal_ref_id": "N4412/152",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 66,
-"stage_code": "S18_TRIMHNIAIES",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Τριμηνιαία συνοπτική αναφορά προόδου",
-"detail": "Υποβάλλεται μέσω της Δ.Υ. στην Προϊσταμένη Αρχή.",
-"legal_ref_id": "N4412/138/17",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 67,
-"stage_code": "S18_TRIMHNIAIES",
-"ordinal": 2,
-"party": "dieuthynousa_ypiresia",
-"title": "Σύνταξη τριμηνιαίας έκθεσης πορείας",
-"detail": "Εντοπισμός σφαλμάτων προμέτρησης και απρόβλεπτων περιστάσεων· η μη τήρηση είναι πειθαρχικό παράπτωμα.",
-"legal_ref_id": "N4412/136/10",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 68,
-"stage_code": "S19_APE",
-"ordinal": 1,
-"party": "epivlepon",
-"title": "Τεκμηρίωση αναγκαιότητας μεταβολών",
-"detail": "Αιτιολόγηση βάσει επιμετρήσεων, σφαλμάτων προμέτρησης ή απρόβλεπτων περιστάσεων.",
-"legal_ref_id": "N4412/156/2",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 69,
-"stage_code": "S19_APE",
-"ordinal": 2,
-"party": "dieuthynousa_ypiresia",
-"title": "Σύνταξη ΑΠΕ",
-"detail": "Αρχικός, προηγούμενος και νέος προϋπολογισμός, απρόβλεπτα, αναθεώρηση, ΦΠΑ.",
-"legal_ref_id": "N4412/156/2",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 70,
-"stage_code": "S19_APE",
-"ordinal": 3,
-"party": "epitropi",
-"title": "Σύνταξη Π.Κ.Τ.Μ.Ν.Ε. για νέες εργασίες",
-"detail": "Τριμελής επιτροπή με συμμετοχή του επιβλέποντος· ιεράρχηση πηγών τιμών και εφαρμογή τεκμαρτής έκπτωσης.",
-"legal_ref_id": "N4412/156/5",
-"is_mandatory": false,
-"needs_evidence": true
-},
-{
-"id": 71,
-"stage_code": "S19_APE",
-"ordinal": 4,
-"party": "dieuthynousa_ypiresia",
-"title": "Έλεγχος ορίων",
-"detail": "50% σωρευτικά, 9%/15% απρόβλεπτα, 20% ανά ομάδα και 10% συνολικά για επί έλασσον.",
-"legal_ref_id": "N4412/156/3c",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 72,
-"stage_code": "S19_APE",
-"ordinal": 5,
-"party": "techniko_symvoulio",
-"title": "Γνωμοδότηση Τεχνικού Συμβουλίου",
-"detail": "Υποχρεωτική για συμπληρωματική σύμβαση και για χρήση επί έλασσον δαπανών.",
-"legal_ref_id": "N4412/156/1e",
-"is_mandatory": false,
-"needs_evidence": true
-},
-{
-"id": 73,
-"stage_code": "S19_APE",
-"ordinal": 6,
-"party": "anadochos",
-"title": "Υπογραφή ΑΠΕ (ανεπιφύλακτα ή με επιφύλαξη)",
-"detail": "Σε άρνηση υπογραφής, κοινοποιείται κατ' άρθρο 143.",
-"legal_ref_id": "N4412/156/7",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 74,
-"stage_code": "S19_APE",
-"ordinal": 7,
-"party": "proistameni_arxi",
-"title": "Έγκριση ΑΠΕ",
-"detail": "Λαμβάνονται υπόψη οι τυχόν επιφυλάξεις/ενστάσεις του αναδόχου.",
-"legal_ref_id": "N4412/156/7",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 75,
-"stage_code": "S20_PARATASEIS",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Υποβολή αιτήματος παράτασης",
-"detail": "ΠΡΙΝ τη λήξη της ισχύουσας προθεσμίας, με τεκμηρίωση.",
-"legal_ref_id": "N4412/147/5",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 76,
-"stage_code": "S20_PARATASEIS",
-"ordinal": 2,
-"party": "epivlepon",
-"title": "Εισήγηση με καταλογισμό ευθύνης",
-"detail": "Προσδιορισμός υπαιτιότητας — άλλως βαρύνει αποκλειστικά τον ανάδοχο.",
-"legal_ref_id": "N4412/147/6",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 77,
-"stage_code": "S20_PARATASEIS",
-"ordinal": 3,
-"party": "proistameni_arxi",
-"title": "Απόφαση εντός 30 ημερών",
-"detail": "Άπρακτη πάροδος = σιωπηρή αποδοχή με αναδρομική ισχύ.",
-"legal_ref_id": "N4412/147/5",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 78,
-"stage_code": "S21_ANWTERA_BIA",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Αίτημα αναστολής εντός 10 ημερών",
-"detail": "Από την επέλευση του γεγονότος ανωτέρας βίας.",
-"legal_ref_id": "N4412/147/7",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 79,
-"stage_code": "S21_ANWTERA_BIA",
-"ordinal": 2,
-"party": "dieuthynousa_ypiresia",
-"title": "Απόφαση εντός 10 ημερών",
-"detail": "Άπρακτη πάροδος = αποδοχή· τήρηση ανώτατου ορίου αναστολής.",
-"legal_ref_id": "N4412/147/7",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 80,
-"stage_code": "S22_POINIKES",
-"ordinal": 1,
-"party": "epivlepon",
-"title": "Υπολογισμός ρητρών",
-"detail": "Υπέρβαση προθεσμιών, παράλειψη ημερολογίου, καθυστέρηση τελικής επιμέτρησης.",
-"legal_ref_id": "N4412/148",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 81,
-"stage_code": "S22_POINIKES",
-"ordinal": 2,
-"party": "dieuthynousa_ypiresia",
-"title": "Απόφαση επιβολής & κοινοποίηση",
-"detail": "Παρακράτηση στον αμέσως επόμενο λογαριασμό.",
-"legal_ref_id": "N4412/148",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 82,
-"stage_code": "S23_ENSTASEIS",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Άσκηση ένστασης εντός 15 ημερών",
-"detail": "Ανατρεπτική προθεσμία από την κοινοποίηση της πράξης.",
-"legal_ref_id": "N4412/174",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 83,
-"stage_code": "S23_ENSTASEIS",
-"ordinal": 2,
-"party": "dieuthynousa_ypiresia",
-"title": "Διαβίβαση με αιτιολογημένη εισήγηση",
-"detail": "Προς την Προϊσταμένη Αρχή και το Τεχνικό Συμβούλιο.",
-"legal_ref_id": "N4412/174",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 84,
-"stage_code": "S23_ENSTASEIS",
-"ordinal": 3,
-"party": "proistameni_arxi",
-"title": "Απόφαση εντός 60 ημερών",
-"detail": "Άπρακτη πάροδος = σιωπηρή αποδοχή της γνωμοδότησης.",
-"legal_ref_id": "N4412/174",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 85,
-"stage_code": "S24_DHLWSH_PERAIWSHS",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Δήλωση περαίωσης εργασιών",
-"detail": "Δύναται να υποβληθεί και πριν τη λήξη, εφόσον οι εργασίες έχουν ολοκληρωθεί.",
-"legal_ref_id": "N4412/168/2",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 86,
-"stage_code": "S24_DHLWSH_PERAIWSHS",
-"ordinal": 2,
-"party": "epivlepon",
-"title": "Επιβεβαίωση ολοκλήρωσης συμβατικών δοκιμών",
-"detail": "Καταγραφή αποτελεσμάτων.",
-"legal_ref_id": "N4412/168/1",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 87,
-"stage_code": "S25_EKTHESI_EPIVL",
-"ordinal": 1,
-"party": "epivlepon",
-"title": "Σύνταξη έκθεσης περαίωσης εντός 30 ημερών",
-"detail": "Δήλωση αν οι εργασίες περατώθηκαν και αν υπάρχουν ελαττώματα.",
-"legal_ref_id": "N4412/168/1",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 88,
-"stage_code": "S25_EKTHESI_EPIVL",
-"ordinal": 2,
-"party": "epivlepon",
-"title": "Χαρακτηρισμός ελαττωμάτων",
-"detail": "Επουσιώδη (δεν θίγουν λειτουργικότητα/ασφάλεια/αδειοδότηση) ή ουσιώδη.",
-"legal_ref_id": "N4412/168/1",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 89,
-"stage_code": "S25_EKTHESI_EPIVL",
-"ordinal": 3,
-"party": "dieuthynousa_ypiresia",
-"title": "Εντολή αποκατάστασης επουσιωδών ελαττωμάτων",
-"detail": "Τάσσεται εύλογη προθεσμία· ο χρόνος αποκατάστασης δεν προσμετράται.",
-"legal_ref_id": "N4412/168/3",
-"is_mandatory": false,
-"needs_evidence": true
-},
-{
-"id": 90,
-"stage_code": "S26_BEBAIWSH",
-"ordinal": 1,
-"party": "dieuthynousa_ypiresia",
-"title": "Έκδοση Βεβαίωσης Περάτωσης εντός 10 ημερών",
-"detail": "Από τη λήψη της έκθεσης του επιβλέποντος.",
-"legal_ref_id": "N4412/168/2",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 91,
-"stage_code": "S26_BEBAIWSH",
-"ordinal": 2,
-"party": "dieuthynousa_ypiresia",
-"title": "Αναγραφή πραγματικής ημερομηνίας περαίωσης",
-"detail": "Χωρίς προσμέτρηση του χρόνου αποκατάστασης επουσιωδών ελαττωμάτων.",
-"legal_ref_id": "N4412/168/3",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 92,
-"stage_code": "S26_BEBAIWSH",
-"ordinal": 3,
-"party": "dieuthynousa_ypiresia",
-"title": "Κοινοποίηση στον ανάδοχο",
-"detail": "Αφετηρία του χρόνου υποχρεωτικής συντήρησης.",
-"legal_ref_id": "N4412/143",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 93,
-"stage_code": "S27_TELIKH_EPIM",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Υποβολή τελικής επιμέτρησης εντός 2 μηνών",
-"detail": "Ανακεφαλαίωση όλων των επιμετρήσεων του έργου.",
-"legal_ref_id": "N4412/151/9",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 94,
-"stage_code": "S27_TELIKH_EPIM",
-"ordinal": 2,
-"party": "epivlepon",
-"title": "Έκθεση επί της τελικής επιμέτρησης εντός 2 μηνών",
-"detail": "Έλεγχος και εισήγηση έγκρισης.",
-"legal_ref_id": "N4412/151/9",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 95,
-"stage_code": "S27_TELIKH_EPIM",
-"ordinal": 3,
-"party": "dieuthynousa_ypiresia",
-"title": "Έγκριση τελικής επιμέτρησης εντός 2 μηνών",
-"detail": "Πράξη έγκρισης — προϋπόθεση για τη μείωση της εγγύησης.",
-"legal_ref_id": "N4412/151/9",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 96,
-"stage_code": "S27_TELIKH_EPIM",
-"ordinal": 4,
-"party": "dieuthynousa_ypiresia",
-"title": "Επιβολή ρήτρας καθυστέρησης 2‰/μήνα",
-"detail": "Έως έξι (6) μήνες· δυνατότητα σύνταξης από την υπηρεσία σε βάρος του αναδόχου.",
-"legal_ref_id": "N4412/151/10",
-"is_mandatory": false,
-"needs_evidence": true
-},
-{
-"id": 97,
-"stage_code": "S28_MEIWSH_EGG",
-"ordinal": 1,
-"party": "dieuthynousa_ypiresia",
-"title": "Έκδοση πράξης μείωσης εγγύησης κατά 70%",
-"detail": "Αμέσως μετά την έγκριση της τελικής επιμέτρησης.",
-"legal_ref_id": "N4412/72/14b",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 98,
-"stage_code": "S28_MEIWSH_EGG",
-"ordinal": 2,
-"party": "dieuthynousa_ypiresia",
-"title": "Ενημέρωση εκδότη εγγυητικής",
-"detail": "Κοινοποίηση της πράξης μείωσης.",
-"legal_ref_id": "N4412/72/14b",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 99,
-"stage_code": "S29_SYNTHRHSH",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Τακτικές επιθεωρήσεις & συντήρηση",
-"detail": "Διατήρηση του έργου σε ικανοποιητική κατάσταση καθ' όλη τη διάρκεια.",
-"legal_ref_id": "N4412/171",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 100,
-"stage_code": "S29_SYNTHRHSH",
-"ordinal": 2,
-"party": "anadochos",
-"title": "Αποκατάσταση ελαττωμάτων κατασκευής",
-"detail": "Ελαττώματα οφειλόμενα σε πλημμελή εκτέλεση.",
-"legal_ref_id": "N4412/171",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 101,
-"stage_code": "S29_SYNTHRHSH",
-"ordinal": 3,
-"party": "epivlepon",
-"title": "Περιοδικοί έλεγχοι συντήρησης",
-"detail": "Καταγραφή ευρημάτων· επί παράλειψης εφαρμόζεται το άρθρο 159.",
-"legal_ref_id": "N4412/159",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 102,
-"stage_code": "S30_EPITROPH",
-"ordinal": 1,
-"party": "proistameni_arxi",
-"title": "Ορισμός πενταμελούς επιτροπής παραλαβής",
-"detail": "Τρεις τεχνικοί υπάλληλοι και δύο εκπρόσωποι ΤΕΕ (ή ΓΕΩΤΕΕ σε γεωτεχνικά έργα).",
-"legal_ref_id": "N4412/172",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 103,
-"stage_code": "S30_EPITROPH",
-"ordinal": 2,
-"party": "proistameni_arxi",
-"title": "Ορισμός τουλάχιστον 3 μήνες πριν τη λήξη συντήρησης",
-"detail": "Αποφυγή αυτοδίκαιης παραλαβής.",
-"legal_ref_id": "N4412/172",
-"is_mandatory": true,
-"needs_evidence": false
-},
-{
-"id": 104,
-"stage_code": "S30_EPITROPH",
-"ordinal": 3,
-"party": "anadochos",
-"title": "Ορισμός παρατηρητή (χωρίς δικαίωμα ψήφου)",
-"detail": "Προαιρετικό δικαίωμα του αναδόχου.",
-"legal_ref_id": "N4412/172",
-"is_mandatory": false,
-"needs_evidence": false
-},
-{
-"id": 105,
-"stage_code": "S31_PARALABH",
-"ordinal": 1,
-"party": "epitropi",
-"title": "Διενέργεια παραλαβής εντός 3 μηνών",
-"detail": "Ποσοτικός και ποιοτικός έλεγχος, δοκιμές.",
-"legal_ref_id": "N4412/172",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 106,
-"stage_code": "S31_PARALABH",
-"ordinal": 2,
-"party": "epitropi",
-"title": "Σύνταξη & υπογραφή πρωτοκόλλου",
-"detail": "Υπογράφεται από όλα τα μέλη, τον επιβλέποντα και τον ανάδοχο.",
-"legal_ref_id": "N4412/172",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 107,
-"stage_code": "S31_PARALABH",
-"ordinal": 3,
-"party": "proistameni_arxi",
-"title": "Έγκριση πρωτοκόλλου παραλαβής",
-"detail": "Ή έκδοση βεβαιωτικής πράξης επί αυτοδίκαιης παραλαβής.",
-"legal_ref_id": "N4412/172",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 108,
-"stage_code": "S32_TELIKOS_LOG",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Υποβολή τελικού λογαριασμού",
-"detail": "Μετά την παραλαβή και την έγκριση του πρωτοκόλλου.",
-"legal_ref_id": "N4412/152",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 109,
-"stage_code": "S32_TELIKOS_LOG",
-"ordinal": 2,
-"party": "dieuthynousa_ypiresia",
-"title": "Έλεγχος & έγκριση εντός 1 μηνός",
-"detail": "Εκκαθάριση των εκατέρωθεν απαιτήσεων από τη σύμβαση εκτέλεσης.",
-"legal_ref_id": "N4412/152",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 110,
-"stage_code": "S33_APODESMEVSH",
-"ordinal": 1,
-"party": "dieuthynousa_ypiresia",
-"title": "Επιστροφή εγγυήσεων καλής εκτέλεσης",
-"detail": "Μετά την έγκριση του πρωτοκόλλου παραλαβής και του τελικού λογαριασμού.",
-"legal_ref_id": "N4412/72/14b",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 111,
-"stage_code": "S33_APODESMEVSH",
-"ordinal": 2,
-"party": "dieuthynousa_ypiresia",
-"title": "Επιστροφή εγγύησης προκαταβολής",
-"detail": "Εφόσον έχει αποσβεστεί πλήρως η προκαταβολή.",
-"legal_ref_id": "N4412/72/7",
-"is_mandatory": false,
-"needs_evidence": true
-},
-{
-"id": 112,
-"stage_code": "S34_MHTRWO",
-"ordinal": 1,
-"party": "anadochos",
-"title": "Παράδοση Μητρώου Έργου",
-"detail": "Σχέδια «as built», φωτογραφικό υλικό αφανών εργασιών, ψηφιακή τεκμηρίωση σταδίων.",
-"legal_ref_id": "N4412/170",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 113,
-"stage_code": "S34_MHTRWO",
-"ordinal": 2,
-"party": "anadochos",
-"title": "Εγχειρίδια λειτουργίας & συντήρησης",
-"detail": "Οδηγίες και προϋπολογισμός συντήρησης.",
-"legal_ref_id": "N4412/172",
-"is_mandatory": true,
-"needs_evidence": true
-},
-{
-"id": 114,
-"stage_code": "S34_MHTRWO",
-"ordinal": 3,
-"party": "dieuthynousa_ypiresia",
-"title": "Οριστική αρχειοθέτηση φακέλου",
-"detail": "Πλήρης ψηφιακός φάκελος με όλα τα έγγραφα και τις πράξεις.",
-"legal_ref_id": "N4412/170",
-"is_mandatory": true,
-"needs_evidence": false
-}
-],
-"documents": [
-{
-"stage_code": "S01_ORISMOS",
-"doc_code": "APOFASI_ORISMOU",
-"title": "Απόφαση ορισμού επιβλέποντος",
-"produced_by": "dieuthynousa_ypiresia",
-"is_mandatory": true,
-"legal_ref_id": "N4412/136/2"
-},
-{
-"stage_code": "S02_GNOSTOPOIHSH",
-"doc_code": "GNOSTOPOIHSH_EPIVL",
-"title": "Έγγραφο γνωστοποίησης επίβλεψης",
-"produced_by": "dieuthynousa_ypiresia",
-"is_mandatory": true,
-"legal_ref_id": "N4412/143"
-},
-{
-"stage_code": "S06_XRONODIAGRAMMA",
-"doc_code": "XRONODIAGRAMMA",
-"title": "Χρονοδιάγραμμα κατασκευής",
-"produced_by": "anadochos",
-"is_mandatory": true,
-"legal_ref_id": "N4412/145/1"
-},
-{
-"stage_code": "S06_XRONODIAGRAMMA",
-"doc_code": "EGKRISI_XRONOD",
-"title": "Απόφαση έγκρισης χρονοδιαγράμματος",
-"produced_by": "dieuthynousa_ypiresia",
-"is_mandatory": true,
-"legal_ref_id": "N4412/145/2"
-},
-{
-"stage_code": "S07_ORGANOGRAMMA",
-"doc_code": "ORGANOGRAMMA",
-"title": "Οργανόγραμμα εργοταξίου",
-"produced_by": "anadochos",
-"is_mandatory": true,
-"legal_ref_id": "N4412/145/4"
-},
-{
-"stage_code": "S08_PPE",
-"doc_code": "PPE",
-"title": "Πρόγραμμα Ποιότητας Έργου",
-"produced_by": "anadochos",
-"is_mandatory": true,
-"legal_ref_id": "N4412/158"
-},
-{
-"stage_code": "S09_SAY_FAY",
-"doc_code": "SAY_FAY",
-"title": "ΣΑΥ - ΦΑΥ",
-"produced_by": "anadochos",
-"is_mandatory": true,
-"legal_ref_id": "PD305/1996"
-},
-{
-"stage_code": "S10_EGKATASTASH",
-"doc_code": "PRWT_PARADOSIS_XWROU",
-"title": "Πρωτόκολλο παράδοσης χώρου εργασιών",
-"produced_by": "dieuthynousa_ypiresia",
-"is_mandatory": true,
-"legal_ref_id": "N4412/137"
-},
-{
-"stage_code": "S12_HMEROLOGIO",
-"doc_code": "HMEROLOGIO",
-"title": "Ημερολόγιο έργου",
-"produced_by": "anadochos",
-"is_mandatory": true,
-"legal_ref_id": "N4412/146"
-},
-{
-"stage_code": "S15_PPAE",
-"doc_code": "PPAE",
-"title": "Πρωτόκολλο / έκθεση παραλαβής αφανών εργασιών",
-"produced_by": "epivlepon",
-"is_mandatory": true,
-"legal_ref_id": "N4412/151/7"
-},
-{
-"stage_code": "S16_EPIMETRHSEIS",
-"doc_code": "ANAL_EPIMETRISI",
-"title": "Αναλυτική επιμέτρηση",
-"produced_by": "anadochos",
-"is_mandatory": true,
-"legal_ref_id": "N4412/151/2"
-},
-{
-"stage_code": "S16_EPIMETRHSEIS",
-"doc_code": "PRAKTIKO_DEIGM_ELEGXOU",
-"title": "Πρακτικό δειγματοληπτικού ελέγχου επιμετρήσεων",
-"produced_by": "dieuthynousa_ypiresia",
-"is_mandatory": true,
-"legal_ref_id": "N4412/151/3"
-},
-{
-"stage_code": "S17_LOGARIASMOI",
-"doc_code": "LOGARIASMOS",
-"title": "Λογαριασμός - Πιστοποίηση",
-"produced_by": "anadochos",
-"is_mandatory": true,
-"legal_ref_id": "N4412/152"
-},
-{
-"stage_code": "S17_LOGARIASMOI",
-"doc_code": "ANAK_PINAKAS_EPIM",
-"title": "Ανακεφαλαιωτικός συνοπτικός πίνακας επιμετρήσεων",
-"produced_by": "anadochos",
-"is_mandatory": true,
-"legal_ref_id": "N4412/152"
-},
-{
-"stage_code": "S18_TRIMHNIAIES",
-"doc_code": "TRIMHNIAIA_EKTHESI",
-"title": "Τριμηνιαία έκθεση πορείας έργου",
-"produced_by": "dieuthynousa_ypiresia",
-"is_mandatory": true,
-"legal_ref_id": "N4412/136/10"
-},
-{
-"stage_code": "S19_APE",
-"doc_code": "APE",
-"title": "Ανακεφαλαιωτικός Πίνακας Εργασιών",
-"produced_by": "dieuthynousa_ypiresia",
-"is_mandatory": true,
-"legal_ref_id": "N4412/156/2"
-},
-{
-"stage_code": "S19_APE",
-"doc_code": "PKTMNE",
-"title": "Πρωτόκολλο Κανονισμού Τιμών Μονάδος Νέων Εργασιών",
-"produced_by": "epitropi",
-"is_mandatory": false,
-"legal_ref_id": "N4412/156/5"
-},
-{
-"stage_code": "S20_PARATASEIS",
-"doc_code": "APOFASI_PARATASIS",
-"title": "Απόφαση παράτασης προθεσμίας",
-"produced_by": "proistameni_arxi",
-"is_mandatory": true,
-"legal_ref_id": "N4412/147/5"
-},
-{
-"stage_code": "S25_EKTHESI_EPIVL",
-"doc_code": "EKTHESI_PERAIWSHS",
-"title": "Έκθεση επιβλέποντος περί περαίωσης",
-"produced_by": "epivlepon",
-"is_mandatory": true,
-"legal_ref_id": "N4412/168/1"
-},
-{
-"stage_code": "S26_BEBAIWSH",
-"doc_code": "BEBAIOSI_PERATOSIS",
-"title": "Βεβαίωση Περάτωσης Εργασιών",
-"produced_by": "dieuthynousa_ypiresia",
-"is_mandatory": true,
-"legal_ref_id": "N4412/168/2"
-},
-{
-"stage_code": "S27_TELIKH_EPIM",
-"doc_code": "TELIKH_EPIMETRISI",
-"title": "Τελική επιμέτρηση",
-"produced_by": "anadochos",
-"is_mandatory": true,
-"legal_ref_id": "N4412/151/9"
-},
-{
-"stage_code": "S27_TELIKH_EPIM",
-"doc_code": "EGKRISI_TELIKHS_EPIM",
-"title": "Πράξη έγκρισης τελικής επιμέτρησης",
-"produced_by": "dieuthynousa_ypiresia",
-"is_mandatory": true,
-"legal_ref_id": "N4412/151/9"
-},
-{
-"stage_code": "S28_MEIWSH_EGG",
-"doc_code": "PRAXH_MEIWSHS_EGG",
-"title": "Πράξη μείωσης εγγύησης καλής εκτέλεσης κατά 70%",
-"produced_by": "dieuthynousa_ypiresia",
-"is_mandatory": true,
-"legal_ref_id": "N4412/72/14b"
-},
-{
-"stage_code": "S30_EPITROPH",
-"doc_code": "APOFASI_EPITROPHS",
-"title": "Απόφαση ορισμού επιτροπής παραλαβής",
-"produced_by": "proistameni_arxi",
-"is_mandatory": true,
-"legal_ref_id": "N4412/172"
-},
-{
-"stage_code": "S31_PARALABH",
-"doc_code": "PRWT_PARALAVIS",
-"title": "Πρωτόκολλο παραλαβής έργου",
-"produced_by": "epitropi",
-"is_mandatory": true,
-"legal_ref_id": "N4412/172"
-},
-{
-"stage_code": "S32_TELIKOS_LOG",
-"doc_code": "TELIKOS_LOGARIASMOS",
-"title": "Τελικός λογαριασμός",
-"produced_by": "anadochos",
-"is_mandatory": true,
-"legal_ref_id": "N4412/152"
-},
-{
-"stage_code": "S33_APODESMEVSH",
-"doc_code": "PRAXH_APODESMEVSHS",
-"title": "Πράξη επιστροφής εγγυητικών επιστολών",
-"produced_by": "dieuthynousa_ypiresia",
-"is_mandatory": true,
-"legal_ref_id": "N4412/72/14b"
-},
-{
-"stage_code": "S34_MHTRWO",
-"doc_code": "MHTRWO_ERGOU",
-"title": "Μητρώο Έργου",
-"produced_by": "anadochos",
-"is_mandatory": true,
-"legal_ref_id": "N4412/170"
-}
-],
-"legal": [
-{
-"id": "N4412/135",
-"law": "ν. 4412/2016",
-"article": "135",
-"paragraph": null,
-"title": "Υπογραφή σύμβασης",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/136",
-"law": "ν. 4412/2016",
-"article": "136",
-"paragraph": null,
-"title": "Διοίκηση του έργου — Παρακολούθηση και επίβλεψη",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/136/10",
-"law": "ν. 4412/2016",
-"article": "136",
-"paragraph": "10",
-"title": "Τριμηνιαίες εκθέσεις πορείας — πειθαρχικό παράπτωμα η μη τήρηση",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/136/11",
-"law": "ν. 4412/2016",
-"article": "136",
-"paragraph": "11",
-"title": "Αυτοψία — πρόσκληση αναδόχου τουλάχιστον 24 ώρες πριν",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/136/2",
-"law": "ν. 4412/2016",
-"article": "136",
-"paragraph": "2",
-"title": "Ορισμός επιβλεπόντων και βοηθών — ομάδα επίβλεψης με συντονιστή",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/136/3",
-"law": "ν. 4412/2016",
-"article": "136",
-"paragraph": "3",
-"title": "Επίβλεψη από πιστοποιημένο Ιδιωτικό Φορέα Επίβλεψης (Ι.Φ.Ε.)",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/136/5",
-"law": "ν. 4412/2016",
-"article": "136",
-"paragraph": "5",
-"title": "Επιτόπιοι έλεγχοι Δ.Υ. — εναντίωση σε πορίσματα Ι.Φ.Ε. εντός 15 ημερών",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/136/8",
-"law": "ν. 4412/2016",
-"article": "136",
-"paragraph": "8",
-"title": "Κλιμάκιο επίβλεψης σε μεγάλα ή ειδικά έργα",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/136A",
-"law": "ν. 4412/2016",
-"article": "136Α",
-"paragraph": null,
-"title": "Παρακολούθηση και επίβλεψη έργων κάτω των ορίων",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/137",
-"law": "ν. 4412/2016",
-"article": "137",
-"paragraph": null,
-"title": "Υπερημερία του κυρίου του έργου",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/138",
-"law": "ν. 4412/2016",
-"article": "138",
-"paragraph": null,
-"title": "Γενικές υποχρεώσεις του αναδόχου",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/138/10",
-"law": "ν. 4412/2016",
-"article": "138",
-"paragraph": "10",
-"title": "Ελάχιστο τεχνικό προσωπικό ανά ειδικότητα",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/138/12",
-"law": "ν. 4412/2016",
-"article": "138",
-"paragraph": "12",
-"title": "Πηγές λήψης υλικών — έγκριση εντός 30 ημερών",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/138/14",
-"law": "ν. 4412/2016",
-"article": "138",
-"paragraph": "14",
-"title": "Αρχαιότητες — άμεση ειδοποίηση της Δ.Υ.",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/138/17",
-"law": "ν. 4412/2016",
-"article": "138",
-"paragraph": "17",
-"title": "Τριμηνιαία συνοπτική αναφορά προόδου από τον ανάδοχο",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/138/2",
-"law": "ν. 4412/2016",
-"article": "138",
-"paragraph": "2",
-"title": "Έλεγχος της μελέτης από τον ανάδοχο (20-60 ημέρες)",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/138/9",
-"law": "ν. 4412/2016",
-"article": "138",
-"paragraph": "9",
-"title": "Τήρηση εργατικής νομοθεσίας, πρόληψη ατυχημάτων, προστασία περιβάλλοντος",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/139",
-"law": "ν. 4412/2016",
-"article": "139",
-"paragraph": null,
-"title": "Διεύθυνση του έργου από την πλευρά του αναδόχου",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/140",
-"law": "ν. 4412/2016",
-"article": "140",
-"paragraph": null,
-"title": "Υποχρεώσεις μελών αναδόχου κοινοπραξίας",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/141",
-"law": "ν. 4412/2016",
-"article": "141",
-"paragraph": null,
-"title": "Πειθαρχικές ευθύνες διοικητικών οργάνων",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/143",
-"law": "ν. 4412/2016",
-"article": "143",
-"paragraph": null,
-"title": "Κοινοποίηση στον ανάδοχο — εκπροσώπηση",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/144",
-"law": "ν. 4412/2016",
-"article": "144",
-"paragraph": null,
-"title": "Σύμπραξη του μελετητή στην κατασκευή",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/145/1",
-"law": "ν. 4412/2016",
-"article": "145",
-"paragraph": "1",
-"title": "Υποβολή χρονοδιαγράμματος εντός 15-30 ημερών από την υπογραφή",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/145/2",
-"law": "ν. 4412/2016",
-"article": "145",
-"paragraph": "2",
-"title": "Έγκριση χρονοδιαγράμματος εντός 15 ημερών — τεκμήριο έγκρισης — έναρξη εργασιών εντός 30 ημερών",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/145/3",
-"law": "ν. 4412/2016",
-"article": "145",
-"paragraph": "3",
-"title": "Περιεχόμενο — δικτυωτή ανάλυση υποχρεωτική άνω του 1.000.000 €",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/145/4",
-"law": "ν. 4412/2016",
-"article": "145",
-"paragraph": "4",
-"title": "Οργανόγραμμα εργοταξίου εντός ενός μηνός",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/146",
-"law": "ν. 4412/2016",
-"article": "146",
-"paragraph": null,
-"title": "Ημερολόγιο του έργου — ηλεκτρονική τήρηση, έλεγχος εντός 2 εργασίμων, ειδική ποινική ρήτρα 100-500 €/ημέρα",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/147/1",
-"law": "ν. 4412/2016",
-"article": "147",
-"paragraph": "1",
-"title": "Συνολική και τμηματικές προθεσμίες",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/147/2",
-"law": "ν. 4412/2016",
-"article": "147",
-"paragraph": "2",
-"title": "Έναρξη προθεσμιών από την υπογραφή της σύμβασης",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/147/4",
-"law": "ν. 4412/2016",
-"article": "147",
-"paragraph": "4",
-"title": "Οριακή προθεσμία — το ήμισυ της αρχικής, τουλάχιστον 3 μήνες",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/147/5",
-"law": "ν. 4412/2016",
-"article": "147",
-"paragraph": "5",
-"title": "Παράταση — απόφαση εντός 30 ημερών, άλλως σιωπηρή αποδοχή",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/147/6",
-"law": "ν. 4412/2016",
-"article": "147",
-"paragraph": "6",
-"title": "Παράταση με ή χωρίς αναθεώρηση — καταλογισμός ευθύνης",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/147/7",
-"law": "ν. 4412/2016",
-"article": "147",
-"paragraph": "7",
-"title": "Ανωτέρα βία — αίτημα σε 10 ημέρες, απόφαση σε 10 ημέρες",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/148",
-"law": "ν. 4412/2016",
-"article": "148",
-"paragraph": null,
-"title": "Ποινικές ρήτρες για παραβίαση προθεσμιών",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/149",
-"law": "ν. 4412/2016",
-"article": "149",
-"paragraph": null,
-"title": "Ρήτρα πρόσθετης καταβολής (πριμ)",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/150",
-"law": "ν. 4412/2016",
-"article": "150",
-"paragraph": null,
-"title": "Προκαταβολές — έως 15% της αξίας της σύμβασης",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/151/1",
-"law": "ν. 4412/2016",
-"article": "151",
-"paragraph": "1",
-"title": "Επιμετρήσεις — δήλωση αληθείας, διάκριση συμβατικών/εκτός σύμβασης ποσοτήτων",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/151/10",
-"law": "ν. 4412/2016",
-"article": "151",
-"paragraph": "10",
-"title": "Ποινική ρήτρα 2‰ ανά μήνα καθυστέρησης τελικής επιμέτρησης (έως 6 μήνες)",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/151/2",
-"law": "ν. 4412/2016",
-"article": "151",
-"paragraph": "2",
-"title": "Υποβολή επιμετρήσεων ανά τμηματική προθεσμία ή μηνιαίως — προϋπόθεση πληρωμής",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/151/3",
-"law": "ν. 4412/2016",
-"article": "151",
-"paragraph": "3",
-"title": "Υποχρεωτικός δειγματοληπτικός έλεγχος στο 40% ή σε τουλάχιστον 4 επιμετρήσεις",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/151/4",
-"law": "ν. 4412/2016",
-"article": "151",
-"paragraph": "4",
-"title": "Ανακριβείς επιμετρήσεις — διόρθωση και πλήρης έλεγχος",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/151/5",
-"law": "ν. 4412/2016",
-"article": "151",
-"paragraph": "5",
-"title": "Ψευδείς επιμετρήσεις — κυρώσεις, έκπτωση, κατάπτωση εγγύησης",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/151/7",
-"law": "ν. 4412/2016",
-"article": "151",
-"paragraph": "7",
-"title": "Αφανείς εργασίες — δήλωση γνωστοποίησης, έλεγχος εντός 3 ημερών, ψηφιακές φωτογραφίες, εγκριτική πράξη εντός 30 ημερών, υπερημερία κυρίου του έργου",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/151/9",
-"law": "ν. 4412/2016",
-"article": "151",
-"paragraph": "9",
-"title": "Τελική επιμέτρηση — 2 μήνες ανάδοχος, 2 μήνες επιβλέπων, 2 μήνες έγκριση Δ.Υ.",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/152",
-"law": "ν. 4412/2016",
-"article": "152",
-"paragraph": null,
-"title": "Λογαριασμοί — έλεγχος και έγκριση εντός 1 μηνός, σιωπηρή έγκριση, κρατήσεις 5%",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/153",
-"law": "ν. 4412/2016",
-"article": "153",
-"paragraph": null,
-"title": "Αναθεωρητική περίοδος για τις βασικές τιμές",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/154",
-"law": "ν. 4412/2016",
-"article": "154",
-"paragraph": null,
-"title": "Απολογιστικές εργασίες",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/155",
-"law": "ν. 4412/2016",
-"article": "155",
-"paragraph": null,
-"title": "Επείγουσες και απρόβλεπτες πρόσθετες εργασίες",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/156/1",
-"law": "ν. 4412/2016",
-"article": "156",
-"paragraph": "1",
-"title": "Τροποποίηση σύμβασης — ανώτατο σωρευτικό όριο 50% της αρχικής αξίας",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/156/1e",
-"law": "ν. 4412/2016",
-"article": "156",
-"paragraph": "1ε",
-"title": "Υποχρεωτική γνωμοδότηση Τεχνικού Συμβουλίου πριν τη συμπληρωματική σύμβαση",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/156/2",
-"law": "ν. 4412/2016",
-"article": "156",
-"paragraph": "2",
-"title": "Ανακεφαλαιωτικός Πίνακας Εργασιών (ΑΠΕ) — περιεχόμενο",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/156/3a",
-"law": "ν. 4412/2016",
-"article": "156",
-"paragraph": "3α",
-"title": "Τροποποίηση έως 15% της αρχικής αξίας και κάτω των ορίων του άρθρου 5",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/156/3b",
-"law": "ν. 4412/2016",
-"article": "156",
-"paragraph": "3β",
-"title": "Απρόβλεπτες δαπάνες: 9% για έργα ίσα/άνω του ορίου, 15% για μικρότερα",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/156/3c",
-"law": "ν. 4412/2016",
-"article": "156",
-"paragraph": "3γ",
-"title": "Επί έλασσον δαπάνες: έως 20% ανά ομάδα εργασιών και έως 10% της αρχικής σύμβασης — απαγόρευση νέων άρθρων — γνωμοδότηση Τεχνικού Συμβουλίου",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/156/5",
-"law": "ν. 4412/2016",
-"article": "156",
-"paragraph": "5",
-"title": "Π.Κ.Τ.Μ.Ν.Ε. — ιεράρχηση πηγών τιμών, τριμελής επιτροπή με τον επιβλέποντα",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/156/6",
-"law": "ν. 4412/2016",
-"article": "156",
-"paragraph": "6",
-"title": "Συντελεστής σ και εφαρμογή της τεκμαρτής έκπτωσης στις νέες τιμές",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/156/7",
-"law": "ν. 4412/2016",
-"article": "156",
-"paragraph": "7",
-"title": "Υπογραφή ΑΠΕ από τον ανάδοχο — ανεπιφύλακτα ή με επιφύλαξη — έγκριση",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/157",
-"law": "ν. 4412/2016",
-"article": "157",
-"paragraph": null,
-"title": "Βλάβες στα έργα — αποζημιώσεις",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/158",
-"law": "ν. 4412/2016",
-"article": "158",
-"paragraph": null,
-"title": "Ποιότητα στα δημόσια έργα — Πρόγραμμα Ποιότητας Έργου",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/159",
-"law": "ν. 4412/2016",
-"article": "159",
-"paragraph": null,
-"title": "Ακαταλληλότητα υλικών — ελαττώματα — παράλειψη συντήρησης",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/160",
-"law": "ν. 4412/2016",
-"article": "160",
-"paragraph": null,
-"title": "Έκπτωση αναδόχου",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/168/1",
-"law": "ν. 4412/2016",
-"article": "168",
-"paragraph": "1",
-"title": "Έγγραφη αναφορά επιβλέποντος περί περαίωσης εντός 30 ημερών",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/168/2",
-"law": "ν. 4412/2016",
-"article": "168",
-"paragraph": "2",
-"title": "Έκδοση Βεβαίωσης Περάτωσης εντός 10 ημερών — τεκμήριο έκδοσης μετά από όχληση",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/168/3",
-"law": "ν. 4412/2016",
-"article": "168",
-"paragraph": "3",
-"title": "Επουσιώδη ελαττώματα — προθεσμία αποκατάστασης",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/168/4",
-"law": "ν. 4412/2016",
-"article": "168",
-"paragraph": "4",
-"title": "Ουσιώδη ελαττώματα — εφαρμογή άρθρων 159 και 160",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/169",
-"law": "ν. 4412/2016",
-"article": "169",
-"paragraph": null,
-"title": "Διοικητική παραλαβή για χρήση",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/170",
-"law": "ν. 4412/2016",
-"article": "170",
-"paragraph": null,
-"title": "Ενιαίο Σύστημα Τεχνικών Προδιαγραφών και Τιμολόγησης — Μητρώο Έργου",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/171",
-"law": "ν. 4412/2016",
-"article": "171",
-"paragraph": null,
-"title": "Χρόνος υποχρεωτικής συντήρησης — γενικά 15 μήνες από την επομένη της Βεβαίωσης Περάτωσης",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/172",
-"law": "ν. 4412/2016",
-"article": "172",
-"paragraph": null,
-"title": "Παραλαβή — εντός 3 μηνών από τη λήξη της συντήρησης, πενταμελής επιτροπή, αυτοδίκαιη παραλαβή",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/173",
-"law": "ν. 4412/2016",
-"article": "173",
-"paragraph": null,
-"title": "Απόσβεση δικαιωμάτων αναδόχου",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/174",
-"law": "ν. 4412/2016",
-"article": "174",
-"paragraph": null,
-"title": "Διοικητική επίλυση συμβατικών διαφορών — ένσταση σε 15 ημέρες, απόφαση σε 60 ημέρες",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/38",
-"law": "ν. 4412/2016",
-"article": "38",
-"paragraph": null,
-"title": "Κ.Η.Μ.ΔΗ.Σ. — καταχώριση στοιχείων συμβάσεων",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/72/14b",
-"law": "ν. 4412/2016",
-"article": "72",
-"paragraph": "14β",
-"title": "Μείωση εγγύησης καλής εκτέλεσης κατά 70% μετά την έγκριση της τελικής επιμέτρησης — ολική επιστροφή μετά την παραλαβή και τον τελικό λογαριασμό",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/72/4",
-"law": "ν. 4412/2016",
-"article": "72",
-"paragraph": "4",
-"title": "Εγγύηση καλής εκτέλεσης — 5% της εκτιμώμενης αξίας",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4412/72/7",
-"law": "ν. 4412/2016",
-"article": "72",
-"paragraph": "7",
-"title": "Εγγύηση προκαταβολής — ίση με το ποσό της προκαταβολής",
-"fek": "Α΄147/2016"
-},
-{
-"id": "N4727/2020",
-"law": "ν. 4727/2020",
-"article": "76",
-"paragraph": null,
-"title": "Πρόγραμμα ΔΙΑΥΓΕΙΑ — υποχρέωση ανάρτησης πράξεων",
-"fek": "Α΄184/2020"
-},
-{
-"id": "PD305/1996",
-"law": "π.δ. 305/1996",
-"article": "—",
-"paragraph": null,
-"title": "Ελάχιστες προδιαγραφές ασφάλειας — ΣΑΥ/ΦΑΥ, γνωστοποίηση έναρξης εργασιών",
-"fek": "Α΄212/1996"
-},
-{
-"id": "YA38107/2017",
-"law": "Υ.Α. ΔΝΣγ/οικ.38107/ΦΝ 466",
-"article": "—",
-"paragraph": null,
-"title": "Καθορισμός «Ομάδων εργασιών» ανά κατηγορία έργων",
-"fek": "Β΄1956/07.06.2017"
-}
-],
-"workGroups": [
-{
-"category": "hlektromichanologika",
-"code": "A",
-"title": "Ηλεκτρικές εγκαταστάσεις ισχυρών ρευμάτων"
-},
-{
-"category": "hlektromichanologika",
-"code": "B",
-"title": "Ηλεκτρικές εγκαταστάσεις ασθενών ρευμάτων"
-},
-{
-"category": "hlektromichanologika",
-"code": "C",
-"title": "Εγκαταστάσεις θέρμανσης - κλιματισμού - αερισμού"
-},
-{
-"category": "hlektromichanologika",
-"code": "D",
-"title": "Υδραυλικές εγκαταστάσεις κτιρίων"
-},
-{
-"category": "hlektromichanologika",
-"code": "E",
-"title": "Πυρόσβεση - Πυρανίχνευση"
-},
-{
-"category": "odopoiia",
-"code": "A",
-"title": "Χωματουργικά - Καθαιρέσεις"
-},
-{
-"category": "odopoiia",
-"code": "B",
-"title": "Τεχνικά έργα"
-},
-{
-"category": "odopoiia",
-"code": "C",
-"title": "Ασφαλτικά"
-},
-{
-"category": "odopoiia",
-"code": "D",
-"title": "Σήμανση - Ασφάλιση"
-},
-{
-"category": "oikodomika",
-"code": "A",
-"title": "Χωματουργικά - Καθαιρέσεις"
-},
-{
-"category": "oikodomika",
-"code": "B",
-"title": "Σκυροδέματα"
-},
-{
-"category": "oikodomika",
-"code": "C",
-"title": "Τοιχοποιίες - Επιχρίσματα"
-},
-{
-"category": "oikodomika",
-"code": "D",
-"title": "Επενδύσεις - Επιστρώσεις"
-},
-{
-"category": "oikodomika",
-"code": "E",
-"title": "Κουφώματα - Υαλουργικά"
-},
-{
-"category": "oikodomika",
-"code": "F",
-"title": "Χρωματισμοί - Λοιπές τελειώσεις"
-},
-{
-"category": "prasino",
-"code": "A",
-"title": "Χωματουργικά - Προετοιμασία εδάφους"
-},
-{
-"category": "prasino",
-"code": "B",
-"title": "Φυτεύσεις"
-},
-{
-"category": "prasino",
-"code": "C",
-"title": "Άρδευση"
-},
-{
-"category": "ydraulika",
-"code": "A",
-"title": "Χωματουργικά"
-},
-{
-"category": "ydraulika",
-"code": "B",
-"title": "Σωληνώσεις - Δίκτυα"
-},
-{
-"category": "ydraulika",
-"code": "C",
-"title": "Τεχνικά έργα - Φρεάτια"
-},
-{
-"category": "ydraulika",
-"code": "D",
-"title": "Ηλεκτρομηχανολογικά"
-}
-]
+  "stages": [
+    {
+      "code": "S00_FAKELOS",
+      "phase": "f0_systasi",
+      "ordinal": 0,
+      "title": "Σύσταση φακέλου έργου & καταχώριση σύμβασης",
+      "purpose": "Καταχώριση όλων των στοιχείων της σύμβασης που τροφοδοτούν κάθε μετέπειτα έλεγχο: ανάδοχος, ποσά, έκπτωση, απρόβλεπτα, προθεσμίες, ΑΔΑΜ/ΑΔΑ.",
+      "responsible": "dieuthynousa_ypiresia",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/135",
+      "deadline_days": null,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Λανθασμένη αρχική καταχώριση αλλοιώνει όλους τους ελέγχους ορίων (50%, 15%, 9%/15%, 10%).",
+      "applies_when": null,
+      "prerequisites": [],
+      "deadline_basis": "ypografi_symvasis"
+    },
+    {
+      "code": "S01_ORISMOS",
+      "phase": "f0_systasi",
+      "ordinal": 1,
+      "title": "Ορισμός Επιβλέποντος / ομάδας επίβλεψης",
+      "purpose": "Ρητή απόφαση της Διευθύνουσας Υπηρεσίας για τον ορισμό επιβλέποντος, βοηθών και συντονιστή, με σαφή κατανομή καθηκόντων.",
+      "responsible": "dieuthynousa_ypiresia",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/136/2",
+      "deadline_days": null,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Χωρίς νόμιμο ορισμό, οι πράξεις επίβλεψης πάσχουν αρμοδιότητας.",
+      "applies_when": null,
+      "prerequisites": [
+        "S00_FAKELOS"
+      ],
+      "deadline_basis": "ypografi_symvasis"
+    },
+    {
+      "code": "S01B_IFE",
+      "phase": "f0_systasi",
+      "ordinal": 2,
+      "title": "Σύμβαση Ιδιωτικού Φορέα Επίβλεψης (Ι.Φ.Ε.)",
+      "purpose": "Έλεγχος πιστοποίησης, σύναψη σύμβασης Ι.Φ.Ε. και οριοθέτηση των υπηρεσιακών ελέγχων της Δ.Υ.",
+      "responsible": "dieuthynousa_ypiresia",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/136/3",
+      "deadline_days": null,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Η αμοιβή του Ι.Φ.Ε. βαρύνει αποκλειστικά τον ανάδοχο· η Δ.Υ. διατηρεί δικαίωμα εναντίωσης σε 15 ημέρες.",
+      "applies_when": {
+        "supervision_mode": "ife"
+      },
+      "prerequisites": [
+        "S00_FAKELOS"
+      ],
+      "deadline_basis": "ypografi_symvasis"
+    },
+    {
+      "code": "S02_GNOSTOPOIHSH",
+      "phase": "f0_systasi",
+      "ordinal": 3,
+      "title": "Γνωστοποίηση ορισμού & στοιχείων επικοινωνίας",
+      "purpose": "Κοινοποίηση στον ανάδοχο του ορισμού επίβλεψης και των στοιχείων επικοινωνίας — αφετηρία εγκύρων κοινοποιήσεων.",
+      "responsible": "dieuthynousa_ypiresia",
+      "approver": null,
+      "recurrence": "once",
+      "legal_ref_id": "N4412/143",
+      "deadline_days": null,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Άκυρη κοινοποίηση = μη έναρξη προθεσμιών ένστασης και υποβολών.",
+      "applies_when": null,
+      "prerequisites": [
+        "S01_ORISMOS"
+      ],
+      "deadline_basis": "ypografi_symvasis"
+    },
+    {
+      "code": "S03_EGGYHSEIS",
+      "phase": "f1_egkatastasi",
+      "ordinal": 4,
+      "title": "Έλεγχος & καταχώριση εγγυητικών επιστολών",
+      "purpose": "Επαλήθευση γνησιότητας, ποσού (5%) και ισχύος της εγγύησης καλής εκτέλεσης· καταχώριση πρόσθετων εγγυήσεων.",
+      "responsible": "dieuthynousa_ypiresia",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/72/4",
+      "deadline_days": null,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": "app.guard_guarantees",
+      "risk_note": "Η μη κατάθεση/ανεπάρκεια εγγύησης θέτει σε κίνδυνο την εξασφάλιση του κυρίου του έργου.",
+      "applies_when": null,
+      "prerequisites": [
+        "S00_FAKELOS"
+      ],
+      "deadline_basis": "ypografi_symvasis"
+    },
+    {
+      "code": "S04_TEXNIKOI",
+      "phase": "f1_egkatastasi",
+      "ordinal": 5,
+      "title": "Δήλωση τεχνικών αναδόχου & τηρούντος το ημερολόγιο",
+      "purpose": "Γνωστοποίηση προϊσταμένου εργοταξίου, τεχνικού ασφαλείας και του τεχνικού που τηρεί καθημερινά το ημερολόγιο.",
+      "responsible": "anadochos",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/139",
+      "deadline_days": null,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Χωρίς ορισμένο τηρούντα δεν υπάρχει νόμιμο ημερολόγιο — γεννάται ποινική ρήτρα.",
+      "applies_when": null,
+      "prerequisites": [
+        "S02_GNOSTOPOIHSH"
+      ],
+      "deadline_basis": "ypografi_symvasis"
+    },
+    {
+      "code": "S05_ELEGXOS_MELETHS",
+      "phase": "f1_egkatastasi",
+      "ordinal": 6,
+      "title": "Έλεγχος της μελέτης δημοπράτησης από τον ανάδοχο",
+      "purpose": "Ο ανάδοχος ελέγχει τη μελέτη και γνωστοποιεί σφάλματα/παραλείψεις εντός της τασσόμενης προθεσμίας (20-60 ημέρες).",
+      "responsible": "anadochos",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/138/2",
+      "deadline_days": 60,
+      "deadline_months": null,
+      "tacit_approval": true,
+      "tacit_effect": "Η σιωπή του αναδόχου εκλαμβάνεται ως αποδοχή της μελέτης.",
+      "guard_fn": null,
+      "risk_note": "Παράλειψη γνωστοποίησης αποκλείει μεταγενέστερες αξιώσεις για σφάλματα μελέτης (άρθρο 138 §18).",
+      "applies_when": null,
+      "prerequisites": [
+        "S02_GNOSTOPOIHSH"
+      ],
+      "deadline_basis": "ypografi_symvasis"
+    },
+    {
+      "code": "S06_XRONODIAGRAMMA",
+      "phase": "f1_egkatastasi",
+      "ordinal": 7,
+      "title": "Υποβολή & έγκριση χρονοδιαγράμματος κατασκευής",
+      "purpose": "Υποβολή από τον ανάδοχο εντός 15-30 ημερών· έγκριση από τη Δ.Υ. εντός 15 ημερών, άλλως τεκμαίρεται εγκεκριμένο.",
+      "responsible": "anadochos",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/145/1",
+      "deadline_days": 30,
+      "deadline_months": null,
+      "tacit_approval": true,
+      "tacit_effect": "Άπρακτη πάροδος 15 ημερών χωρίς έγκριση ή αίτημα διευκρινίσεων = τεκμήριο έγκρισης.",
+      "guard_fn": "app.guard_schedule",
+      "risk_note": "Το εγκεκριμένο χρονοδιάγραμμα αποτελεί συμβατικό στοιχείο και βάση των τμηματικών προθεσμιών και των ρητρών.",
+      "applies_when": null,
+      "prerequisites": [
+        "S03_EGGYHSEIS",
+        "S04_TEXNIKOI"
+      ],
+      "deadline_basis": "ypografi_symvasis"
+    },
+    {
+      "code": "S07_ORGANOGRAMMA",
+      "phase": "f1_egkatastasi",
+      "ordinal": 8,
+      "title": "Οργανόγραμμα εργοταξίου",
+      "purpose": "Υποβολή οργανογράμματος με προσωπικό, εξοπλισμό και μηχανήματα του εργοταξίου.",
+      "responsible": "anadochos",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/145/4",
+      "deadline_days": null,
+      "deadline_months": 1,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Ελλιπής στελέχωση τεκμηριώνει υπαιτιότητα αναδόχου σε καθυστερήσεις.",
+      "applies_when": null,
+      "prerequisites": [
+        "S06_XRONODIAGRAMMA"
+      ],
+      "deadline_basis": "ypografi_symvasis"
+    },
+    {
+      "code": "S08_PPE",
+      "phase": "f1_egkatastasi",
+      "ordinal": 9,
+      "title": "Πρόγραμμα Ποιότητας Έργου (ΠΠΕ)",
+      "purpose": "Σύνταξη, υποβολή και έγκριση του ΠΠΕ και των σχεδίων ελέγχων/δοκιμών.",
+      "responsible": "anadochos",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/158",
+      "deadline_days": null,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Χωρίς ΠΠΕ δεν τεκμηριώνεται η ποιοτική συμμόρφωση κατά την παραλαβή.",
+      "applies_when": null,
+      "prerequisites": [
+        "S06_XRONODIAGRAMMA"
+      ],
+      "deadline_basis": "ypografi_symvasis"
+    },
+    {
+      "code": "S09_SAY_FAY",
+      "phase": "f1_egkatastasi",
+      "ordinal": 10,
+      "title": "ΣΑΥ / ΦΑΥ & μέτρα ασφάλειας",
+      "purpose": "Επικαιροποίηση ΣΑΥ/ΦΑΥ, ορισμός τεχνικού ασφαλείας, εκ των προτέρων γνωστοποίηση έναρξης εργασιών.",
+      "responsible": "anadochos",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "PD305/1996",
+      "deadline_days": null,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Παράλειψη επισύρει διοικητικές και ποινικές ευθύνες και διακοπή εργασιών.",
+      "applies_when": null,
+      "prerequisites": [
+        "S04_TEXNIKOI"
+      ],
+      "deadline_basis": "ypografi_symvasis"
+    },
+    {
+      "code": "S10_EGKATASTASH",
+      "phase": "f1_egkatastasi",
+      "ordinal": 11,
+      "title": "Εγκατάσταση εργοταξίου & έναρξη εργασιών",
+      "purpose": "Παράδοση χώρου, εγκατάσταση εργοταξίου και έναρξη εργασιών — το αργότερο 30 ημέρες από την υπογραφή.",
+      "responsible": "anadochos",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/145/2",
+      "deadline_days": 30,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Καθυστέρηση έναρξης από υπαιτιότητα αναδόχου συνιστά λόγο έκπτωσης.",
+      "applies_when": null,
+      "prerequisites": [
+        "S06_XRONODIAGRAMMA",
+        "S09_SAY_FAY"
+      ],
+      "deadline_basis": "ypografi_symvasis"
+    },
+    {
+      "code": "S11_PROKATAVOLH",
+      "phase": "f1_egkatastasi",
+      "ordinal": 12,
+      "title": "Χορήγηση προκαταβολής (προαιρετικό)",
+      "purpose": "Έγκριση προκαταβολής έως 15%, κατάθεση ισόποσης εγγυητικής και ορισμός τρόπου απόσβεσης.",
+      "responsible": "anadochos",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "conditional",
+      "legal_ref_id": "N4412/150",
+      "deadline_days": null,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Χορήγηση χωρίς εγγυητική επιστολή είναι παράνομη· η μη απόσβεση δημιουργεί δημοσιονομική ζημία.",
+      "applies_when": null,
+      "prerequisites": [
+        "S03_EGGYHSEIS"
+      ],
+      "deadline_basis": "ypografi_symvasis"
+    },
+    {
+      "code": "S12_HMEROLOGIO",
+      "phase": "f2_ektelesi",
+      "ordinal": 13,
+      "title": "Τήρηση & έλεγχος ημερολογίου έργου",
+      "purpose": "Καθημερινή ηλεκτρονική τήρηση από τον ανάδοχο· έλεγχος και διόρθωση από τον επιβλέποντα εντός 2 εργασίμων ημερών· έγκριση από τον προϊστάμενο Δ.Υ.",
+      "responsible": "anadochos",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "continuous",
+      "legal_ref_id": "N4412/146",
+      "deadline_days": null,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": "app.guard_diary",
+      "risk_note": "Κάθε ημέρα χωρίς εγγραφή γεννά ειδική ποινική ρήτρα 100-500 € και αποδυναμώνει την απόδειξη πραγματικών περιστατικών.",
+      "applies_when": {
+        "diary_mode": "imerisio"
+      },
+      "prerequisites": [
+        "S10_EGKATASTASH"
+      ],
+      "deadline_basis": "enarxi_ergasion"
+    },
+    {
+      "code": "S13_YLIKA",
+      "phase": "f2_ektelesi",
+      "ordinal": 14,
+      "title": "Έγκριση υλικών & πηγών λήψης",
+      "purpose": "Υποβολή δειγμάτων/πιστοποιητικών CE και έγκριση πηγών λήψης εντός 30 ημερών από τη γνωστοποίηση.",
+      "responsible": "anadochos",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "repeating",
+      "legal_ref_id": "N4412/138/12",
+      "deadline_days": 30,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Ενσωμάτωση μη εγκεκριμένων υλικών οδηγεί σε καθαίρεση με δαπάνη του αναδόχου (άρθρο 159).",
+      "applies_when": null,
+      "prerequisites": [
+        "S10_EGKATASTASH"
+      ],
+      "deadline_basis": "ypovoli_eggrafou"
+    },
+    {
+      "code": "S14_POIOTIKOI",
+      "phase": "f2_ektelesi",
+      "ordinal": 15,
+      "title": "Ποιοτικοί & εργαστηριακοί έλεγχοι",
+      "purpose": "Δειγματοληψίες και δοκιμές κατά ΕΤΕΠ/ΕΛΟΤ, καταγραφή αποτελεσμάτων και συσχέτιση με το ημερολόγιο.",
+      "responsible": "epivlepon",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "repeating",
+      "legal_ref_id": "N4412/158",
+      "deadline_days": null,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Ελλιπείς έλεγχοι καθιστούν αδύνατη την τεκμηρίωση ποιότητας στην παραλαβή.",
+      "applies_when": null,
+      "prerequisites": [
+        "S08_PPE"
+      ],
+      "deadline_basis": "enarxi_ergasion"
+    },
+    {
+      "code": "S15_PPAE",
+      "phase": "f2_ektelesi",
+      "ordinal": 16,
+      "title": "Αφανείς εργασίες — δήλωση, έλεγχος & εγκριτική πράξη (ΠΠΑΕ)",
+      "purpose": "Ο ανάδοχος δηλώνει τις αφανείς εργασίες και καλεί τον επιβλέποντα ΠΡΙΝ την επικάλυψη· έλεγχος εντός 3 ημερών με ψηφιακές φωτογραφίες· εγκριτική πράξη Δ.Υ. εντός 30 ημερών.",
+      "responsible": "anadochos",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "repeating",
+      "legal_ref_id": "N4412/151/7",
+      "deadline_days": 3,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": "app.guard_hidden_works",
+      "risk_note": "Επικάλυψη χωρίς έλεγχο καθιστά αδύνατη την επιμέτρηση· παράλειψη ελέγχου εντός 3 ημερών συνιστά υπερημερία του κυρίου του έργου.",
+      "applies_when": null,
+      "prerequisites": [
+        "S12_HMEROLOGIO"
+      ],
+      "deadline_basis": "koinopoiisi_praxis"
+    },
+    {
+      "code": "S16_EPIMETRHSEIS",
+      "phase": "f2_ektelesi",
+      "ordinal": 17,
+      "title": "Τμηματικές επιμετρήσεις & δειγματοληπτικός έλεγχος",
+      "purpose": "Υποβολή επιμετρήσεων ανά τμηματική προθεσμία ή μηνιαίως, με δήλωση αληθείας και επιμετρητικά σχέδια· υποχρεωτικός δειγματοληπτικός έλεγχος 40% (ή ≥4).",
+      "responsible": "anadochos",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "repeating",
+      "legal_ref_id": "N4412/151/2",
+      "deadline_days": 30,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": "app.guard_measurements",
+      "risk_note": "Η επιμέτρηση είναι προϋπόθεση πληρωμής· ανακριβείς/ψευδείς επιμετρήσεις οδηγούν σε έκπτωση και κατάπτωση εγγύησης.",
+      "applies_when": null,
+      "prerequisites": [
+        "S15_PPAE"
+      ],
+      "deadline_basis": "ypovoli_eggrafou"
+    },
+    {
+      "code": "S17_LOGARIASMOI",
+      "phase": "f2_ektelesi",
+      "ordinal": 18,
+      "title": "Λογαριασμοί — έλεγχος & έγκριση",
+      "purpose": "Υποβολή λογαριασμού με τα προβλεπόμενα συνημμένα· έλεγχος, διόρθωση και έγκριση από τη Δ.Υ. εντός ενός μηνός.",
+      "responsible": "anadochos",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "repeating",
+      "legal_ref_id": "N4412/152",
+      "deadline_days": null,
+      "deadline_months": 1,
+      "tacit_approval": true,
+      "tacit_effect": "Άπρακτη πάροδος ενός μηνός: ο λογαριασμός θεωρείται εγκεκριμένος και καθίσταται πληρωτέος.",
+      "guard_fn": null,
+      "risk_note": "Η άπρακτη πάροδος δημιουργεί πληρωτέο λογαριασμό χωρίς έλεγχο — κίνδυνος αχρεωστήτως καταβληθέντων.",
+      "applies_when": null,
+      "prerequisites": [
+        "S16_EPIMETRHSEIS"
+      ],
+      "deadline_basis": "ypovoli_eggrafou"
+    },
+    {
+      "code": "S18_TRIMHNIAIES",
+      "phase": "f2_ektelesi",
+      "ordinal": 19,
+      "title": "Τριμηνιαίες εκθέσεις πορείας",
+      "purpose": "Σύνταξη τριμηνιαίας έκθεσης από τη Δ.Υ. με εντοπισμό σφαλμάτων προμέτρησης και απρόβλεπτων περιστάσεων· αντίστοιχη αναφορά αναδόχου.",
+      "responsible": "dieuthynousa_ypiresia",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "repeating",
+      "legal_ref_id": "N4412/136/10",
+      "deadline_days": null,
+      "deadline_months": 3,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Η μη τήρηση συνιστά ΠΕΙΘΑΡΧΙΚΟ ΠΑΡΑΠΤΩΜΑ των αρμοδίων οργάνων.",
+      "applies_when": null,
+      "prerequisites": [
+        "S10_EGKATASTASH"
+      ],
+      "deadline_basis": "enarxi_ergasion"
+    },
+    {
+      "code": "S19_APE",
+      "phase": "f2_ektelesi",
+      "ordinal": 20,
+      "title": "Ανακεφαλαιωτικοί Πίνακες Εργασιών & ΠΚΤΜΝΕ",
+      "purpose": "Σύνταξη ΑΠΕ με έλεγχο των ορίων 50% / 9%-15% / 20% ανά ομάδα / 10% συνολικά· κανονισμός νέων τιμών· γνωμοδότηση Τεχνικού Συμβουλίου όπου απαιτείται.",
+      "responsible": "dieuthynousa_ypiresia",
+      "approver": "proistameni_arxi",
+      "recurrence": "repeating",
+      "legal_ref_id": "N4412/156/2",
+      "deadline_days": null,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": "app.guard_ape_stage",
+      "risk_note": "Υπέρβαση ορίων ή παράλειψη γνωμοδότησης καθιστά την τροποποίηση παράνομη και μη πληρωτέα.",
+      "applies_when": null,
+      "prerequisites": [
+        "S16_EPIMETRHSEIS"
+      ],
+      "deadline_basis": "custom"
+    },
+    {
+      "code": "S20_PARATASEIS",
+      "phase": "f2_ektelesi",
+      "ordinal": 21,
+      "title": "Παρατάσεις προθεσμιών",
+      "purpose": "Υποβολή αιτήματος πριν τη λήξη της προθεσμίας· απόφαση εντός 30 ημερών· καταλογισμός ευθύνης και χαρακτηρισμός «με/χωρίς αναθεώρηση».",
+      "responsible": "anadochos",
+      "approver": "proistameni_arxi",
+      "recurrence": "conditional",
+      "legal_ref_id": "N4412/147/5",
+      "deadline_days": 30,
+      "deadline_months": null,
+      "tacit_approval": true,
+      "tacit_effect": "Άπρακτη πάροδος 30 ημερών: η παράταση θεωρείται εγκριθείσα αναδρομικά.",
+      "guard_fn": null,
+      "risk_note": "Λήξη προθεσμίας χωρίς παράταση οδηγεί σε ποινικές ρήτρες και, μετά την οριακή, σε λύση της σύμβασης.",
+      "applies_when": null,
+      "prerequisites": [
+        "S06_XRONODIAGRAMMA"
+      ],
+      "deadline_basis": "ypovoli_eggrafou"
+    },
+    {
+      "code": "S21_ANWTERA_BIA",
+      "phase": "f2_ektelesi",
+      "ordinal": 22,
+      "title": "Αναστολή προθεσμιών λόγω ανωτέρας βίας",
+      "purpose": "Αίτημα εντός 10 ημερών από το γεγονός· απόφαση εντός 10 ημερών· τήρηση του ανώτατου ορίου αναστολής.",
+      "responsible": "anadochos",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "conditional",
+      "legal_ref_id": "N4412/147/7",
+      "deadline_days": 10,
+      "deadline_months": null,
+      "tacit_approval": true,
+      "tacit_effect": "Άπρακτη πάροδος 10 ημερών: το αίτημα θεωρείται αποδεκτό.",
+      "guard_fn": null,
+      "risk_note": "Εκπρόθεσμο αίτημα απορρίπτεται και ο χρόνος προσμετράται εις βάρος του αναδόχου.",
+      "applies_when": null,
+      "prerequisites": [],
+      "deadline_basis": "custom"
+    },
+    {
+      "code": "S22_POINIKES",
+      "phase": "f2_ektelesi",
+      "ordinal": 23,
+      "title": "Ποινικές ρήτρες & πρόστιμα",
+      "purpose": "Υπολογισμός και επιβολή ρητρών υπέρβασης προθεσμιών, παράλειψης ημερολογίου και καθυστέρησης τελικής επιμέτρησης· παρακράτηση στον επόμενο λογαριασμό.",
+      "responsible": "dieuthynousa_ypiresia",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "conditional",
+      "legal_ref_id": "N4412/148",
+      "deadline_days": null,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Μη επιβολή οφειλόμενων ρητρών συνιστά παράβαση καθήκοντος και δημοσιονομική ζημία.",
+      "applies_when": null,
+      "prerequisites": [
+        "S12_HMEROLOGIO"
+      ],
+      "deadline_basis": "custom"
+    },
+    {
+      "code": "S23_ENSTASEIS",
+      "phase": "f2_ektelesi",
+      "ordinal": 24,
+      "title": "Ενστάσεις — διοικητική επίλυση διαφορών",
+      "purpose": "Παραλαβή ένστασης εντός 15 ημερών από την κοινοποίηση· εισήγηση, γνωμοδότηση Τεχνικού Συμβουλίου, απόφαση εντός 60 ημερών.",
+      "responsible": "anadochos",
+      "approver": "proistameni_arxi",
+      "recurrence": "conditional",
+      "legal_ref_id": "N4412/174",
+      "deadline_days": 60,
+      "deadline_months": null,
+      "tacit_approval": true,
+      "tacit_effect": "Άπρακτη πάροδος 60 ημερών: τεκμαίρεται σιωπηρή αποδοχή της γνωμοδότησης.",
+      "guard_fn": null,
+      "risk_note": "Παράλειψη τήρησης της διαδικασίας γεννά ακυρότητες και δικαστικές διαφορές.",
+      "applies_when": null,
+      "prerequisites": [],
+      "deadline_basis": "koinopoiisi_praxis"
+    },
+    {
+      "code": "S24_DHLWSH_PERAIWSHS",
+      "phase": "f3_peraiosi",
+      "ordinal": 25,
+      "title": "Δήλωση περαίωσης / λήξη εγκεκριμένου χρόνου",
+      "purpose": "Καταγραφή της δήλωσης περαίωσης του αναδόχου ή της λήξης του εγκεκριμένου χρόνου περαίωσης.",
+      "responsible": "anadochos",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/168/1",
+      "deadline_days": null,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Λανθασμένη ημερομηνία περαίωσης μετατοπίζει όλες τις επόμενες προθεσμίες (συντήρηση, παραλαβή).",
+      "applies_when": null,
+      "prerequisites": [
+        "S10_EGKATASTASH"
+      ],
+      "deadline_basis": "lixi_prothesmias"
+    },
+    {
+      "code": "S25_EKTHESI_EPIVL",
+      "phase": "f3_peraiosi",
+      "ordinal": 26,
+      "title": "Έκθεση επιβλέποντος περί περαίωσης",
+      "purpose": "Έγγραφη αναφορά στη Δ.Υ. εντός 30 ημερών από τη λήξη του εγκεκριμένου χρόνου: ολοκλήρωση εργασιών, δοκιμές, ελαττώματα.",
+      "responsible": "epivlepon",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/168/1",
+      "deadline_days": 30,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": "app.guard_completion",
+      "risk_note": "Η καθυστέρηση της έκθεσης επισύρει πειθαρχική ευθύνη (άρθρο 141 §3).",
+      "applies_when": null,
+      "prerequisites": [
+        "S12_HMEROLOGIO",
+        "S24_DHLWSH_PERAIWSHS"
+      ],
+      "deadline_basis": "lixi_prothesmias"
+    },
+    {
+      "code": "S26_BEBAIWSH",
+      "phase": "f3_peraiosi",
+      "ordinal": 27,
+      "title": "Έκδοση Βεβαίωσης Περάτωσης Εργασιών",
+      "purpose": "Έκδοση από τον προϊστάμενο της Δ.Υ. εντός 10 ημερών από τη λήψη της έκθεσης, με αναγραφή της πραγματικής ημερομηνίας περαίωσης.",
+      "responsible": "dieuthynousa_ypiresia",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/168/2",
+      "deadline_days": 10,
+      "deadline_months": null,
+      "tacit_approval": true,
+      "tacit_effect": "Αν δεν εκδοθεί, τεκμαίρεται εκδοθείσα 30 ημέρες μετά την έγγραφη όχληση του αναδόχου.",
+      "guard_fn": null,
+      "risk_note": "Η Βεβαίωση εκκινεί τον χρόνο υποχρεωτικής συντήρησης και δεσμεύει το χρονοδιάγραμμα παραλαβής.",
+      "applies_when": null,
+      "prerequisites": [
+        "S25_EKTHESI_EPIVL"
+      ],
+      "deadline_basis": "ypovoli_eggrafou"
+    },
+    {
+      "code": "S27_TELIKH_EPIM",
+      "phase": "f3_peraiosi",
+      "ordinal": 28,
+      "title": "Τελική επιμέτρηση",
+      "purpose": "Υποβολή τελικής επιμέτρησης εντός 2 μηνών από την περαίωση· έκθεση επιβλέποντος εντός 2 μηνών· έγκριση Δ.Υ. εντός 2 μηνών.",
+      "responsible": "anadochos",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/151/9",
+      "deadline_days": null,
+      "deadline_months": 2,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Καθυστέρηση επισύρει ποινική ρήτρα 2‰/μήνα (έως 6 μήνες) και δυνατότητα σύνταξης από την υπηρεσία σε βάρος του αναδόχου.",
+      "applies_when": null,
+      "prerequisites": [
+        "S16_EPIMETRHSEIS",
+        "S26_BEBAIWSH"
+      ],
+      "deadline_basis": "bebaiosi_peratosis"
+    },
+    {
+      "code": "S28_MEIWSH_EGG",
+      "phase": "f3_peraiosi",
+      "ordinal": 29,
+      "title": "Μείωση εγγύησης καλής εκτέλεσης κατά 70%",
+      "purpose": "Έκδοση πράξης μείωσης της εγγύησης καλής εκτέλεσης κατά 70%, αμέσως μετά την έγκριση της τελικής επιμέτρησης.",
+      "responsible": "dieuthynousa_ypiresia",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/72/14b",
+      "deadline_days": null,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": "app.guard_guarantee_reduction",
+      "risk_note": "Πρόωρη μείωση εκθέτει τον κύριο του έργου· καθυστερημένη μείωση επιβαρύνει αδικαιολόγητα τον ανάδοχο.",
+      "applies_when": null,
+      "prerequisites": [
+        "S27_TELIKH_EPIM"
+      ],
+      "deadline_basis": "custom"
+    },
+    {
+      "code": "S29_SYNTHRHSH",
+      "phase": "f4_paralavi",
+      "ordinal": 30,
+      "title": "Χρόνος υποχρεωτικής συντήρησης",
+      "purpose": "Παρακολούθηση της υποχρεωτικής συντήρησης (γενικά 15 μήνες) με περιοδικές επιθεωρήσεις και αποκατάσταση ελαττωμάτων.",
+      "responsible": "anadochos",
+      "approver": "epivlepon",
+      "recurrence": "continuous",
+      "legal_ref_id": "N4412/171",
+      "deadline_days": null,
+      "deadline_months": 15,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Παράλειψη συντήρησης ενεργοποιεί το άρθρο 159 (έκπτωση/εκτέλεση σε βάρος του αναδόχου).",
+      "applies_when": null,
+      "prerequisites": [
+        "S26_BEBAIWSH"
+      ],
+      "deadline_basis": "bebaiosi_peratosis"
+    },
+    {
+      "code": "S30_EPITROPH",
+      "phase": "f4_paralavi",
+      "ordinal": 31,
+      "title": "Ορισμός Επιτροπής Παραλαβής",
+      "purpose": "Ορισμός πενταμελούς επιτροπής (με δύο εκπροσώπους ΤΕΕ/ΓΕΩΤΕΕ) τουλάχιστον 3 μήνες πριν τη λήξη της συντήρησης.",
+      "responsible": "proistameni_arxi",
+      "approver": "proistameni_arxi",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/172",
+      "deadline_days": null,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Καθυστερημένος ορισμός οδηγεί σε αυτοδίκαιη παραλαβή χωρίς ουσιαστικό έλεγχο.",
+      "applies_when": null,
+      "prerequisites": [
+        "S29_SYNTHRHSH"
+      ],
+      "deadline_basis": "lixi_syntirisis"
+    },
+    {
+      "code": "S31_PARALABH",
+      "phase": "f4_paralavi",
+      "ordinal": 32,
+      "title": "Παραλαβή έργου & πρωτόκολλο",
+      "purpose": "Διενέργεια παραλαβής εντός 3 μηνών από τη λήξη της συντήρησης και σύνταξη/έγκριση πρωτοκόλλου.",
+      "responsible": "epitropi",
+      "approver": "proistameni_arxi",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/172",
+      "deadline_days": null,
+      "deadline_months": 3,
+      "tacit_approval": true,
+      "tacit_effect": "Αν η επιτροπή δεν ενεργήσει εντός 3 μηνών, η παραλαβή θεωρείται αυτοδικαίως συντελεσμένη.",
+      "guard_fn": "app.guard_acceptance",
+      "risk_note": "Η αυτοδίκαιη παραλαβή στερεί από την υπηρεσία τη δυνατότητα καταγραφής ελαττωμάτων.",
+      "applies_when": null,
+      "prerequisites": [
+        "S29_SYNTHRHSH",
+        "S30_EPITROPH"
+      ],
+      "deadline_basis": "lixi_syntirisis"
+    },
+    {
+      "code": "S32_TELIKOS_LOG",
+      "phase": "f4_paralavi",
+      "ordinal": 33,
+      "title": "Τελικός λογαριασμός & εκκαθάριση",
+      "purpose": "Υποβολή και έγκριση τελικού λογαριασμού μετά την παραλαβή — εκκαθάριση των εκατέρωθεν απαιτήσεων.",
+      "responsible": "anadochos",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/152",
+      "deadline_days": null,
+      "deadline_months": 1,
+      "tacit_approval": true,
+      "tacit_effect": "Άπρακτη πάροδος ενός μηνός: ο τελικός λογαριασμός θεωρείται εγκεκριμένος.",
+      "guard_fn": null,
+      "risk_note": "Χωρίς εγκεκριμένο τελικό λογαριασμό δεν επιτρέπεται η επιστροφή των εγγυήσεων.",
+      "applies_when": null,
+      "prerequisites": [
+        "S19_APE",
+        "S31_PARALABH"
+      ],
+      "deadline_basis": "ypovoli_eggrafou"
+    },
+    {
+      "code": "S33_APODESMEVSH",
+      "phase": "f4_paralavi",
+      "ordinal": 34,
+      "title": "Επιστροφή εγγυητικών επιστολών",
+      "purpose": "Ολική επιστροφή των εγγυήσεων καλής εκτέλεσης μετά την έγκριση του πρωτοκόλλου παραλαβής και του τελικού λογαριασμού.",
+      "responsible": "dieuthynousa_ypiresia",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/72/14b",
+      "deadline_days": null,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Πρόωρη επιστροφή αποστερεί τον κύριο του έργου από κάθε εξασφάλιση.",
+      "applies_when": null,
+      "prerequisites": [
+        "S31_PARALABH",
+        "S32_TELIKOS_LOG"
+      ],
+      "deadline_basis": "custom"
+    },
+    {
+      "code": "S34_MHTRWO",
+      "phase": "f4_paralavi",
+      "ordinal": 35,
+      "title": "Μητρώο Έργου & αρχειοθέτηση",
+      "purpose": "Ολοκλήρωση του Μητρώου Έργου (σχέδια «as built», φωτογραφικό υλικό αφανών, εγχειρίδια λειτουργίας & συντήρησης) και οριστική αρχειοθέτηση.",
+      "responsible": "anadochos",
+      "approver": "dieuthynousa_ypiresia",
+      "recurrence": "once",
+      "legal_ref_id": "N4412/170",
+      "deadline_days": null,
+      "deadline_months": null,
+      "tacit_approval": false,
+      "tacit_effect": null,
+      "guard_fn": null,
+      "risk_note": "Ελλιπές Μητρώο καθιστά αδύνατη τη μελλοντική συντήρηση και τεκμηρίωση του έργου.",
+      "applies_when": null,
+      "prerequisites": [
+        "S31_PARALABH"
+      ],
+      "deadline_basis": "custom"
+    }
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "stage_code": "S00_FAKELOS",
+      "ordinal": 1,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Καταχώριση στοιχείων σύμβασης",
+      "detail": "Αριθμός & ημερομηνία σύμβασης, ΑΔΑΜ/ΑΔΑ, ανάδοχος, ΑΦΜ, νόμιμος εκπρόσωπος.",
+      "legal_ref_id": "N4412/135",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 2,
+      "stage_code": "S00_FAKELOS",
+      "ordinal": 2,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Καταχώριση οικονομικών στοιχείων",
+      "detail": "Δαπάνη εργασιών, ΓΕ&ΟΕ 18%, απρόβλεπτα (9% ή 15%), αναθεώρηση, ΦΠΑ, μέση τεκμαρτή έκπτωση.",
+      "legal_ref_id": "N4412/156/3b",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 3,
+      "stage_code": "S00_FAKELOS",
+      "ordinal": 3,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Καταχώριση προθεσμιών",
+      "detail": "Συνολική προθεσμία, τμηματικές (αποκλειστικές/ενδεικτικές), υπολογισμός οριακής προθεσμίας.",
+      "legal_ref_id": "N4412/147/1",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 4,
+      "stage_code": "S00_FAKELOS",
+      "ordinal": 4,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Εισαγωγή προϋπολογισμού & τιμολογίου",
+      "detail": "Άρθρα, μονάδες, τιμές μονάδος, ποσότητες και αντιστοίχιση σε Ομάδες Εργασιών.",
+      "legal_ref_id": "YA38107/2017",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 5,
+      "stage_code": "S00_FAKELOS",
+      "ordinal": 5,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Επιβεβαίωση καταχώρισης στο Κ.Η.Μ.ΔΗ.Σ.",
+      "detail": "Ανάρτηση συμφωνητικού και λήψη ΑΔΑΜ.",
+      "legal_ref_id": "N4412/38",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 9,
+      "stage_code": "S01B_IFE",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Δήλωση Ιδιωτικού Φορέα Επίβλεψης",
+      "detail": "Δηλώνεται με την προσφορά· σε απόρριψη προτείνεται νέος εντός της τασσόμενης προθεσμίας.",
+      "legal_ref_id": "N4412/136/3",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 10,
+      "stage_code": "S01B_IFE",
+      "ordinal": 2,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Έλεγχος πιστοποίησης & ασυμβιβάστων",
+      "detail": "Επαλήθευση εγγραφής στο μητρώο πιστοποιημένων φορέων και ανεξαρτησίας.",
+      "legal_ref_id": "N4412/136/3",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 11,
+      "stage_code": "S01B_IFE",
+      "ordinal": 3,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Έλεγχος σχεδίου σύμβασης Ι.Φ.Ε.",
+      "detail": "Η αμοιβή βαρύνει αποκλειστικά τον ανάδοχο.",
+      "legal_ref_id": "N4412/136/3",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 6,
+      "stage_code": "S01_ORISMOS",
+      "ordinal": 1,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Έκδοση απόφασης ορισμού επιβλέποντος",
+      "detail": "Ορισμός επιβλέποντος, βοηθών και —εφόσον συγκροτείται ομάδα— συντονιστή, με σαφή κατανομή καθηκόντων.",
+      "legal_ref_id": "N4412/136/2",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 7,
+      "stage_code": "S01_ORISMOS",
+      "ordinal": 2,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Έλεγχος καταλληλότητας προσόντων",
+      "detail": "Αντιστοιχία ειδικότητας/κατηγορίας με τη φύση του έργου.",
+      "legal_ref_id": "N4412/136/2",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 8,
+      "stage_code": "S01_ORISMOS",
+      "ordinal": 3,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Ανάρτηση απόφασης στη ΔΙΑΥΓΕΙΑ",
+      "detail": "Λήψη ΑΔΑ.",
+      "legal_ref_id": "N4727/2020",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 12,
+      "stage_code": "S02_GNOSTOPOIHSH",
+      "ordinal": 1,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Κοινοποίηση ορισμού επίβλεψης στον ανάδοχο",
+      "detail": "Έγγραφη/ηλεκτρονική κοινοποίηση με αποδεικτικό.",
+      "legal_ref_id": "N4412/143",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 13,
+      "stage_code": "S02_GNOSTOPOIHSH",
+      "ordinal": 2,
+      "party": "anadochos",
+      "title": "Δήλωση αντικλήτου & στοιχείων επικοινωνίας",
+      "detail": "Ορισμός εκπροσώπου και διεύθυνσης επιδόσεων.",
+      "legal_ref_id": "N4412/143",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 14,
+      "stage_code": "S03_EGGYHSEIS",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Κατάθεση εγγύησης καλής εκτέλεσης",
+      "detail": "Ποσοστό 5% επί της εκτιμώμενης αξίας, πριν την υπογραφή του συμφωνητικού.",
+      "legal_ref_id": "N4412/72/4",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 15,
+      "stage_code": "S03_EGGYHSEIS",
+      "ordinal": 2,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Επαλήθευση γνησιότητας εγγυητικής",
+      "detail": "Επιβεβαίωση από τον εκδότη (τράπεζα/ΤΜΕΔΕ).",
+      "legal_ref_id": "N4412/72/4",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 16,
+      "stage_code": "S03_EGGYHSEIS",
+      "ordinal": 3,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Έλεγχος πρόσθετης εγγύησης λόγω έκπτωσης",
+      "detail": "Όπου προβλέπεται όριο ποσοστού έκπτωσης με απόφαση Υπουργού Υποδομών & Μεταφορών.",
+      "legal_ref_id": "N4412/72/4",
+      "is_mandatory": false,
+      "needs_evidence": false
+    },
+    {
+      "id": 17,
+      "stage_code": "S04_TEXNIKOI",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Γνωστοποίηση προϊσταμένου εργοταξίου",
+      "detail": "Στοιχεία, ειδικότητα και δήλωση αποδοχής.",
+      "legal_ref_id": "N4412/139",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 18,
+      "stage_code": "S04_TEXNIKOI",
+      "ordinal": 2,
+      "party": "anadochos",
+      "title": "Ορισμός τεχνικού τήρησης ημερολογίου",
+      "detail": "Ο τεχνικός υπογράφει ψηφιακά το ημερολόγιο.",
+      "legal_ref_id": "N4412/146",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 19,
+      "stage_code": "S04_TEXNIKOI",
+      "ordinal": 3,
+      "party": "anadochos",
+      "title": "Ορισμός τεχνικού ασφαλείας / συντονιστή ασφάλειας",
+      "detail": "Κατά τις κείμενες διατάξεις ασφάλειας & υγείας.",
+      "legal_ref_id": "PD305/1996",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 20,
+      "stage_code": "S04_TEXNIKOI",
+      "ordinal": 4,
+      "party": "epivlepon",
+      "title": "Έλεγχος επάρκειας τεχνικού προσωπικού",
+      "detail": "Αντιστοιχία με το ελάχιστο απαιτούμενο των τευχών.",
+      "legal_ref_id": "N4412/138/10",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 21,
+      "stage_code": "S05_ELEGXOS_MELETHS",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Έλεγχος μελέτης & γνωστοποίηση ευρημάτων",
+      "detail": "Εντός της τασσόμενης προθεσμίας (20-60 ημέρες)· η σιωπή ισοδυναμεί με αποδοχή.",
+      "legal_ref_id": "N4412/138/2",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 22,
+      "stage_code": "S05_ELEGXOS_MELETHS",
+      "ordinal": 2,
+      "party": "epivlepon",
+      "title": "Αξιολόγηση ευρημάτων αναδόχου",
+      "detail": "Εισήγηση για διόρθωση μελέτης ή απόρριψη ισχυρισμών.",
+      "legal_ref_id": "N4412/138/2",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 23,
+      "stage_code": "S06_XRONODIAGRAMMA",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Υποβολή χρονοδιαγράμματος",
+      "detail": "Εντός της συμβατικής προθεσμίας (15-30 ημέρες από την υπογραφή), σε έντυπη και ηλεκτρονική μορφή.",
+      "legal_ref_id": "N4412/145/1",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 24,
+      "stage_code": "S06_XRONODIAGRAMMA",
+      "ordinal": 2,
+      "party": "anadochos",
+      "title": "Δικτυωτή ανάλυση (έργα > 1.000.000 €)",
+      "detail": "Υποχρεωτική μέθοδος για έργα άνω του ορίου.",
+      "legal_ref_id": "N4412/145/3",
+      "is_mandatory": false,
+      "needs_evidence": true
+    },
+    {
+      "id": 25,
+      "stage_code": "S06_XRONODIAGRAMMA",
+      "ordinal": 3,
+      "party": "epivlepon",
+      "title": "Έλεγχος αλληλουχίας & μεθοδολογίας",
+      "detail": "Έλεγχος ρεαλιστικότητας, τμηματικών προθεσμιών και τετραγωνικού πίνακα ποσοτήτων.",
+      "legal_ref_id": "N4412/145/2",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 26,
+      "stage_code": "S06_XRONODIAGRAMMA",
+      "ordinal": 4,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Έγκριση ή αίτημα διευκρινίσεων εντός 15 ημερών",
+      "detail": "Άπρακτη πάροδος = τεκμήριο έγκρισης· απαιτείται ρητή καταχώριση της σιωπηρής έγκρισης.",
+      "legal_ref_id": "N4412/145/2",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 27,
+      "stage_code": "S07_ORGANOGRAMMA",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Υποβολή οργανογράμματος εργοταξίου",
+      "detail": "Προσωπικό, εξοπλισμός, μηχανήματα.",
+      "legal_ref_id": "N4412/145/4",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 28,
+      "stage_code": "S07_ORGANOGRAMMA",
+      "ordinal": 2,
+      "party": "epivlepon",
+      "title": "Έλεγχος επάρκειας μέσων",
+      "detail": "Συσχέτιση με το εγκεκριμένο χρονοδιάγραμμα.",
+      "legal_ref_id": "N4412/145/4",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 29,
+      "stage_code": "S08_PPE",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Υποβολή Προγράμματος Ποιότητας Έργου",
+      "detail": "Σχέδια ελέγχων και δοκιμών, υπεύθυνοι ποιότητας.",
+      "legal_ref_id": "N4412/158",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 30,
+      "stage_code": "S08_PPE",
+      "ordinal": 2,
+      "party": "epivlepon",
+      "title": "Έλεγχος & εισήγηση έγκρισης ΠΠΕ",
+      "detail": "Συμβατότητα με ΕΤΕΠ/ΕΛΟΤ και τη μελέτη.",
+      "legal_ref_id": "N4412/158",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 31,
+      "stage_code": "S09_SAY_FAY",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Επικαιροποίηση ΣΑΥ & ΦΑΥ",
+      "detail": "Προσαρμογή στις πραγματικές συνθήκες του εργοταξίου.",
+      "legal_ref_id": "PD305/1996",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 32,
+      "stage_code": "S09_SAY_FAY",
+      "ordinal": 2,
+      "party": "anadochos",
+      "title": "Εκ των προτέρων γνωστοποίηση έναρξης εργασιών",
+      "detail": "Υποβολή στην αρμόδια Επιθεώρηση Εργασίας.",
+      "legal_ref_id": "PD305/1996",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 33,
+      "stage_code": "S09_SAY_FAY",
+      "ordinal": 3,
+      "party": "epivlepon",
+      "title": "Έλεγχος μέτρων ασφάλειας & σήμανσης",
+      "detail": "Καταγραφή στο ημερολόγιο.",
+      "legal_ref_id": "N4412/138/9",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 34,
+      "stage_code": "S10_EGKATASTASH",
+      "ordinal": 1,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Παράδοση χώρου εκτέλεσης εργασιών",
+      "detail": "Πρωτόκολλο παράδοσης-παραλαβής χώρου.",
+      "legal_ref_id": "N4412/137",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 35,
+      "stage_code": "S10_EGKATASTASH",
+      "ordinal": 2,
+      "party": "anadochos",
+      "title": "Εγκατάσταση εργοταξίου & έναρξη εργασιών",
+      "detail": "Το αργότερο 30 ημέρες από την υπογραφή της σύμβασης.",
+      "legal_ref_id": "N4412/145/2",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 36,
+      "stage_code": "S10_EGKATASTASH",
+      "ordinal": 3,
+      "party": "epivlepon",
+      "title": "Καταγραφή ημερομηνίας έναρξης",
+      "detail": "Πρώτη εγγραφή στο ημερολόγιο έργου.",
+      "legal_ref_id": "N4412/146",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 37,
+      "stage_code": "S11_PROKATAVOLH",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Αίτημα προκαταβολής & κατάθεση εγγυητικής",
+      "detail": "Ισόποση εγγυητική επιστολή προκαταβολής.",
+      "legal_ref_id": "N4412/72/7",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 38,
+      "stage_code": "S11_PROKATAVOLH",
+      "ordinal": 2,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Έλεγχος ορίων & έγκριση",
+      "detail": "Έως 15% συνολικά (έως 5%/7% εγκατάστασης, έως 10% υλικών).",
+      "legal_ref_id": "N4412/150",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 39,
+      "stage_code": "S11_PROKATAVOLH",
+      "ordinal": 3,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Ορισμός τρόπου απόσβεσης & τόκων",
+      "detail": "Παρακράτηση σε κάθε επόμενο λογαριασμό.",
+      "legal_ref_id": "N4412/150",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 40,
+      "stage_code": "S12_HMEROLOGIO",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Καθημερινή συμπλήρωση ημερολογίου",
+      "detail": "Καιρικές συνθήκες, προσωπικό ανά ειδικότητα, μηχανήματα, εργασίες, δοκιμές, συμβάντα, εντολές.",
+      "legal_ref_id": "N4412/146",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 41,
+      "stage_code": "S12_HMEROLOGIO",
+      "ordinal": 2,
+      "party": "anadochos",
+      "title": "Ηλεκτρονική αποστολή σε επιβλέποντα & προϊστάμενο Δ.Υ.",
+      "detail": "Με ψηφιακή υπογραφή του τηρούντος.",
+      "legal_ref_id": "N4412/146",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 42,
+      "stage_code": "S12_HMEROLOGIO",
+      "ordinal": 3,
+      "party": "epivlepon",
+      "title": "Έλεγχος & διόρθωση εντός 2 εργασίμων ημερών",
+      "detail": "Υποβολή προς έγκριση στον προϊστάμενο της Δ.Υ.",
+      "legal_ref_id": "N4412/146",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 43,
+      "stage_code": "S12_HMEROLOGIO",
+      "ordinal": 4,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Επιβολή ειδικής ποινικής ρήτρας επί παραλείψεων",
+      "detail": "100-500 € ανά ημέρα, αναλόγως του μεγέθους της σύμβασης.",
+      "legal_ref_id": "N4412/146",
+      "is_mandatory": false,
+      "needs_evidence": true
+    },
+    {
+      "id": 44,
+      "stage_code": "S13_YLIKA",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Υποβολή πηγών λήψης & πιστοποιητικών",
+      "detail": "Δείγματα, δηλώσεις επιδόσεων, σήμανση CE.",
+      "legal_ref_id": "N4412/138/12",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 45,
+      "stage_code": "S13_YLIKA",
+      "ordinal": 2,
+      "party": "epivlepon",
+      "title": "Έλεγχος συμμόρφωσης με ΕΤΕΠ/ΕΛΟΤ",
+      "detail": "Εισήγηση έγκρισης ή απόρριψης.",
+      "legal_ref_id": "N4412/158",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 46,
+      "stage_code": "S13_YLIKA",
+      "ordinal": 3,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Απόφαση εντός 30 ημερών",
+      "detail": "Όταν η πηγή αποκλίνει από τη μελέτη.",
+      "legal_ref_id": "N4412/138/12",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 47,
+      "stage_code": "S14_POIOTIKOI",
+      "ordinal": 1,
+      "party": "epivlepon",
+      "title": "Πρόγραμμα δειγματοληψιών & δοκιμών",
+      "detail": "Σύμφωνα με το εγκεκριμένο ΠΠΕ.",
+      "legal_ref_id": "N4412/158",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 48,
+      "stage_code": "S14_POIOTIKOI",
+      "ordinal": 2,
+      "party": "anadochos",
+      "title": "Διενέργεια εργαστηριακών ελέγχων",
+      "detail": "Υποβολή εκθέσεων δοκιμών.",
+      "legal_ref_id": "N4412/158",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 49,
+      "stage_code": "S14_POIOTIKOI",
+      "ordinal": 3,
+      "party": "epivlepon",
+      "title": "Αξιολόγηση αποτελεσμάτων & εντολές συμμόρφωσης",
+      "detail": "Επί μη συμμόρφωσης εφαρμόζεται το άρθρο 159.",
+      "legal_ref_id": "N4412/159",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 50,
+      "stage_code": "S15_PPAE",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Δήλωση γνωστοποίησης αφανών εργασιών",
+      "detail": "Διακριτή επιμέτρηση με δήλωση αληθείας, υπογεγραμμένη και από τους τεχνικούς του άρθρου 139.",
+      "legal_ref_id": "N4412/151/7",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 51,
+      "stage_code": "S15_PPAE",
+      "ordinal": 2,
+      "party": "anadochos",
+      "title": "Πρόσκληση επιβλέποντος πριν την επικάλυψη",
+      "detail": "Ημερομηνία ελέγχου που δεν απέχει περισσότερο από 3 ημέρες από την κοινοποίηση.",
+      "legal_ref_id": "N4412/151/7",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 52,
+      "stage_code": "S15_PPAE",
+      "ordinal": 3,
+      "party": "epivlepon",
+      "title": "Αυτοψία & έλεγχος αφανών εργασιών",
+      "detail": "Υποχρεωτική ανταπόκριση· η παράλειψη συνιστά υπερημερία του κυρίου του έργου.",
+      "legal_ref_id": "N4412/151/7",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 53,
+      "stage_code": "S15_PPAE",
+      "ordinal": 4,
+      "party": "epivlepon",
+      "title": "Σύνταξη έκθεσης με ψηφιακές φωτογραφίες",
+      "detail": "Επαρκής αριθμός φωτογραφιών, οι οποίες εντάσσονται στο Μητρώο του Έργου.",
+      "legal_ref_id": "N4412/151/7",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 54,
+      "stage_code": "S15_PPAE",
+      "ordinal": 5,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Εγκριτική πράξη επιμέτρησης αφανών εντός 30 ημερών",
+      "detail": "Η έκθεση δεν προσβάλλεται αυτοτελώς, παρά μόνο μαζί με την εγκριτική πράξη.",
+      "legal_ref_id": "N4412/151/7",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 55,
+      "stage_code": "S16_EPIMETRHSEIS",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Λήψη επιτόπιων επιμετρητικών στοιχείων",
+      "detail": "Υποβολή στον επιβλέποντα με δήλωση περί της αλήθειας των στοιχείων.",
+      "legal_ref_id": "N4412/151/1",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 56,
+      "stage_code": "S16_EPIMETRHSEIS",
+      "ordinal": 2,
+      "party": "anadochos",
+      "title": "Σύνταξη επιμέτρησης ανά διακριτό τμήμα",
+      "detail": "Περιγραφή εργασιών, άρθρα τιμολογίου, επιμετρητικά σχέδια· έντυπη & ηλεκτρονική μορφή.",
+      "legal_ref_id": "N4412/151/2",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 57,
+      "stage_code": "S16_EPIMETRHSEIS",
+      "ordinal": 3,
+      "party": "anadochos",
+      "title": "Διάκριση συμβατικών & εκτός σύμβασης ποσοτήτων",
+      "detail": "Ρητή επισήμανση ποσοτήτων πέραν των συμβατικών.",
+      "legal_ref_id": "N4412/151/1",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 58,
+      "stage_code": "S16_EPIMETRHSEIS",
+      "ordinal": 4,
+      "party": "epivlepon",
+      "title": "Έλεγχος & θεώρηση επιμέτρησης",
+      "detail": "Διασταύρωση με ημερολόγιο, ΠΠΑΕ και εγκεκριμένο χρονοδιάγραμμα.",
+      "legal_ref_id": "N4412/151/2",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 59,
+      "stage_code": "S16_EPIMETRHSEIS",
+      "ordinal": 5,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Δειγματοληπτικός έλεγχος 40% (ή ≥4)",
+      "detail": "Υποχρεωτικός έλεγχος του 40% των υποβληθεισών ή τουλάχιστον τεσσάρων, αν είναι λιγότερες από δέκα.",
+      "legal_ref_id": "N4412/151/3",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 60,
+      "stage_code": "S16_EPIMETRHSEIS",
+      "ordinal": 6,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Χειρισμός ανακριβειών",
+      "detail": "Εντολή διόρθωσης, πλήρης έλεγχος, και επί ψευδών δηλώσεων εφαρμογή κυρώσεων.",
+      "legal_ref_id": "N4412/151/5",
+      "is_mandatory": false,
+      "needs_evidence": true
+    },
+    {
+      "id": 61,
+      "stage_code": "S17_LOGARIASMOI",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Υποβολή λογαριασμού",
+      "detail": "Με βάση εγκεκριμένες επιμετρήσεις και δηλώσεις αφανών εργασιών.",
+      "legal_ref_id": "N4412/152",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 62,
+      "stage_code": "S17_LOGARIASMOI",
+      "ordinal": 2,
+      "party": "anadochos",
+      "title": "Επισύναψη ανακεφαλαιωτικού συνοπτικού πίνακα επιμετρήσεων",
+      "detail": "Υποχρεωτικό συνοδευτικό.",
+      "legal_ref_id": "N4412/152",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 63,
+      "stage_code": "S17_LOGARIASMOI",
+      "ordinal": 3,
+      "party": "anadochos",
+      "title": "Επισύναψη υπολογισμού αναθεώρησης & δικαιολογητικών απολογιστικών",
+      "detail": "Όπου συντρέχει περίπτωση.",
+      "legal_ref_id": "N4412/153",
+      "is_mandatory": false,
+      "needs_evidence": true
+    },
+    {
+      "id": 64,
+      "stage_code": "S17_LOGARIASMOI",
+      "ordinal": 4,
+      "party": "epivlepon",
+      "title": "Έλεγχος ποσοτήτων, τιμών & κρατήσεων",
+      "detail": "Έλεγχος απόσβεσης προκαταβολής, ρητρών και κρατήσεων 5%.",
+      "legal_ref_id": "N4412/152",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 65,
+      "stage_code": "S17_LOGARIASMOI",
+      "ordinal": 5,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Έλεγχος, διόρθωση & έγκριση εντός 1 μηνός",
+      "detail": "Επί ελλείψεων επιστρέφεται για συμπλήρωση και η προθεσμία εκκινεί εκ νέου.",
+      "legal_ref_id": "N4412/152",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 66,
+      "stage_code": "S18_TRIMHNIAIES",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Τριμηνιαία συνοπτική αναφορά προόδου",
+      "detail": "Υποβάλλεται μέσω της Δ.Υ. στην Προϊσταμένη Αρχή.",
+      "legal_ref_id": "N4412/138/17",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 67,
+      "stage_code": "S18_TRIMHNIAIES",
+      "ordinal": 2,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Σύνταξη τριμηνιαίας έκθεσης πορείας",
+      "detail": "Εντοπισμός σφαλμάτων προμέτρησης και απρόβλεπτων περιστάσεων· η μη τήρηση είναι πειθαρχικό παράπτωμα.",
+      "legal_ref_id": "N4412/136/10",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 68,
+      "stage_code": "S19_APE",
+      "ordinal": 1,
+      "party": "epivlepon",
+      "title": "Τεκμηρίωση αναγκαιότητας μεταβολών",
+      "detail": "Αιτιολόγηση βάσει επιμετρήσεων, σφαλμάτων προμέτρησης ή απρόβλεπτων περιστάσεων.",
+      "legal_ref_id": "N4412/156/2",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 69,
+      "stage_code": "S19_APE",
+      "ordinal": 2,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Σύνταξη ΑΠΕ",
+      "detail": "Αρχικός, προηγούμενος και νέος προϋπολογισμός, απρόβλεπτα, αναθεώρηση, ΦΠΑ.",
+      "legal_ref_id": "N4412/156/2",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 70,
+      "stage_code": "S19_APE",
+      "ordinal": 3,
+      "party": "epitropi",
+      "title": "Σύνταξη Π.Κ.Τ.Μ.Ν.Ε. για νέες εργασίες",
+      "detail": "Τριμελής επιτροπή με συμμετοχή του επιβλέποντος· ιεράρχηση πηγών τιμών και εφαρμογή τεκμαρτής έκπτωσης.",
+      "legal_ref_id": "N4412/156/5",
+      "is_mandatory": false,
+      "needs_evidence": true
+    },
+    {
+      "id": 71,
+      "stage_code": "S19_APE",
+      "ordinal": 4,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Έλεγχος ορίων",
+      "detail": "50% σωρευτικά, 9%/15% απρόβλεπτα, 20% ανά ομάδα και 10% συνολικά για επί έλασσον.",
+      "legal_ref_id": "N4412/156/3c",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 72,
+      "stage_code": "S19_APE",
+      "ordinal": 5,
+      "party": "techniko_symvoulio",
+      "title": "Γνωμοδότηση Τεχνικού Συμβουλίου",
+      "detail": "Υποχρεωτική για συμπληρωματική σύμβαση και για χρήση επί έλασσον δαπανών.",
+      "legal_ref_id": "N4412/156/1e",
+      "is_mandatory": false,
+      "needs_evidence": true
+    },
+    {
+      "id": 73,
+      "stage_code": "S19_APE",
+      "ordinal": 6,
+      "party": "anadochos",
+      "title": "Υπογραφή ΑΠΕ (ανεπιφύλακτα ή με επιφύλαξη)",
+      "detail": "Σε άρνηση υπογραφής, κοινοποιείται κατ' άρθρο 143.",
+      "legal_ref_id": "N4412/156/7",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 74,
+      "stage_code": "S19_APE",
+      "ordinal": 7,
+      "party": "proistameni_arxi",
+      "title": "Έγκριση ΑΠΕ",
+      "detail": "Λαμβάνονται υπόψη οι τυχόν επιφυλάξεις/ενστάσεις του αναδόχου.",
+      "legal_ref_id": "N4412/156/7",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 75,
+      "stage_code": "S20_PARATASEIS",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Υποβολή αιτήματος παράτασης",
+      "detail": "ΠΡΙΝ τη λήξη της ισχύουσας προθεσμίας, με τεκμηρίωση.",
+      "legal_ref_id": "N4412/147/5",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 76,
+      "stage_code": "S20_PARATASEIS",
+      "ordinal": 2,
+      "party": "epivlepon",
+      "title": "Εισήγηση με καταλογισμό ευθύνης",
+      "detail": "Προσδιορισμός υπαιτιότητας — άλλως βαρύνει αποκλειστικά τον ανάδοχο.",
+      "legal_ref_id": "N4412/147/6",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 77,
+      "stage_code": "S20_PARATASEIS",
+      "ordinal": 3,
+      "party": "proistameni_arxi",
+      "title": "Απόφαση εντός 30 ημερών",
+      "detail": "Άπρακτη πάροδος = σιωπηρή αποδοχή με αναδρομική ισχύ.",
+      "legal_ref_id": "N4412/147/5",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 78,
+      "stage_code": "S21_ANWTERA_BIA",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Αίτημα αναστολής εντός 10 ημερών",
+      "detail": "Από την επέλευση του γεγονότος ανωτέρας βίας.",
+      "legal_ref_id": "N4412/147/7",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 79,
+      "stage_code": "S21_ANWTERA_BIA",
+      "ordinal": 2,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Απόφαση εντός 10 ημερών",
+      "detail": "Άπρακτη πάροδος = αποδοχή· τήρηση ανώτατου ορίου αναστολής.",
+      "legal_ref_id": "N4412/147/7",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 80,
+      "stage_code": "S22_POINIKES",
+      "ordinal": 1,
+      "party": "epivlepon",
+      "title": "Υπολογισμός ρητρών",
+      "detail": "Υπέρβαση προθεσμιών, παράλειψη ημερολογίου, καθυστέρηση τελικής επιμέτρησης.",
+      "legal_ref_id": "N4412/148",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 81,
+      "stage_code": "S22_POINIKES",
+      "ordinal": 2,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Απόφαση επιβολής & κοινοποίηση",
+      "detail": "Παρακράτηση στον αμέσως επόμενο λογαριασμό.",
+      "legal_ref_id": "N4412/148",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 82,
+      "stage_code": "S23_ENSTASEIS",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Άσκηση ένστασης εντός 15 ημερών",
+      "detail": "Ανατρεπτική προθεσμία από την κοινοποίηση της πράξης.",
+      "legal_ref_id": "N4412/174",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 83,
+      "stage_code": "S23_ENSTASEIS",
+      "ordinal": 2,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Διαβίβαση με αιτιολογημένη εισήγηση",
+      "detail": "Προς την Προϊσταμένη Αρχή και το Τεχνικό Συμβούλιο.",
+      "legal_ref_id": "N4412/174",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 84,
+      "stage_code": "S23_ENSTASEIS",
+      "ordinal": 3,
+      "party": "proistameni_arxi",
+      "title": "Απόφαση εντός 60 ημερών",
+      "detail": "Άπρακτη πάροδος = σιωπηρή αποδοχή της γνωμοδότησης.",
+      "legal_ref_id": "N4412/174",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 85,
+      "stage_code": "S24_DHLWSH_PERAIWSHS",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Δήλωση περαίωσης εργασιών",
+      "detail": "Δύναται να υποβληθεί και πριν τη λήξη, εφόσον οι εργασίες έχουν ολοκληρωθεί.",
+      "legal_ref_id": "N4412/168/2",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 86,
+      "stage_code": "S24_DHLWSH_PERAIWSHS",
+      "ordinal": 2,
+      "party": "epivlepon",
+      "title": "Επιβεβαίωση ολοκλήρωσης συμβατικών δοκιμών",
+      "detail": "Καταγραφή αποτελεσμάτων.",
+      "legal_ref_id": "N4412/168/1",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 87,
+      "stage_code": "S25_EKTHESI_EPIVL",
+      "ordinal": 1,
+      "party": "epivlepon",
+      "title": "Σύνταξη έκθεσης περαίωσης εντός 30 ημερών",
+      "detail": "Δήλωση αν οι εργασίες περατώθηκαν και αν υπάρχουν ελαττώματα.",
+      "legal_ref_id": "N4412/168/1",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 88,
+      "stage_code": "S25_EKTHESI_EPIVL",
+      "ordinal": 2,
+      "party": "epivlepon",
+      "title": "Χαρακτηρισμός ελαττωμάτων",
+      "detail": "Επουσιώδη (δεν θίγουν λειτουργικότητα/ασφάλεια/αδειοδότηση) ή ουσιώδη.",
+      "legal_ref_id": "N4412/168/1",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 89,
+      "stage_code": "S25_EKTHESI_EPIVL",
+      "ordinal": 3,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Εντολή αποκατάστασης επουσιωδών ελαττωμάτων",
+      "detail": "Τάσσεται εύλογη προθεσμία· ο χρόνος αποκατάστασης δεν προσμετράται.",
+      "legal_ref_id": "N4412/168/3",
+      "is_mandatory": false,
+      "needs_evidence": true
+    },
+    {
+      "id": 90,
+      "stage_code": "S26_BEBAIWSH",
+      "ordinal": 1,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Έκδοση Βεβαίωσης Περάτωσης εντός 10 ημερών",
+      "detail": "Από τη λήψη της έκθεσης του επιβλέποντος.",
+      "legal_ref_id": "N4412/168/2",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 91,
+      "stage_code": "S26_BEBAIWSH",
+      "ordinal": 2,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Αναγραφή πραγματικής ημερομηνίας περαίωσης",
+      "detail": "Χωρίς προσμέτρηση του χρόνου αποκατάστασης επουσιωδών ελαττωμάτων.",
+      "legal_ref_id": "N4412/168/3",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 92,
+      "stage_code": "S26_BEBAIWSH",
+      "ordinal": 3,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Κοινοποίηση στον ανάδοχο",
+      "detail": "Αφετηρία του χρόνου υποχρεωτικής συντήρησης.",
+      "legal_ref_id": "N4412/143",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 93,
+      "stage_code": "S27_TELIKH_EPIM",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Υποβολή τελικής επιμέτρησης εντός 2 μηνών",
+      "detail": "Ανακεφαλαίωση όλων των επιμετρήσεων του έργου.",
+      "legal_ref_id": "N4412/151/9",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 94,
+      "stage_code": "S27_TELIKH_EPIM",
+      "ordinal": 2,
+      "party": "epivlepon",
+      "title": "Έκθεση επί της τελικής επιμέτρησης εντός 2 μηνών",
+      "detail": "Έλεγχος και εισήγηση έγκρισης.",
+      "legal_ref_id": "N4412/151/9",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 95,
+      "stage_code": "S27_TELIKH_EPIM",
+      "ordinal": 3,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Έγκριση τελικής επιμέτρησης εντός 2 μηνών",
+      "detail": "Πράξη έγκρισης — προϋπόθεση για τη μείωση της εγγύησης.",
+      "legal_ref_id": "N4412/151/9",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 96,
+      "stage_code": "S27_TELIKH_EPIM",
+      "ordinal": 4,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Επιβολή ρήτρας καθυστέρησης 2‰/μήνα",
+      "detail": "Έως έξι (6) μήνες· δυνατότητα σύνταξης από την υπηρεσία σε βάρος του αναδόχου.",
+      "legal_ref_id": "N4412/151/10",
+      "is_mandatory": false,
+      "needs_evidence": true
+    },
+    {
+      "id": 97,
+      "stage_code": "S28_MEIWSH_EGG",
+      "ordinal": 1,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Έκδοση πράξης μείωσης εγγύησης κατά 70%",
+      "detail": "Αμέσως μετά την έγκριση της τελικής επιμέτρησης.",
+      "legal_ref_id": "N4412/72/14b",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 98,
+      "stage_code": "S28_MEIWSH_EGG",
+      "ordinal": 2,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Ενημέρωση εκδότη εγγυητικής",
+      "detail": "Κοινοποίηση της πράξης μείωσης.",
+      "legal_ref_id": "N4412/72/14b",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 99,
+      "stage_code": "S29_SYNTHRHSH",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Τακτικές επιθεωρήσεις & συντήρηση",
+      "detail": "Διατήρηση του έργου σε ικανοποιητική κατάσταση καθ' όλη τη διάρκεια.",
+      "legal_ref_id": "N4412/171",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 100,
+      "stage_code": "S29_SYNTHRHSH",
+      "ordinal": 2,
+      "party": "anadochos",
+      "title": "Αποκατάσταση ελαττωμάτων κατασκευής",
+      "detail": "Ελαττώματα οφειλόμενα σε πλημμελή εκτέλεση.",
+      "legal_ref_id": "N4412/171",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 101,
+      "stage_code": "S29_SYNTHRHSH",
+      "ordinal": 3,
+      "party": "epivlepon",
+      "title": "Περιοδικοί έλεγχοι συντήρησης",
+      "detail": "Καταγραφή ευρημάτων· επί παράλειψης εφαρμόζεται το άρθρο 159.",
+      "legal_ref_id": "N4412/159",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 102,
+      "stage_code": "S30_EPITROPH",
+      "ordinal": 1,
+      "party": "proistameni_arxi",
+      "title": "Ορισμός πενταμελούς επιτροπής παραλαβής",
+      "detail": "Τρεις τεχνικοί υπάλληλοι και δύο εκπρόσωποι ΤΕΕ (ή ΓΕΩΤΕΕ σε γεωτεχνικά έργα).",
+      "legal_ref_id": "N4412/172",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 103,
+      "stage_code": "S30_EPITROPH",
+      "ordinal": 2,
+      "party": "proistameni_arxi",
+      "title": "Ορισμός τουλάχιστον 3 μήνες πριν τη λήξη συντήρησης",
+      "detail": "Αποφυγή αυτοδίκαιης παραλαβής.",
+      "legal_ref_id": "N4412/172",
+      "is_mandatory": true,
+      "needs_evidence": false
+    },
+    {
+      "id": 104,
+      "stage_code": "S30_EPITROPH",
+      "ordinal": 3,
+      "party": "anadochos",
+      "title": "Ορισμός παρατηρητή (χωρίς δικαίωμα ψήφου)",
+      "detail": "Προαιρετικό δικαίωμα του αναδόχου.",
+      "legal_ref_id": "N4412/172",
+      "is_mandatory": false,
+      "needs_evidence": false
+    },
+    {
+      "id": 105,
+      "stage_code": "S31_PARALABH",
+      "ordinal": 1,
+      "party": "epitropi",
+      "title": "Διενέργεια παραλαβής εντός 3 μηνών",
+      "detail": "Ποσοτικός και ποιοτικός έλεγχος, δοκιμές.",
+      "legal_ref_id": "N4412/172",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 106,
+      "stage_code": "S31_PARALABH",
+      "ordinal": 2,
+      "party": "epitropi",
+      "title": "Σύνταξη & υπογραφή πρωτοκόλλου",
+      "detail": "Υπογράφεται από όλα τα μέλη, τον επιβλέποντα και τον ανάδοχο.",
+      "legal_ref_id": "N4412/172",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 107,
+      "stage_code": "S31_PARALABH",
+      "ordinal": 3,
+      "party": "proistameni_arxi",
+      "title": "Έγκριση πρωτοκόλλου παραλαβής",
+      "detail": "Ή έκδοση βεβαιωτικής πράξης επί αυτοδίκαιης παραλαβής.",
+      "legal_ref_id": "N4412/172",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 108,
+      "stage_code": "S32_TELIKOS_LOG",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Υποβολή τελικού λογαριασμού",
+      "detail": "Μετά την παραλαβή και την έγκριση του πρωτοκόλλου.",
+      "legal_ref_id": "N4412/152",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 109,
+      "stage_code": "S32_TELIKOS_LOG",
+      "ordinal": 2,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Έλεγχος & έγκριση εντός 1 μηνός",
+      "detail": "Εκκαθάριση των εκατέρωθεν απαιτήσεων από τη σύμβαση εκτέλεσης.",
+      "legal_ref_id": "N4412/152",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 110,
+      "stage_code": "S33_APODESMEVSH",
+      "ordinal": 1,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Επιστροφή εγγυήσεων καλής εκτέλεσης",
+      "detail": "Μετά την έγκριση του πρωτοκόλλου παραλαβής και του τελικού λογαριασμού.",
+      "legal_ref_id": "N4412/72/14b",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 111,
+      "stage_code": "S33_APODESMEVSH",
+      "ordinal": 2,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Επιστροφή εγγύησης προκαταβολής",
+      "detail": "Εφόσον έχει αποσβεστεί πλήρως η προκαταβολή.",
+      "legal_ref_id": "N4412/72/7",
+      "is_mandatory": false,
+      "needs_evidence": true
+    },
+    {
+      "id": 112,
+      "stage_code": "S34_MHTRWO",
+      "ordinal": 1,
+      "party": "anadochos",
+      "title": "Παράδοση Μητρώου Έργου",
+      "detail": "Σχέδια «as built», φωτογραφικό υλικό αφανών εργασιών, ψηφιακή τεκμηρίωση σταδίων.",
+      "legal_ref_id": "N4412/170",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 113,
+      "stage_code": "S34_MHTRWO",
+      "ordinal": 2,
+      "party": "anadochos",
+      "title": "Εγχειρίδια λειτουργίας & συντήρησης",
+      "detail": "Οδηγίες και προϋπολογισμός συντήρησης.",
+      "legal_ref_id": "N4412/172",
+      "is_mandatory": true,
+      "needs_evidence": true
+    },
+    {
+      "id": 114,
+      "stage_code": "S34_MHTRWO",
+      "ordinal": 3,
+      "party": "dieuthynousa_ypiresia",
+      "title": "Οριστική αρχειοθέτηση φακέλου",
+      "detail": "Πλήρης ψηφιακός φάκελος με όλα τα έγγραφα και τις πράξεις.",
+      "legal_ref_id": "N4412/170",
+      "is_mandatory": true,
+      "needs_evidence": false
+    }
+  ],
+  "documents": [
+    {
+      "stage_code": "S01_ORISMOS",
+      "doc_code": "APOFASI_ORISMOU",
+      "title": "Απόφαση ορισμού επιβλέποντος",
+      "produced_by": "dieuthynousa_ypiresia",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/136/2"
+    },
+    {
+      "stage_code": "S02_GNOSTOPOIHSH",
+      "doc_code": "GNOSTOPOIHSH_EPIVL",
+      "title": "Έγγραφο γνωστοποίησης επίβλεψης",
+      "produced_by": "dieuthynousa_ypiresia",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/143"
+    },
+    {
+      "stage_code": "S06_XRONODIAGRAMMA",
+      "doc_code": "XRONODIAGRAMMA",
+      "title": "Χρονοδιάγραμμα κατασκευής",
+      "produced_by": "anadochos",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/145/1"
+    },
+    {
+      "stage_code": "S06_XRONODIAGRAMMA",
+      "doc_code": "EGKRISI_XRONOD",
+      "title": "Απόφαση έγκρισης χρονοδιαγράμματος",
+      "produced_by": "dieuthynousa_ypiresia",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/145/2"
+    },
+    {
+      "stage_code": "S07_ORGANOGRAMMA",
+      "doc_code": "ORGANOGRAMMA",
+      "title": "Οργανόγραμμα εργοταξίου",
+      "produced_by": "anadochos",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/145/4"
+    },
+    {
+      "stage_code": "S08_PPE",
+      "doc_code": "PPE",
+      "title": "Πρόγραμμα Ποιότητας Έργου",
+      "produced_by": "anadochos",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/158"
+    },
+    {
+      "stage_code": "S09_SAY_FAY",
+      "doc_code": "SAY_FAY",
+      "title": "ΣΑΥ - ΦΑΥ",
+      "produced_by": "anadochos",
+      "is_mandatory": true,
+      "legal_ref_id": "PD305/1996"
+    },
+    {
+      "stage_code": "S10_EGKATASTASH",
+      "doc_code": "PRWT_PARADOSIS_XWROU",
+      "title": "Πρωτόκολλο παράδοσης χώρου εργασιών",
+      "produced_by": "dieuthynousa_ypiresia",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/137"
+    },
+    {
+      "stage_code": "S12_HMEROLOGIO",
+      "doc_code": "HMEROLOGIO",
+      "title": "Ημερολόγιο έργου",
+      "produced_by": "anadochos",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/146"
+    },
+    {
+      "stage_code": "S15_PPAE",
+      "doc_code": "PPAE",
+      "title": "Πρωτόκολλο / έκθεση παραλαβής αφανών εργασιών",
+      "produced_by": "epivlepon",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/151/7"
+    },
+    {
+      "stage_code": "S16_EPIMETRHSEIS",
+      "doc_code": "ANAL_EPIMETRISI",
+      "title": "Αναλυτική επιμέτρηση",
+      "produced_by": "anadochos",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/151/2"
+    },
+    {
+      "stage_code": "S16_EPIMETRHSEIS",
+      "doc_code": "PRAKTIKO_DEIGM_ELEGXOU",
+      "title": "Πρακτικό δειγματοληπτικού ελέγχου επιμετρήσεων",
+      "produced_by": "dieuthynousa_ypiresia",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/151/3"
+    },
+    {
+      "stage_code": "S17_LOGARIASMOI",
+      "doc_code": "LOGARIASMOS",
+      "title": "Λογαριασμός - Πιστοποίηση",
+      "produced_by": "anadochos",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/152"
+    },
+    {
+      "stage_code": "S17_LOGARIASMOI",
+      "doc_code": "ANAK_PINAKAS_EPIM",
+      "title": "Ανακεφαλαιωτικός συνοπτικός πίνακας επιμετρήσεων",
+      "produced_by": "anadochos",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/152"
+    },
+    {
+      "stage_code": "S18_TRIMHNIAIES",
+      "doc_code": "TRIMHNIAIA_EKTHESI",
+      "title": "Τριμηνιαία έκθεση πορείας έργου",
+      "produced_by": "dieuthynousa_ypiresia",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/136/10"
+    },
+    {
+      "stage_code": "S19_APE",
+      "doc_code": "APE",
+      "title": "Ανακεφαλαιωτικός Πίνακας Εργασιών",
+      "produced_by": "dieuthynousa_ypiresia",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/156/2"
+    },
+    {
+      "stage_code": "S19_APE",
+      "doc_code": "PKTMNE",
+      "title": "Πρωτόκολλο Κανονισμού Τιμών Μονάδος Νέων Εργασιών",
+      "produced_by": "epitropi",
+      "is_mandatory": false,
+      "legal_ref_id": "N4412/156/5"
+    },
+    {
+      "stage_code": "S20_PARATASEIS",
+      "doc_code": "APOFASI_PARATASIS",
+      "title": "Απόφαση παράτασης προθεσμίας",
+      "produced_by": "proistameni_arxi",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/147/5"
+    },
+    {
+      "stage_code": "S25_EKTHESI_EPIVL",
+      "doc_code": "EKTHESI_PERAIWSHS",
+      "title": "Έκθεση επιβλέποντος περί περαίωσης",
+      "produced_by": "epivlepon",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/168/1"
+    },
+    {
+      "stage_code": "S26_BEBAIWSH",
+      "doc_code": "BEBAIOSI_PERATOSIS",
+      "title": "Βεβαίωση Περάτωσης Εργασιών",
+      "produced_by": "dieuthynousa_ypiresia",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/168/2"
+    },
+    {
+      "stage_code": "S27_TELIKH_EPIM",
+      "doc_code": "TELIKH_EPIMETRISI",
+      "title": "Τελική επιμέτρηση",
+      "produced_by": "anadochos",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/151/9"
+    },
+    {
+      "stage_code": "S27_TELIKH_EPIM",
+      "doc_code": "EGKRISI_TELIKHS_EPIM",
+      "title": "Πράξη έγκρισης τελικής επιμέτρησης",
+      "produced_by": "dieuthynousa_ypiresia",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/151/9"
+    },
+    {
+      "stage_code": "S28_MEIWSH_EGG",
+      "doc_code": "PRAXH_MEIWSHS_EGG",
+      "title": "Πράξη μείωσης εγγύησης καλής εκτέλεσης κατά 70%",
+      "produced_by": "dieuthynousa_ypiresia",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/72/14b"
+    },
+    {
+      "stage_code": "S30_EPITROPH",
+      "doc_code": "APOFASI_EPITROPHS",
+      "title": "Απόφαση ορισμού επιτροπής παραλαβής",
+      "produced_by": "proistameni_arxi",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/172"
+    },
+    {
+      "stage_code": "S31_PARALABH",
+      "doc_code": "PRWT_PARALAVIS",
+      "title": "Πρωτόκολλο παραλαβής έργου",
+      "produced_by": "epitropi",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/172"
+    },
+    {
+      "stage_code": "S32_TELIKOS_LOG",
+      "doc_code": "TELIKOS_LOGARIASMOS",
+      "title": "Τελικός λογαριασμός",
+      "produced_by": "anadochos",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/152"
+    },
+    {
+      "stage_code": "S33_APODESMEVSH",
+      "doc_code": "PRAXH_APODESMEVSHS",
+      "title": "Πράξη επιστροφής εγγυητικών επιστολών",
+      "produced_by": "dieuthynousa_ypiresia",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/72/14b"
+    },
+    {
+      "stage_code": "S34_MHTRWO",
+      "doc_code": "MHTRWO_ERGOU",
+      "title": "Μητρώο Έργου",
+      "produced_by": "anadochos",
+      "is_mandatory": true,
+      "legal_ref_id": "N4412/170"
+    }
+  ],
+  "legal": [
+    {
+      "id": "N4412/135",
+      "law": "ν. 4412/2016",
+      "article": "135",
+      "paragraph": null,
+      "title": "Υπογραφή σύμβασης",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/136",
+      "law": "ν. 4412/2016",
+      "article": "136",
+      "paragraph": null,
+      "title": "Διοίκηση του έργου — Παρακολούθηση και επίβλεψη",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/136/10",
+      "law": "ν. 4412/2016",
+      "article": "136",
+      "paragraph": "10",
+      "title": "Τριμηνιαίες εκθέσεις πορείας — πειθαρχικό παράπτωμα η μη τήρηση",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/136/11",
+      "law": "ν. 4412/2016",
+      "article": "136",
+      "paragraph": "11",
+      "title": "Αυτοψία — πρόσκληση αναδόχου τουλάχιστον 24 ώρες πριν",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/136/2",
+      "law": "ν. 4412/2016",
+      "article": "136",
+      "paragraph": "2",
+      "title": "Ορισμός επιβλεπόντων και βοηθών — ομάδα επίβλεψης με συντονιστή",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/136/3",
+      "law": "ν. 4412/2016",
+      "article": "136",
+      "paragraph": "3",
+      "title": "Επίβλεψη από πιστοποιημένο Ιδιωτικό Φορέα Επίβλεψης (Ι.Φ.Ε.)",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/136/5",
+      "law": "ν. 4412/2016",
+      "article": "136",
+      "paragraph": "5",
+      "title": "Επιτόπιοι έλεγχοι Δ.Υ. — εναντίωση σε πορίσματα Ι.Φ.Ε. εντός 15 ημερών",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/136/8",
+      "law": "ν. 4412/2016",
+      "article": "136",
+      "paragraph": "8",
+      "title": "Κλιμάκιο επίβλεψης σε μεγάλα ή ειδικά έργα",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/136A",
+      "law": "ν. 4412/2016",
+      "article": "136Α",
+      "paragraph": null,
+      "title": "Παρακολούθηση και επίβλεψη έργων κάτω των ορίων",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/137",
+      "law": "ν. 4412/2016",
+      "article": "137",
+      "paragraph": null,
+      "title": "Υπερημερία του κυρίου του έργου",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/138",
+      "law": "ν. 4412/2016",
+      "article": "138",
+      "paragraph": null,
+      "title": "Γενικές υποχρεώσεις του αναδόχου",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/138/10",
+      "law": "ν. 4412/2016",
+      "article": "138",
+      "paragraph": "10",
+      "title": "Ελάχιστο τεχνικό προσωπικό ανά ειδικότητα",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/138/12",
+      "law": "ν. 4412/2016",
+      "article": "138",
+      "paragraph": "12",
+      "title": "Πηγές λήψης υλικών — έγκριση εντός 30 ημερών",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/138/14",
+      "law": "ν. 4412/2016",
+      "article": "138",
+      "paragraph": "14",
+      "title": "Αρχαιότητες — άμεση ειδοποίηση της Δ.Υ.",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/138/17",
+      "law": "ν. 4412/2016",
+      "article": "138",
+      "paragraph": "17",
+      "title": "Τριμηνιαία συνοπτική αναφορά προόδου από τον ανάδοχο",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/138/2",
+      "law": "ν. 4412/2016",
+      "article": "138",
+      "paragraph": "2",
+      "title": "Έλεγχος της μελέτης από τον ανάδοχο (20-60 ημέρες)",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/138/9",
+      "law": "ν. 4412/2016",
+      "article": "138",
+      "paragraph": "9",
+      "title": "Τήρηση εργατικής νομοθεσίας, πρόληψη ατυχημάτων, προστασία περιβάλλοντος",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/139",
+      "law": "ν. 4412/2016",
+      "article": "139",
+      "paragraph": null,
+      "title": "Διεύθυνση του έργου από την πλευρά του αναδόχου",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/140",
+      "law": "ν. 4412/2016",
+      "article": "140",
+      "paragraph": null,
+      "title": "Υποχρεώσεις μελών αναδόχου κοινοπραξίας",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/141",
+      "law": "ν. 4412/2016",
+      "article": "141",
+      "paragraph": null,
+      "title": "Πειθαρχικές ευθύνες διοικητικών οργάνων",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/143",
+      "law": "ν. 4412/2016",
+      "article": "143",
+      "paragraph": null,
+      "title": "Κοινοποίηση στον ανάδοχο — εκπροσώπηση",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/144",
+      "law": "ν. 4412/2016",
+      "article": "144",
+      "paragraph": null,
+      "title": "Σύμπραξη του μελετητή στην κατασκευή",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/145/1",
+      "law": "ν. 4412/2016",
+      "article": "145",
+      "paragraph": "1",
+      "title": "Υποβολή χρονοδιαγράμματος εντός 15-30 ημερών από την υπογραφή",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/145/2",
+      "law": "ν. 4412/2016",
+      "article": "145",
+      "paragraph": "2",
+      "title": "Έγκριση χρονοδιαγράμματος εντός 15 ημερών — τεκμήριο έγκρισης — έναρξη εργασιών εντός 30 ημερών",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/145/3",
+      "law": "ν. 4412/2016",
+      "article": "145",
+      "paragraph": "3",
+      "title": "Περιεχόμενο — δικτυωτή ανάλυση υποχρεωτική άνω του 1.000.000 €",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/145/4",
+      "law": "ν. 4412/2016",
+      "article": "145",
+      "paragraph": "4",
+      "title": "Οργανόγραμμα εργοταξίου εντός ενός μηνός",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/146",
+      "law": "ν. 4412/2016",
+      "article": "146",
+      "paragraph": null,
+      "title": "Ημερολόγιο του έργου — ηλεκτρονική τήρηση, έλεγχος εντός 2 εργασίμων, ειδική ποινική ρήτρα 100-500 €/ημέρα",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/147/1",
+      "law": "ν. 4412/2016",
+      "article": "147",
+      "paragraph": "1",
+      "title": "Συνολική και τμηματικές προθεσμίες",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/147/2",
+      "law": "ν. 4412/2016",
+      "article": "147",
+      "paragraph": "2",
+      "title": "Έναρξη προθεσμιών από την υπογραφή της σύμβασης",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/147/4",
+      "law": "ν. 4412/2016",
+      "article": "147",
+      "paragraph": "4",
+      "title": "Οριακή προθεσμία — το ήμισυ της αρχικής, τουλάχιστον 3 μήνες",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/147/5",
+      "law": "ν. 4412/2016",
+      "article": "147",
+      "paragraph": "5",
+      "title": "Παράταση — απόφαση εντός 30 ημερών, άλλως σιωπηρή αποδοχή",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/147/6",
+      "law": "ν. 4412/2016",
+      "article": "147",
+      "paragraph": "6",
+      "title": "Παράταση με ή χωρίς αναθεώρηση — καταλογισμός ευθύνης",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/147/7",
+      "law": "ν. 4412/2016",
+      "article": "147",
+      "paragraph": "7",
+      "title": "Ανωτέρα βία — αίτημα σε 10 ημέρες, απόφαση σε 10 ημέρες",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/148",
+      "law": "ν. 4412/2016",
+      "article": "148",
+      "paragraph": null,
+      "title": "Ποινικές ρήτρες για παραβίαση προθεσμιών",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/149",
+      "law": "ν. 4412/2016",
+      "article": "149",
+      "paragraph": null,
+      "title": "Ρήτρα πρόσθετης καταβολής (πριμ)",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/150",
+      "law": "ν. 4412/2016",
+      "article": "150",
+      "paragraph": null,
+      "title": "Προκαταβολές — έως 15% της αξίας της σύμβασης",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/151/1",
+      "law": "ν. 4412/2016",
+      "article": "151",
+      "paragraph": "1",
+      "title": "Επιμετρήσεις — δήλωση αληθείας, διάκριση συμβατικών/εκτός σύμβασης ποσοτήτων",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/151/10",
+      "law": "ν. 4412/2016",
+      "article": "151",
+      "paragraph": "10",
+      "title": "Ποινική ρήτρα 2‰ ανά μήνα καθυστέρησης τελικής επιμέτρησης (έως 6 μήνες)",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/151/2",
+      "law": "ν. 4412/2016",
+      "article": "151",
+      "paragraph": "2",
+      "title": "Υποβολή επιμετρήσεων ανά τμηματική προθεσμία ή μηνιαίως — προϋπόθεση πληρωμής",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/151/3",
+      "law": "ν. 4412/2016",
+      "article": "151",
+      "paragraph": "3",
+      "title": "Υποχρεωτικός δειγματοληπτικός έλεγχος στο 40% ή σε τουλάχιστον 4 επιμετρήσεις",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/151/4",
+      "law": "ν. 4412/2016",
+      "article": "151",
+      "paragraph": "4",
+      "title": "Ανακριβείς επιμετρήσεις — διόρθωση και πλήρης έλεγχος",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/151/5",
+      "law": "ν. 4412/2016",
+      "article": "151",
+      "paragraph": "5",
+      "title": "Ψευδείς επιμετρήσεις — κυρώσεις, έκπτωση, κατάπτωση εγγύησης",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/151/7",
+      "law": "ν. 4412/2016",
+      "article": "151",
+      "paragraph": "7",
+      "title": "Αφανείς εργασίες — δήλωση γνωστοποίησης, έλεγχος εντός 3 ημερών, ψηφιακές φωτογραφίες, εγκριτική πράξη εντός 30 ημερών, υπερημερία κυρίου του έργου",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/151/9",
+      "law": "ν. 4412/2016",
+      "article": "151",
+      "paragraph": "9",
+      "title": "Τελική επιμέτρηση — 2 μήνες ανάδοχος, 2 μήνες επιβλέπων, 2 μήνες έγκριση Δ.Υ.",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/152",
+      "law": "ν. 4412/2016",
+      "article": "152",
+      "paragraph": null,
+      "title": "Λογαριασμοί — έλεγχος και έγκριση εντός 1 μηνός, σιωπηρή έγκριση, κρατήσεις 5%",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/153",
+      "law": "ν. 4412/2016",
+      "article": "153",
+      "paragraph": null,
+      "title": "Αναθεωρητική περίοδος για τις βασικές τιμές",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/154",
+      "law": "ν. 4412/2016",
+      "article": "154",
+      "paragraph": null,
+      "title": "Απολογιστικές εργασίες",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/155",
+      "law": "ν. 4412/2016",
+      "article": "155",
+      "paragraph": null,
+      "title": "Επείγουσες και απρόβλεπτες πρόσθετες εργασίες",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/156/1",
+      "law": "ν. 4412/2016",
+      "article": "156",
+      "paragraph": "1",
+      "title": "Τροποποίηση σύμβασης — ανώτατο σωρευτικό όριο 50% της αρχικής αξίας",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/156/1e",
+      "law": "ν. 4412/2016",
+      "article": "156",
+      "paragraph": "1ε",
+      "title": "Υποχρεωτική γνωμοδότηση Τεχνικού Συμβουλίου πριν τη συμπληρωματική σύμβαση",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/156/2",
+      "law": "ν. 4412/2016",
+      "article": "156",
+      "paragraph": "2",
+      "title": "Ανακεφαλαιωτικός Πίνακας Εργασιών (ΑΠΕ) — περιεχόμενο",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/156/3a",
+      "law": "ν. 4412/2016",
+      "article": "156",
+      "paragraph": "3α",
+      "title": "Τροποποίηση έως 15% της αρχικής αξίας και κάτω των ορίων του άρθρου 5",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/156/3b",
+      "law": "ν. 4412/2016",
+      "article": "156",
+      "paragraph": "3β",
+      "title": "Απρόβλεπτες δαπάνες: 9% για έργα ίσα/άνω του ορίου, 15% για μικρότερα",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/156/3c",
+      "law": "ν. 4412/2016",
+      "article": "156",
+      "paragraph": "3γ",
+      "title": "Επί έλασσον δαπάνες: έως 20% ανά ομάδα εργασιών και έως 10% της αρχικής σύμβασης — απαγόρευση νέων άρθρων — γνωμοδότηση Τεχνικού Συμβουλίου",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/156/5",
+      "law": "ν. 4412/2016",
+      "article": "156",
+      "paragraph": "5",
+      "title": "Π.Κ.Τ.Μ.Ν.Ε. — ιεράρχηση πηγών τιμών, τριμελής επιτροπή με τον επιβλέποντα",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/156/6",
+      "law": "ν. 4412/2016",
+      "article": "156",
+      "paragraph": "6",
+      "title": "Συντελεστής σ και εφαρμογή της τεκμαρτής έκπτωσης στις νέες τιμές",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/156/7",
+      "law": "ν. 4412/2016",
+      "article": "156",
+      "paragraph": "7",
+      "title": "Υπογραφή ΑΠΕ από τον ανάδοχο — ανεπιφύλακτα ή με επιφύλαξη — έγκριση",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/157",
+      "law": "ν. 4412/2016",
+      "article": "157",
+      "paragraph": null,
+      "title": "Βλάβες στα έργα — αποζημιώσεις",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/158",
+      "law": "ν. 4412/2016",
+      "article": "158",
+      "paragraph": null,
+      "title": "Ποιότητα στα δημόσια έργα — Πρόγραμμα Ποιότητας Έργου",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/159",
+      "law": "ν. 4412/2016",
+      "article": "159",
+      "paragraph": null,
+      "title": "Ακαταλληλότητα υλικών — ελαττώματα — παράλειψη συντήρησης",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/160",
+      "law": "ν. 4412/2016",
+      "article": "160",
+      "paragraph": null,
+      "title": "Έκπτωση αναδόχου",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/168/1",
+      "law": "ν. 4412/2016",
+      "article": "168",
+      "paragraph": "1",
+      "title": "Έγγραφη αναφορά επιβλέποντος περί περαίωσης εντός 30 ημερών",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/168/2",
+      "law": "ν. 4412/2016",
+      "article": "168",
+      "paragraph": "2",
+      "title": "Έκδοση Βεβαίωσης Περάτωσης εντός 10 ημερών — τεκμήριο έκδοσης μετά από όχληση",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/168/3",
+      "law": "ν. 4412/2016",
+      "article": "168",
+      "paragraph": "3",
+      "title": "Επουσιώδη ελαττώματα — προθεσμία αποκατάστασης",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/168/4",
+      "law": "ν. 4412/2016",
+      "article": "168",
+      "paragraph": "4",
+      "title": "Ουσιώδη ελαττώματα — εφαρμογή άρθρων 159 και 160",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/169",
+      "law": "ν. 4412/2016",
+      "article": "169",
+      "paragraph": null,
+      "title": "Διοικητική παραλαβή για χρήση",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/170",
+      "law": "ν. 4412/2016",
+      "article": "170",
+      "paragraph": null,
+      "title": "Ενιαίο Σύστημα Τεχνικών Προδιαγραφών και Τιμολόγησης — Μητρώο Έργου",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/171",
+      "law": "ν. 4412/2016",
+      "article": "171",
+      "paragraph": null,
+      "title": "Χρόνος υποχρεωτικής συντήρησης — γενικά 15 μήνες από την επομένη της Βεβαίωσης Περάτωσης",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/172",
+      "law": "ν. 4412/2016",
+      "article": "172",
+      "paragraph": null,
+      "title": "Παραλαβή — εντός 3 μηνών από τη λήξη της συντήρησης, πενταμελής επιτροπή, αυτοδίκαιη παραλαβή",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/173",
+      "law": "ν. 4412/2016",
+      "article": "173",
+      "paragraph": null,
+      "title": "Απόσβεση δικαιωμάτων αναδόχου",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/174",
+      "law": "ν. 4412/2016",
+      "article": "174",
+      "paragraph": null,
+      "title": "Διοικητική επίλυση συμβατικών διαφορών — ένσταση σε 15 ημέρες, απόφαση σε 60 ημέρες",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/38",
+      "law": "ν. 4412/2016",
+      "article": "38",
+      "paragraph": null,
+      "title": "Κ.Η.Μ.ΔΗ.Σ. — καταχώριση στοιχείων συμβάσεων",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/72/14b",
+      "law": "ν. 4412/2016",
+      "article": "72",
+      "paragraph": "14β",
+      "title": "Μείωση εγγύησης καλής εκτέλεσης κατά 70% μετά την έγκριση της τελικής επιμέτρησης — ολική επιστροφή μετά την παραλαβή και τον τελικό λογαριασμό",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/72/4",
+      "law": "ν. 4412/2016",
+      "article": "72",
+      "paragraph": "4",
+      "title": "Εγγύηση καλής εκτέλεσης — 5% της εκτιμώμενης αξίας",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4412/72/7",
+      "law": "ν. 4412/2016",
+      "article": "72",
+      "paragraph": "7",
+      "title": "Εγγύηση προκαταβολής — ίση με το ποσό της προκαταβολής",
+      "fek": "Α΄147/2016"
+    },
+    {
+      "id": "N4727/2020",
+      "law": "ν. 4727/2020",
+      "article": "76",
+      "paragraph": null,
+      "title": "Πρόγραμμα ΔΙΑΥΓΕΙΑ — υποχρέωση ανάρτησης πράξεων",
+      "fek": "Α΄184/2020"
+    },
+    {
+      "id": "PD305/1996",
+      "law": "π.δ. 305/1996",
+      "article": "—",
+      "paragraph": null,
+      "title": "Ελάχιστες προδιαγραφές ασφάλειας — ΣΑΥ/ΦΑΥ, γνωστοποίηση έναρξης εργασιών",
+      "fek": "Α΄212/1996"
+    },
+    {
+      "id": "YA38107/2017",
+      "law": "Υ.Α. ΔΝΣγ/οικ.38107/ΦΝ 466",
+      "article": "—",
+      "paragraph": null,
+      "title": "Καθορισμός «Ομάδων εργασιών» ανά κατηγορία έργων",
+      "fek": "Β΄1956/07.06.2017"
+    }
+  ],
+  "workGroups": [
+    {
+      "category": "hlektromichanologika",
+      "code": "A",
+      "title": "Ηλεκτρικές εγκαταστάσεις ισχυρών ρευμάτων"
+    },
+    {
+      "category": "hlektromichanologika",
+      "code": "B",
+      "title": "Ηλεκτρικές εγκαταστάσεις ασθενών ρευμάτων"
+    },
+    {
+      "category": "hlektromichanologika",
+      "code": "C",
+      "title": "Εγκαταστάσεις θέρμανσης - κλιματισμού - αερισμού"
+    },
+    {
+      "category": "hlektromichanologika",
+      "code": "D",
+      "title": "Υδραυλικές εγκαταστάσεις κτιρίων"
+    },
+    {
+      "category": "hlektromichanologika",
+      "code": "E",
+      "title": "Πυρόσβεση - Πυρανίχνευση"
+    },
+    {
+      "category": "odopoiia",
+      "code": "A",
+      "title": "Χωματουργικά - Καθαιρέσεις"
+    },
+    {
+      "category": "odopoiia",
+      "code": "B",
+      "title": "Τεχνικά έργα"
+    },
+    {
+      "category": "odopoiia",
+      "code": "C",
+      "title": "Ασφαλτικά"
+    },
+    {
+      "category": "odopoiia",
+      "code": "D",
+      "title": "Σήμανση - Ασφάλιση"
+    },
+    {
+      "category": "oikodomika",
+      "code": "A",
+      "title": "Χωματουργικά - Καθαιρέσεις"
+    },
+    {
+      "category": "oikodomika",
+      "code": "B",
+      "title": "Σκυροδέματα"
+    },
+    {
+      "category": "oikodomika",
+      "code": "C",
+      "title": "Τοιχοποιίες - Επιχρίσματα"
+    },
+    {
+      "category": "oikodomika",
+      "code": "D",
+      "title": "Επενδύσεις - Επιστρώσεις"
+    },
+    {
+      "category": "oikodomika",
+      "code": "E",
+      "title": "Κουφώματα - Υαλουργικά"
+    },
+    {
+      "category": "oikodomika",
+      "code": "F",
+      "title": "Χρωματισμοί - Λοιπές τελειώσεις"
+    },
+    {
+      "category": "prasino",
+      "code": "A",
+      "title": "Χωματουργικά - Προετοιμασία εδάφους"
+    },
+    {
+      "category": "prasino",
+      "code": "B",
+      "title": "Φυτεύσεις"
+    },
+    {
+      "category": "prasino",
+      "code": "C",
+      "title": "Άρδευση"
+    },
+    {
+      "category": "ydraulika",
+      "code": "A",
+      "title": "Χωματουργικά"
+    },
+    {
+      "category": "ydraulika",
+      "code": "B",
+      "title": "Σωληνώσεις - Δίκτυα"
+    },
+    {
+      "category": "ydraulika",
+      "code": "C",
+      "title": "Τεχνικά έργα - Φρεάτια"
+    },
+    {
+      "category": "ydraulika",
+      "code": "D",
+      "title": "Ηλεκτρομηχανολογικά"
+    }
+  ]
 }

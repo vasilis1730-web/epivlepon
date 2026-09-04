@@ -19,7 +19,14 @@
 -- Οι επιμετρήσεις απλώς σημαίνονται ως εκπρόθεσμες προς έλεγχο.
 -- =====================================================================
 
-create extension if not exists pg_cron;
+-- Το pg_cron παρέχεται από το Supabase. Σε σκέτη PostgreSQL απλώς δεν
+-- υπάρχει· η συνάρτηση εγκαθίσταται κανονικά και προγραμματίζεται εξωτερικά.
+do $ext$
+begin
+  create extension if not exists pg_cron;
+exception when others then
+  raise notice 'pg_cron μη διαθέσιμο — προγραμματίστε εξωτερικά την app.run_nightly_jobs().';
+end $ext$;
 
 -- ---- 1. Μητρώο εκτελέσεων -------------------------------------------
 create table if not exists app.nightly_runs (
@@ -184,15 +191,18 @@ revoke all on function app.run_nightly_jobs() from public, anon, authenticated;
 
 -- ---- 3. Χρονοπρογραμματισμός ----------------------------------------
 -- Κάθε βράδυ στις 02:15 UTC (≈ 04:15/05:15 ώρα Ελλάδας).
-do $$
+do $sched$
 begin
-  perform cron.unschedule('epivlepsi-nightly');
-exception when others then
-  null; -- δεν υπάρχει ακόμη
-end $$;
-
-select cron.schedule(
-  'epivlepsi-nightly',
-  '15 2 * * *',
-  $cron$ select app.run_nightly_jobs(); $cron$
-);
+  if exists (select 1 from pg_extension where extname = 'pg_cron') then
+    begin
+      perform cron.unschedule('epivlepsi-nightly');
+    exception when others then
+      null; -- δεν υπάρχει ακόμη
+    end;
+    perform cron.schedule('epivlepsi-nightly', '15 2 * * *',
+                          'select app.run_nightly_jobs();');
+    raise notice 'Η νυχτερινή εργασία προγραμματίστηκε (02:15 UTC).';
+  else
+    raise notice 'Χωρίς pg_cron: εκτελέστε την app.run_nightly_jobs() από εξωτερικό χρονοπρογραμματιστή.';
+  end if;
+end $sched$;

@@ -19,6 +19,7 @@ interface Row {
 }
 
 export default function Dashboard() {
+  const { data: me } = useQuery(() => api.getProfile().catch(() => null), [])
   const { data, loading } = useQuery(async (): Promise<Row[]> => {
     const projects = await api.getProjects()
     return Promise.all(
@@ -51,9 +52,19 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <div className="label-xs">Χαρτοφυλάκιο επίβλεψης</div>
-        <h1 className="mt-1 font-serif text-3xl font-bold tracking-tight">Έργα σε εξέλιξη</h1>
+      <header className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <div className="label-xs">Χαρτοφυλάκιο επίβλεψης</div>
+          <h1 className="mt-1 font-serif text-3xl font-bold tracking-tight">Έργα σε εξέλιξη</h1>
+        </div>
+        {api.canCreateProject(me) && (
+          <Link
+            to="/neo-ergo"
+            className="inline-flex items-center gap-2 rounded border border-accent bg-accent px-3 py-1.5 text-sm font-medium text-paper transition-[filter] hover:brightness-110"
+          >
+            <span aria-hidden="true">+</span> Νέο έργο
+          </Link>
+        )}
       </header>
 
       <div className="grid gap-px overflow-hidden rounded border border-rule bg-rule sm:grid-cols-2 lg:grid-cols-4">
@@ -68,6 +79,8 @@ export default function Dashboard() {
           note={urgent > 0 ? `${urgent} έργα με προθεσμία < 60 ημ.` : 'καμία κρίσιμη προθεσμία'}
         />
       </div>
+
+      {data.length === 0 && <NoProjects canCreate={api.canCreateProject(me)} />}
 
       <div className="space-y-4">
         {data.map(r => (
@@ -171,6 +184,36 @@ export default function Dashboard() {
 
       <UpcomingDeadlines rows={data} />
     </div>
+  )
+}
+
+/** Πρώτη οθόνη σε κενή εγκατάσταση: από πού ξεκινά η επίβλεψη. */
+function NoProjects({ canCreate }: { canCreate: boolean }) {
+  return (
+    <Card>
+      <div className="px-5 py-8">
+        <h2 className="font-serif text-xl font-semibold">Δεν υπάρχει ακόμη κανένα έργο</h2>
+        <p className="mt-2 max-w-2xl text-sm text-ink2">
+          Η επίβλεψη ξεκινά από τη σύμβαση. Καταχωρίστε την όπως υπογράφηκε — αριθμό,
+          ημερομηνία, έκπτωση, προθεσμία, ανάδοχο και τον ορισμό του επιβλέποντος — και
+          το σύστημα στήνει από μόνο του τα στάδια του οδηγού με τις προθεσμίες τους,
+          από την ανάληψη καθηκόντων μέχρι τη Βεβαίωση Περάτωσης.
+        </p>
+        {canCreate ? (
+          <Link
+            to="/neo-ergo"
+            className="mt-5 inline-flex items-center gap-2 rounded border border-accent bg-accent px-4 py-2 text-sm font-medium text-paper hover:brightness-110"
+          >
+            Καταχώριση πρώτου έργου
+          </Link>
+        ) : (
+          <p className="mt-4 text-sm text-ink3">
+            Τα έργα τα ανοίγει η Διευθύνουσα Υπηρεσία, η οποία ορίζει και τον επιβλέποντα
+            (άρθρο 136 §2 ν. 4412/2016). Μόλις οριστείτε, το έργο θα εμφανιστεί εδώ.
+          </p>
+        )}
+      </div>
+    </Card>
   )
 }
 

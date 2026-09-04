@@ -1,8 +1,10 @@
 -- ===================================================================
 -- ΣΥΣΤΗΜΑ ΕΠΙΒΛΕΨΗΣ ΔΗΜΟΣΙΩΝ ΕΡΓΩΝ — ΕΝΙΑΙΟ SQL SCHEMA
 -- Παράχθηκε: 2026-09-03
--- Σειρά: 0001 → 0019, 0021. Το 0020_demo_seed.sql είναι ΠΡΟΑΙΡΕΤΙΚΟ.
+-- Σειρά: 0001 → 0019, 0021 → 0023. Το 0020_demo_seed.sql είναι ΠΡΟΑΙΡΕΤΙΚΟ
+-- (δοκιμαστικά δεδομένα) και παρατίθεται τελευταίο.
 -- ===================================================================
+
 
 -- >>>>>>>>>>>>>>>>>>>> 0001_extensions_enums.sql <<<<<<<<<<<<<<<<<<<<
 
@@ -4507,10 +4509,20 @@ begin
   return new;
 end $$;
 
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
+drop trigger if exists trg_handle_new_user on auth.users;
+create trigger trg_handle_new_user
   after insert on auth.users
   for each row execute function app.handle_new_user();
+
+-- ΚΡΙΣΙΜΟ: η υπηρεσία Auth εκτελείται με τον ρόλο supabase_auth_admin. Για να
+-- μπορεί να πυροδοτήσει το παραπάνω trigger χρειάζεται USAGE στο σχήμα app και
+-- EXECUTE στη συνάρτηση. Χωρίς αυτά, ΚΑΘΕ ενέργεια στον auth.users — ακόμη και
+-- απλή σύνδεση — αποτυγχάνει με «Database error querying schema».
+--
+-- Η συνάρτηση είναι SECURITY DEFINER, οπότε δεν απαιτούνται δικαιώματα στους
+-- πίνακες profiles/organizations: αρκεί να μπορεί να κληθεί.
+grant usage on schema app to supabase_auth_admin;
+grant execute on function app.handle_new_user() to supabase_auth_admin;
 
 -- ---- 2. Views με δικαιώματα του καλούντος ---------------------------
 -- Χωρίς security_invoker τα views εκτελούνται με τα δικαιώματα του
@@ -5151,7 +5163,14 @@ on conflict do nothing;
 -- Οι επιμετρήσεις απλώς σημαίνονται ως εκπρόθεσμες προς έλεγχο.
 -- =====================================================================
 
-create extension if not exists pg_cron;
+-- Το pg_cron παρέχεται από το Supabase. Σε σκέτη PostgreSQL απλώς δεν
+-- υπάρχει· η συνάρτηση εγκαθίσταται κανονικά και προγραμματίζεται εξωτερικά.
+do $ext$
+begin
+  create extension if not exists pg_cron;
+exception when others then
+  raise notice 'pg_cron μη διαθέσιμο — προγραμματίστε εξωτερικά την app.run_nightly_jobs().';
+end $ext$;
 
 -- ---- 1. Μητρώο εκτελέσεων -------------------------------------------
 create table if not exists app.nightly_runs (
@@ -5316,15 +5335,881 @@ revoke all on function app.run_nightly_jobs() from public, anon, authenticated;
 
 -- ---- 3. Χρονοπρογραμματισμός ----------------------------------------
 -- Κάθε βράδυ στις 02:15 UTC (≈ 04:15/05:15 ώρα Ελλάδας).
-do $$
+do $sched$
 begin
-  perform cron.unschedule('epivlepsi-nightly');
-exception when others then
-  null; -- δεν υπάρχει ακόμη
+  if exists (select 1 from pg_extension where extname = 'pg_cron') then
+    begin
+      perform cron.unschedule('epivlepsi-nightly');
+    exception when others then
+      null; -- δεν υπάρχει ακόμη
+    end;
+    perform cron.schedule('epivlepsi-nightly', '15 2 * * *',
+                          'select app.run_nightly_jobs();');
+    raise notice 'Η νυχτερινή εργασία προγραμματίστηκε (02:15 UTC).';
+  else
+    raise notice 'Χωρίς pg_cron: εκτελέστε την app.run_nightly_jobs() από εξωτερικό χρονοπρογραμματιστή.';
+  end if;
+end $sched$;
+
+-- >>>>>>>>>>>>>>>>>>>> 0022_create_project_rpc.sql <<<<<<<<<<<<<<<<<<<<
+
+-- =====================================================================
+-- 0022_create_project_rpc.sql — Έναρξη επίβλεψης νέου έργου
+-- ---------------------------------------------------------------------
+-- Μία και μόνη συναλλαγή που δημιουργεί:
+--   ανάδοχο → έργο → σύμβαση → ορισμούς επίβλεψης → εγγύηση →
+--   ολόκληρη τη ροή των 36 σταδίων του οδηγού.
+--
+-- Γιατί σε μία RPC και όχι με πέντε κλήσεις από τον browser: αν
+-- αποτύχει το τέταρτο βήμα, τα τρία πρώτα έχουν ήδη γραφτεί και το
+-- μητρώο μένει με μισοτελειωμένο έργο. Εδώ ή γίνονται όλα ή κανένα.
+--
+-- ΑΡΜΟΔΙΟΤΗΤΑ: το έργο το ανοίγει η Διευθύνουσα Υπηρεσία, η οποία
+-- ορίζει και τον επιβλέποντα (άρθρο 136 §2 ν. 4412/2016). Ο επιβλέπων
+-- δεν αυτο-ορίζεται· γι' αυτό απαιτείται ρόλος υπηρεσιακής εμβέλειας.
+-- =====================================================================
+
+-- ---- 1. Κατάλογοι για τις λίστες επιλογής της φόρμας ----------------
+-- Τα profiles έχουν ήδη policy «ίδιος φορέας → ορατό», όμως το
+-- front-end χρειάζεται και τους ρόλους καθενός για να προτείνει σωστά.
+create or replace function public.org_people()
+returns table (id uuid, full_name text, email text, specialty text,
+               grade text, registry_no text, roles text[])
+language sql
+stable
+security definer
+set search_path = public, app
+as $$
+  select p.id, p.full_name, p.email, p.specialty, p.grade, p.registry_no,
+         coalesce(array_agg(r.role::text order by r.role)
+                    filter (where r.role is not null), '{}')
+    from public.profiles p
+    left join public.org_roles r
+           on r.profile_id = p.id
+          and (r.valid_to is null or r.valid_to >= current_date)
+   where p.org_id = app.my_org()
+     and p.is_active
+   group by p.id, p.full_name, p.email, p.specialty, p.grade, p.registry_no
+   order by p.full_name;
+$$;
+
+comment on function public.org_people() is
+  'Το ενεργό προσωπικό του φορέα του καλούντος, με τους υπηρεσιακούς του ρόλους.';
+
+-- ---- 2. Η δημιουργία -------------------------------------------------
+create or replace function public.create_project_full(payload jsonb)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, app
+as $$
+declare
+  v_org         uuid := app.my_org();
+  v_me          uuid := app.uid();
+  j_project     jsonb := payload -> 'project';
+  j_contractor  jsonb := payload -> 'contractor';
+  j_contract    jsonb := payload -> 'contract';
+  j_assign      jsonb := payload -> 'assignments';
+  j_guarantee   jsonb := payload -> 'guarantee';
+
+  v_contractor  uuid;
+  v_project     uuid;
+  v_code        text;
+  v_signed      date;
+  v_days        integer;
+  v_orig_end    date;
+  v_oriaki      date;
+
+  v_budget_works numeric;   -- δαπάνη εργασιών κατά τη μελέτη, χωρίς ΓΕ&ΟΕ
+  v_discount     numeric;
+  v_geoe_pct     numeric;
+  v_cont_pct     numeric;
+  v_revision     numeric;
+  v_works        numeric;   -- μετά την έκπτωση
+  v_geoe         numeric;
+  v_cont         numeric;
+  v_initial      numeric;
+  v_study_total  numeric;
+
+  v_epivlepon   uuid;
+  v_proistam    uuid;
+  v_helper      uuid;
+  v_stages      integer;
+  v_guarantee   uuid;
+begin
+  ------------------------------------------------------------------
+  -- 2.1 Αρμοδιότητα
+  ------------------------------------------------------------------
+  if v_me is null then
+    raise exception 'Δεν υπάρχει ενεργή συνεδρία.';
+  end if;
+  if v_org is null then
+    raise exception 'Ο λογαριασμός σας δεν έχει συνδεθεί με φορέα. Απευθυνθείτε στον διαχειριστή.';
+  end if;
+  if not app.is_service_wide() then
+    raise exception 'Η δημιουργία έργου ανήκει στη Διευθύνουσα Υπηρεσία, η οποία ορίζει και '
+                    'τον επιβλέποντα (άρθρο 136 §2 ν. 4412/2016). Ο λογαριασμός σας δεν φέρει '
+                    'ρόλο υπηρεσιακής εμβέλειας.';
+  end if;
+
+  ------------------------------------------------------------------
+  -- 2.2 Ανάδοχος — υπάρχων ή νέος
+  ------------------------------------------------------------------
+  v_contractor := nullif(j_contractor ->> 'id', '')::uuid;
+
+  if v_contractor is null then
+    -- Ίδιο ΑΦΜ στον ίδιο φορέα σημαίνει ίδιος ανάδοχος: ενημερώνουμε
+    -- αντί να σκάσουμε στο μοναδικό ευρετήριο.
+    insert into public.contractors
+      (org_id, name, legal_form, afm, doy, gemi, meep_mieedde,
+       legal_rep_name, legal_rep_afm, address, email, phone, is_joint_venture)
+    values
+      (v_org,
+       j_contractor ->> 'name',
+       nullif(j_contractor ->> 'legal_form', ''),
+       j_contractor ->> 'afm',
+       nullif(j_contractor ->> 'doy', ''),
+       nullif(j_contractor ->> 'gemi', ''),
+       nullif(j_contractor ->> 'meep_mieedde', ''),
+       nullif(j_contractor ->> 'legal_rep_name', ''),
+       nullif(j_contractor ->> 'legal_rep_afm', ''),
+       nullif(j_contractor ->> 'address', ''),
+       j_contractor ->> 'email',
+       nullif(j_contractor ->> 'phone', ''),
+       coalesce((j_contractor ->> 'is_joint_venture')::boolean, false))
+    on conflict (org_id, afm) do update
+       set name           = excluded.name,
+           email          = excluded.email,
+           phone          = coalesce(excluded.phone, public.contractors.phone),
+           legal_rep_name = coalesce(excluded.legal_rep_name, public.contractors.legal_rep_name)
+    returning id into v_contractor;
+  else
+    perform 1 from public.contractors
+     where id = v_contractor and org_id = v_org;
+    if not found then
+      raise exception 'Ο ανάδοχος που επιλέξατε δεν ανήκει στον φορέα σας.';
+    end if;
+  end if;
+
+  ------------------------------------------------------------------
+  -- 2.3 Οικονομικά μεγέθη — υπολογίζονται εδώ, όχι στον browser
+  ------------------------------------------------------------------
+  v_budget_works := (j_contract ->> 'budget_works_net')::numeric;
+  v_discount     := coalesce((j_contract ->> 'discount_pct')::numeric, 0);
+  v_geoe_pct     := coalesce((j_contract ->> 'ge_oe_pct')::numeric, 18);
+  v_cont_pct     := coalesce((j_contract ->> 'contingency_pct')::numeric, 15);
+  v_revision     := coalesce((j_contract ->> 'revision_amount')::numeric, 0);
+
+  if v_budget_works is null or v_budget_works <= 0 then
+    raise exception 'Η δαπάνη εργασιών του προϋπολογισμού μελέτης πρέπει να είναι θετική.';
+  end if;
+  if v_cont_pct not in (9, 15) then
+    raise exception 'Το ποσοστό απροβλέπτων ορίζεται σε 9%% για έργα ίσα ή άνω των ορίων '
+                    'του άρθρου 5 και σε 15%% για τα μικρότερα (άρθρο 156 §3β ν. 4412/2016).';
+  end if;
+
+  v_works   := round(v_budget_works * (1 - v_discount / 100), 2);
+  v_geoe    := round(v_works * v_geoe_pct / 100, 2);
+  v_cont    := round((v_works + v_geoe) * v_cont_pct / 100, 2);
+  v_initial := round(v_works + v_geoe + v_cont + v_revision, 2);
+
+  -- Προϋπολογισμός μελέτης: τα ίδια μεγέθη χωρίς την έκπτωση.
+  v_study_total := round(
+      v_budget_works
+    + v_budget_works * v_geoe_pct / 100
+    + (v_budget_works + v_budget_works * v_geoe_pct / 100) * v_cont_pct / 100
+    + v_revision, 2);
+
+  ------------------------------------------------------------------
+  -- 2.4 Προθεσμίες (άρθρο 147)
+  ------------------------------------------------------------------
+  v_signed := (j_contract ->> 'signed_at')::date;
+  v_days   := (j_contract ->> 'total_duration_days')::integer;
+
+  if v_signed is null then raise exception 'Λείπει η ημερομηνία υπογραφής της σύμβασης.'; end if;
+  if v_days is null or v_days <= 0 then
+    raise exception 'Η συνολική προθεσμία πρέπει να είναι θετικός αριθμός ημερών (άρθρο 147 §1).';
+  end if;
+
+  -- §2: οι προθεσμίες αρχίζουν από την υπογραφή της σύμβασης.
+  v_orig_end := v_signed + v_days;
+  -- §4: οριακή προθεσμία = το ήμισυ της αρχικής, όχι λιγότερο από 3 μήνες.
+  v_oriaki   := v_orig_end + greatest((v_days / 2)::integer, 90);
+
+  ------------------------------------------------------------------
+  -- 2.5 Έργο
+  ------------------------------------------------------------------
+  v_code := trim(j_project ->> 'code');
+  if v_code is null or v_code = '' then
+    raise exception 'Ο κωδικός του έργου είναι υποχρεωτικός.';
+  end if;
+  if exists (select 1 from public.projects
+              where org_id = v_org and code = v_code) then
+    raise exception 'Υπάρχει ήδη έργο με κωδικό «%» στον φορέα σας.', v_code;
+  end if;
+
+  insert into public.projects
+    (org_id, code, title, category, cpv, ka_budget_code, funding_source, mis_code,
+     study_budget_net, estimated_value_net, vat_rate,
+     tender_publication_at, adam_tender, award_decision_ada, location, created_by)
+  values
+    (v_org, v_code,
+     j_project ->> 'title',
+     (j_project ->> 'category')::public.project_category,
+     nullif(j_project ->> 'cpv', ''),
+     nullif(j_project ->> 'ka_budget_code', ''),
+     nullif(j_project ->> 'funding_source', ''),
+     nullif(j_project ->> 'mis_code', ''),
+     coalesce(nullif(j_project ->> 'study_budget_net', '')::numeric, v_study_total),
+     coalesce(nullif(j_project ->> 'estimated_value_net', '')::numeric, v_study_total),
+     coalesce((j_project ->> 'vat_rate')::numeric, 24),
+     nullif(j_project ->> 'tender_publication_at', '')::date,
+     nullif(j_project ->> 'adam_tender', ''),
+     nullif(j_project ->> 'award_decision_ada', ''),
+     nullif(j_project ->> 'location', ''),
+     v_me)
+  returning id into v_project;
+
+  ------------------------------------------------------------------
+  -- 2.6 Ορισμοί επίβλεψης — ΠΡΙΝ από τη σύμβαση, ώστε ο επιβλέπων να
+  --     βλέπει το έργο του από την πρώτη στιγμή (άρθρο 136 §2).
+  ------------------------------------------------------------------
+  v_epivlepon := nullif(j_assign ->> 'epivlepon', '')::uuid;
+  v_proistam  := nullif(j_assign ->> 'proistamenos_dy', '')::uuid;
+
+  if v_epivlepon is null then
+    raise exception 'Πρέπει να οριστεί επιβλέπων μηχανικός (άρθρο 136 §2 ν. 4412/2016).';
+  end if;
+  perform 1 from public.profiles where id = v_epivlepon and org_id = v_org;
+  if not found then
+    raise exception 'Ο επιβλέπων που επιλέξατε δεν ανήκει στον φορέα σας.';
+  end if;
+
+  insert into public.project_assignments
+    (project_id, profile_id, role, is_coordinator, duties,
+     decision_no, decision_ada, decision_date, valid_from, legal_ref_id)
+  values
+    (v_project, v_epivlepon, 'epivlepon',
+     coalesce((j_assign ->> 'epivlepon_is_coordinator')::boolean, false),
+     nullif(j_assign ->> 'duties', ''),
+     nullif(j_assign ->> 'decision_no', ''),
+     nullif(j_assign ->> 'decision_ada', ''),
+     nullif(j_assign ->> 'decision_date', '')::date,
+     coalesce(nullif(j_assign ->> 'decision_date', '')::date, v_signed),
+     'N4412/136/2');
+
+  -- Βοηθοί επιβλέποντες (προαιρετικά, ίδια απόφαση ορισμού)
+  for v_helper in
+    select value::uuid
+      from jsonb_array_elements_text(coalesce(j_assign -> 'voithoi', '[]'::jsonb))
+     where value <> ''
+  loop
+    if exists (select 1 from public.profiles where id = v_helper and org_id = v_org)
+       and v_helper <> v_epivlepon then
+      insert into public.project_assignments
+        (project_id, profile_id, role, decision_no, decision_ada, decision_date,
+         valid_from, legal_ref_id)
+      values
+        (v_project, v_helper, 'voithos_epivlepon',
+         nullif(j_assign ->> 'decision_no', ''),
+         nullif(j_assign ->> 'decision_ada', ''),
+         nullif(j_assign ->> 'decision_date', '')::date,
+         coalesce(nullif(j_assign ->> 'decision_date', '')::date, v_signed),
+         'N4412/136/2');
+    end if;
+  end loop;
+
+  -- Προϊστάμενος Διευθύνουσας Υπηρεσίας
+  if v_proistam is not null
+     and exists (select 1 from public.profiles where id = v_proistam and org_id = v_org) then
+    insert into public.project_assignments
+      (project_id, profile_id, role, valid_from, legal_ref_id)
+    values (v_project, v_proistam, 'proistamenos_dy', v_signed, 'N4412/136');
+  end if;
+
+  -- Ο ανάδοχος ως συμβαλλόμενο μέρος του έργου
+  insert into public.project_assignments
+    (project_id, contractor_id, role, valid_from, legal_ref_id)
+  values (v_project, v_contractor, 'anadochos', v_signed, 'N4412/138');
+
+  ------------------------------------------------------------------
+  -- 2.7 Σύμβαση
+  ------------------------------------------------------------------
+  insert into public.contracts
+    (project_id, contractor_id, regime, supervision_mode,
+     contract_no, signed_at, adam_contract, ada_contract,
+     discount_pct, works_value_net, ge_oe_pct, ge_oe_amount,
+     contingency_pct, contingency_amount, revision_amount, initial_value_net,
+     estimated_guarantee_base, vat_rate,
+     total_duration_days, works_start_deadline, schedule_submit_days,
+     original_end_date, current_end_date, oriaki_end_date,
+     maintenance_months, has_prim_clause, daily_penalty_basis,
+     diary_mode, diary_penalty_per_day, status)
+  values
+    (v_project, v_contractor,
+     coalesce((j_contract ->> 'regime')::public.contract_regime, 'n4412_meta_n4782'),
+     coalesce((j_contract ->> 'supervision_mode')::public.supervision_mode, 'ypiresiaki'),
+     j_contract ->> 'contract_no',
+     v_signed,
+     nullif(j_contract ->> 'adam_contract', ''),
+     nullif(j_contract ->> 'ada_contract', ''),
+     v_discount, v_works, v_geoe_pct, v_geoe,
+     v_cont_pct, v_cont, v_revision, v_initial,
+     v_initial, coalesce((j_contract ->> 'vat_rate')::numeric, 24),
+     v_days,
+     nullif(j_contract ->> 'works_start_deadline', '')::date,
+     coalesce((j_contract ->> 'schedule_submit_days')::integer, 15),
+     v_orig_end, v_orig_end, v_oriaki,
+     coalesce((j_contract ->> 'maintenance_months')::integer, 15),
+     coalesce((j_contract ->> 'has_prim_clause')::boolean, false),
+     nullif(j_contract ->> 'daily_penalty_basis', '')::numeric,
+     coalesce((j_contract ->> 'diary_mode')::public.diary_mode, 'imerisio'),
+     coalesce((j_contract ->> 'diary_penalty_per_day')::numeric, 100),
+     'active');
+
+  ------------------------------------------------------------------
+  -- 2.8 Εγγύηση καλής εκτέλεσης (άρθρο 72 §4) — προαιρετική εδώ:
+  --     αν δεν έχει κατατεθεί ακόμη, καταχωρίζεται εκκρεμής ώστε το
+  --     στάδιο εγκατάστασης να μπλοκάρει μέχρι να προσκομιστεί.
+  ------------------------------------------------------------------
+  if j_guarantee is not null and jsonb_typeof(j_guarantee) = 'object'
+     and coalesce(j_guarantee ->> 'guarantee_no', '') <> '' then
+    insert into public.guarantees
+      (project_id, gtype, issuer, guarantee_no, issued_at, valid_to,
+       original_amount, current_amount, pct_of_contract, status, legal_ref_id)
+    values
+      (v_project, 'kalis_ektelesis',
+       j_guarantee ->> 'issuer',
+       j_guarantee ->> 'guarantee_no',
+       coalesce(nullif(j_guarantee ->> 'issued_at', '')::date, v_signed),
+       nullif(j_guarantee ->> 'valid_to', '')::date,
+       (j_guarantee ->> 'original_amount')::numeric,
+       (j_guarantee ->> 'original_amount')::numeric,
+       round((j_guarantee ->> 'original_amount')::numeric / nullif(v_initial, 0) * 100, 3),
+       'energi', 'N4412/72/4')
+    returning id into v_guarantee;
+  end if;
+
+  ------------------------------------------------------------------
+  -- 2.9 Η ροή του οδηγού
+  ------------------------------------------------------------------
+  v_stages := app.instantiate_workflow(v_project);
+
+  return jsonb_build_object(
+    'project_id',      v_project,
+    'contractor_id',   v_contractor,
+    'guarantee_id',    v_guarantee,
+    'stages_created',  v_stages,
+    'code',            v_code,
+    'oikonomika', jsonb_build_object(
+      'works_value_net',     v_works,
+      'ge_oe_amount',        v_geoe,
+      'contingency_amount',  v_cont,
+      'initial_value_net',   v_initial,
+      'study_budget_net',    v_study_total),
+    'prothesmies', jsonb_build_object(
+      'signed_at',         v_signed,
+      'original_end_date', v_orig_end,
+      'oriaki_end_date',   v_oriaki)
+  );
 end $$;
 
-select cron.schedule(
-  'epivlepsi-nightly',
-  '15 2 * * *',
-  $cron$ select app.run_nightly_jobs(); $cron$
-);
+comment on function public.create_project_full(jsonb) is
+  'Ατομική δημιουργία έργου: ανάδοχος, έργο, ορισμοί επίβλεψης (136 §2), σύμβαση, '
+  'εγγύηση (72 §4) και στιγμιότυπο ροής 36 σταδίων. Απαιτεί ρόλο υπηρεσιακής εμβέλειας.';
+
+revoke all on function public.create_project_full(jsonb) from public, anon;
+revoke all on function public.org_people()             from public, anon;
+grant execute on function public.create_project_full(jsonb) to authenticated, service_role;
+grant execute on function public.org_people()               to authenticated, service_role;
+
+-- >>>>>>>>>>>>>>>>>>>> 0023_stage_due_dates.sql <<<<<<<<<<<<<<<<<<<<
+
+-- =====================================================================
+-- 0023_stage_due_dates.sql — Διόρθωση αφετηρίας των προθεσμιών σταδίου
+-- ---------------------------------------------------------------------
+-- ΤΟ ΠΡΟΒΛΗΜΑ
+-- Η app.compute_stage_due() αναγνώριζε τρεις μόνο αφετηρίες και για κάθε
+-- άλλη έπεφτε σιωπηλά στην ημερομηνία υπογραφής της σύμβασης. Έτσι στάδια
+-- που κατά τον νόμο μετρούν από γεγονός που ΔΕΝ έχει ακόμη επέλθει —
+-- υποβολή εγγράφου, κοινοποίηση πράξης, Βεβαίωση Περάτωσης, λήξη
+-- συντήρησης — έπαιρναν ημερομηνία 10 ή 30 ημερών από την υπογραφή και
+-- εμφανίζονταν ως ΕΚΠΡΟΘΕΣΜΑ σε έργο που μόλις ξεκίνησε.
+--
+-- Ένας επιβλέπων που βλέπει «Έκδοση Βεβαίωσης Περάτωσης — εκπρόθεσμο 145
+-- ημέρες» σε έργο υπό εκτέλεση μαθαίνει να αγνοεί τις ειδοποιήσεις. Ένα
+-- σύστημα ελέγχου που παράγει ψευδείς συναγερμούς είναι χειρότερο από
+-- κανένα.
+--
+-- Η ΔΙΟΡΘΩΣΗ
+-- Η προθεσμία υπολογίζεται μόνο όταν υπάρχει η αφετηρία της. Αλλιώς
+-- επιστρέφεται NULL: το στάδιο απλώς δεν έχει ακόμη προθεσμία.
+--
+--   ypografi_symvasis   → ημερομηνία υπογραφής                (147 §2)
+--   enarxi_ergasion     → προθεσμία έναρξης εργασιών          (145 §2)
+--   lixi_prothesmias    → τρέχουσα λήξη συνολικής προθεσμίας  (147 §1)
+--   bebaiosi_peratosis  → έκδοση Βεβαίωσης Περάτωσης          (168 §2)
+--   lixi_syntirisis     → λήξη υποχρεωτικής συντήρησης        (171)
+--   ypovoli_eggrafou    ┐ ανά έγγραφο/γεγονός: οι προθεσμίες αυτές
+--   koinopoiisi_praxis  ├ τηρούνται στην ίδια την εγγραφή (approval_due,
+--   custom              ┘ inspection_due, decision_due) — όχι στο στάδιο.
+-- =====================================================================
+
+create or replace function app.compute_stage_due(p_project_id uuid, p_stage_code text)
+returns date
+language plpgsql
+stable
+set search_path = public, app
+as $$
+declare
+  s      public.workflow_stages%rowtype;
+  v_base date;
+begin
+  select * into s from public.workflow_stages where code = p_stage_code;
+  if not found then return null; end if;
+  if s.deadline_days is null and s.deadline_months is null then return null; end if;
+
+  case s.deadline_basis
+    when 'ypografi_symvasis' then
+      select c.signed_at into v_base from public.contracts c where c.project_id = p_project_id;
+
+    when 'enarxi_ergasion' then
+      select c.works_start_deadline into v_base from public.contracts c where c.project_id = p_project_id;
+
+    when 'lixi_prothesmias' then
+      select c.current_end_date into v_base from public.contracts c where c.project_id = p_project_id;
+
+    when 'bebaiosi_peratosis' then
+      -- Άρθρο 168 §2: μετρά από την έκδοση της Βεβαίωσης — ή από τον χρόνο
+      -- που αυτή τεκμαίρεται εκδοθείσα μετά την όχληση του αναδόχου.
+      select coalesce(cm.certificate_issued_at,
+                      case when cm.deemed_issued then cm.certificate_due end)
+        into v_base
+        from public.completions cm where cm.project_id = p_project_id;
+
+    when 'lixi_syntirisis' then
+      -- Άρθρο 171: η παραλαβή μετρά από τη λήξη του χρόνου συντήρησης.
+      select mp.ends_on into v_base
+        from public.maintenance_periods mp
+       where mp.project_id = p_project_id
+       order by mp.ends_on desc nulls last limit 1;
+
+    else
+      -- ypovoli_eggrafou / koinopoiisi_praxis / custom: η αφετηρία είναι
+      -- συγκεκριμένο έγγραφο ή πράξη. Χωρίς αυτό δεν υπάρχει προθεσμία —
+      -- και δεν επινοούμε καμία.
+      v_base := null;
+  end case;
+
+  if v_base is null then return null; end if;
+
+  if s.deadline_months is not null then
+    v_base := v_base + (s.deadline_months || ' months')::interval;
+  end if;
+  if s.deadline_days is not null then
+    v_base := v_base + s.deadline_days;
+  end if;
+  return v_base;
+end $$;
+
+comment on function app.compute_stage_due(uuid, text) is
+  'Προθεσμία σταδίου με βάση την αφετηρία που ορίζει ο νόμος. Επιστρέφει NULL όσο '
+  'η αφετηρία δεν έχει επέλθει — ποτέ πλασματική ημερομηνία.';
+
+-- ---------------------------------------------------------------------
+-- Επανυπολογισμός όταν εμφανιστεί μια αφετηρία
+-- ---------------------------------------------------------------------
+create or replace function app.recompute_stage_dues(p_project_id uuid)
+returns integer
+language plpgsql
+security definer
+set search_path = public, app
+as $$
+declare v_n integer;
+begin
+  update public.project_stages ps
+     set due_date = app.compute_stage_due(p_project_id, ps.stage_code)
+   where ps.project_id = p_project_id
+     and ps.status not in ('completed', 'not_applicable')
+     and ps.due_date is distinct from app.compute_stage_due(p_project_id, ps.stage_code);
+  get diagnostics v_n = row_count;
+
+  -- Ένα στάδιο που είχε χαρακτηριστεί εκπρόθεσμο επειδή έφερε πλασματική
+  -- ημερομηνία επιστρέφει στην κανονική του κατάσταση.
+  update public.project_stages ps
+     set status = 'available'
+   where ps.project_id = p_project_id
+     and ps.status = 'overdue'
+     and (ps.due_date is null or ps.due_date >= current_date);
+
+  return v_n;
+end $$;
+
+comment on function app.recompute_stage_dues(uuid) is
+  'Επαναϋπολογισμός των προθεσμιών των σταδίων ενός έργου όταν επέλθει νέα αφετηρία '
+  '(Βεβαίωση Περάτωσης, έναρξη εργασιών, παράταση, λήξη συντήρησης).';
+
+revoke all on function app.recompute_stage_dues(uuid) from public, anon;
+
+create or replace function app.trg_recompute_stage_dues()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, app
+as $$
+begin
+  perform app.recompute_stage_dues(coalesce(new.project_id, old.project_id));
+  return null;
+end $$;
+
+-- Οι τρεις πίνακες που γεννούν νέες αφετηρίες.
+drop trigger if exists trg_dues_completions on public.completions;
+create trigger trg_dues_completions
+  after insert or update on public.completions
+  for each row execute function app.trg_recompute_stage_dues();
+
+drop trigger if exists trg_dues_maintenance on public.maintenance_periods;
+create trigger trg_dues_maintenance
+  after insert or update on public.maintenance_periods
+  for each row execute function app.trg_recompute_stage_dues();
+
+drop trigger if exists trg_dues_contracts on public.contracts;
+create trigger trg_dues_contracts
+  after update of works_start_deadline, current_end_date, signed_at on public.contracts
+  for each row execute function app.trg_recompute_stage_dues();
+
+-- ---------------------------------------------------------------------
+-- Διόρθωση των ήδη καταχωρισμένων έργων
+-- ---------------------------------------------------------------------
+do $fix$
+declare r record; v_total integer := 0; v_n integer;
+begin
+  for r in select id from public.projects loop
+    v_n := app.recompute_stage_dues(r.id);
+    v_total := v_total + v_n;
+  end loop;
+  raise notice 'Διορθώθηκαν % προθεσμίες σταδίων σε υπάρχοντα έργα.', v_total;
+end $fix$;
+
+-- >>>>>>>>>>>>>>>>>>>> 0020_demo_seed.sql <<<<<<<<<<<<<<<<<<<<
+
+-- =====================================================================
+-- 0020_demo_seed.sql — Επιδεικτικά δεδομένα (ΠΡΟΑΙΡΕΤΙΚΟ)
+-- ---------------------------------------------------------------------
+-- Δημιουργεί δύο χρήστες, ένα πλήρες έργο του Δήμου Ρόδου και όλες τις
+-- συνοδευτικές εγγραφές, ώστε να δοκιμαστεί άμεσα η ροή και η παραγωγή
+-- εγγράφων. ΔΕΝ πρέπει να εφαρμοστεί σε παραγωγική βάση.
+--
+--   epivlepon@dimosrodou.demo    / Epivlepsi!2026   (επιβλέπων)
+--   proistamenos@dimosrodou.demo / Epivlepsi!2026   (προϊστάμενος Δ.Υ.)
+-- =====================================================================
+
+do $$
+declare
+  v_org        uuid := '00000000-0000-0000-0000-0000000000d1';
+  v_epiv       uuid := '00000000-0000-0000-0000-00000000e001';
+  v_proi       uuid := '00000000-0000-0000-0000-00000000e002';
+  v_project    uuid := '00000000-0000-0000-0000-0000000000a1';
+  v_contractor uuid := '00000000-0000-0000-0000-0000000000c1';
+  v_contract   uuid := '00000000-0000-0000-0000-0000000000b1';
+  v_bver       uuid := '00000000-0000-0000-0000-0000000000f1';
+  v_meas       uuid := '00000000-0000-0000-0000-000000000101';
+  v_hwn        uuid := '00000000-0000-0000-0000-000000000111';
+  v_guar       uuid := '00000000-0000-0000-0000-000000000121';
+  v_sched      uuid := '00000000-0000-0000-0000-000000000131';
+  v_bi         uuid;
+  v_pw         text := extensions.crypt('Epivlepsi!2026', extensions.gen_salt('bf'));
+begin
+  -- ---- 1. Χρήστες αυθεντικοποίησης --------------------------------
+  insert into auth.users (
+    instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
+    raw_app_meta_data, raw_user_meta_data, created_at, updated_at)
+  values
+    ('00000000-0000-0000-0000-000000000000', v_epiv, 'authenticated', 'authenticated',
+     'epivlepon@dimosrodou.demo', v_pw, now(),
+     '{"provider":"email","providers":["email"]}'::jsonb,
+     '{"full_name":"Βασίλειος Διακολιός","specialty":"ΠΕ Μηχανολόγος Μηχανικός"}'::jsonb, now(), now()),
+    ('00000000-0000-0000-0000-000000000000', v_proi, 'authenticated', 'authenticated',
+     'proistamenos@dimosrodou.demo', v_pw, now(),
+     '{"provider":"email","providers":["email"]}'::jsonb,
+     '{"full_name":"Γεώργιος Παπαδόπουλος","specialty":"Πολιτικός Μηχανικός"}'::jsonb, now(), now())
+  on conflict (id) do nothing;
+
+  insert into auth.identities (provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
+  values
+    (v_epiv::text, v_epiv,
+     jsonb_build_object('sub', v_epiv::text, 'email', 'epivlepon@dimosrodou.demo', 'email_verified', true),
+     'email', now(), now(), now()),
+    (v_proi::text, v_proi,
+     jsonb_build_object('sub', v_proi::text, 'email', 'proistamenos@dimosrodou.demo', 'email_verified', true),
+     'email', now(), now(), now())
+  on conflict (provider, provider_id) do nothing;
+
+  -- ΚΡΙΣΙΜΟ: οι στήλες κειμένου confirmation_token, recovery_token,
+  -- email_change_token_new και email_change ΔΕΝ έχουν προεπιλογή. Αν μείνουν
+  -- NULL, η υπηρεσία Auth τις διαβάζει σε μη-μηδενίσιμα πεδία και κάθε
+  -- σύνδεση αποτυγχάνει με «Database error querying schema». Το GoTrue
+  -- αποθηκεύει κενό κείμενο — κάνουμε το ίδιο.
+  update auth.users
+     set confirmation_token         = coalesce(confirmation_token, ''),
+         recovery_token             = coalesce(recovery_token, ''),
+         email_change_token_new     = coalesce(email_change_token_new, ''),
+         email_change               = coalesce(email_change, ''),
+         email_change_token_current = coalesce(email_change_token_current, ''),
+         phone_change               = coalesce(phone_change, ''),
+         phone_change_token         = coalesce(phone_change_token, ''),
+         reauthentication_token     = coalesce(reauthentication_token, '')
+   where id in (v_epiv, v_proi);
+
+  -- Το trigger trg_handle_new_user έχει ήδη δημιουργήσει τα profiles·
+  -- εδώ μόνο συμπληρώνουμε στοιχεία.
+  update public.profiles set grade = 'Α΄', registry_no = 'ΤΕΕ 98765'
+   where id = v_epiv;
+  update public.profiles set grade = 'Α΄', registry_no = 'ΤΕΕ 45321'
+   where id = v_proi;
+
+  insert into public.org_roles (profile_id, org_id, role, decision_ada)
+  values (v_proi, v_org, 'proistamenos_dy', 'ΨΞ12ΩΡΤ-Λ4Δ')
+  on conflict do nothing;
+
+  -- ---- 2. Ανάδοχος --------------------------------------------------
+  insert into public.contractors (id, org_id, name, legal_form, afm, doy, gemi,
+                                  meep_mieedde, categories, legal_rep_name, legal_rep_afm,
+                                  address, email, phone)
+  values (v_contractor, v_org, 'ΤΕΧΝΙΚΗ ΑΙΓΑΙΟΥ Α.Τ.Ε.', 'Α.Ε.', '099887766', 'Ρόδου',
+          '123456789000', 'ΜΗ.Ε.Ε.Δ.Ε. 21456', array['ΟΔΟΠΟΙΙΑ','ΟΙΚΟΔΟΜΙΚΑ'],
+          'Ιωάννης Καραγιάννης', '045678912',
+          'Λεωφ. Ρόδου–Λίνδου 12, 85100 Ρόδος', 'info@texnikiaigaiou.demo', '2241012345')
+  on conflict (id) do nothing;
+
+  -- ---- 3. Έργο ------------------------------------------------------
+  insert into public.projects (id, org_id, code, title, category, cpv, ka_budget_code,
+                               funding_source, study_budget_net, estimated_value_net,
+                               tender_publication_at, adam_tender, award_decision_ada,
+                               location, created_by)
+  values (v_project, v_org, 'ΔΡ-2026/014',
+          'Ανακατασκευή οδοστρωμάτων και κατασκευή πεζοδρομίων στη Δ.Ε. Ιαλυσού',
+          'odopoiia', '45233120-6', '30.7323.0012',
+          'ΣΑΤΑ / Ίδιοι πόροι (Κ.Α. 30.7323.0012)',
+          620000.00, 620000.00,
+          date '2025-09-15', '25PROC000123456', 'ΨΘ45ΩΡΤ-Ν9Ζ',
+          'Δ.Ε. Ιαλυσού, Δήμος Ρόδου', v_proi)
+  on conflict (id) do nothing;
+
+  -- ---- 4. Σύμβαση ---------------------------------------------------
+  insert into public.contracts (id, project_id, contractor_id, regime, supervision_mode,
+                                contract_no, signed_at, adam_contract, ada_contract,
+                                discount_pct, works_value_net, ge_oe_pct, ge_oe_amount,
+                                contingency_pct, contingency_amount, revision_amount,
+                                initial_value_net, vat_rate, total_duration_days,
+                                works_start_deadline, schedule_submit_days,
+                                original_end_date, current_end_date, maintenance_months,
+                                diary_mode, diary_penalty_per_day, daily_penalty_basis)
+  values (v_contract, v_project, v_contractor, 'n4412_meta_n4782', 'ypiresiaki',
+          'ΔΡ-2026/014-ΣΥΜ', date '2026-01-20', '26SYMV000234567', 'Ω4Κ7ΩΡΤ-Β2Χ',
+          32.40, 335664.00, 18.00, 60419.52, 15.00, 59412.53, 0.00,
+          455496.05, 24.00, 300,
+          date '2026-02-19', 15,
+          date '2026-11-16', date '2026-11-16', 15,
+          'imerisio', 200.00, 455496.05)
+  on conflict (id) do nothing;
+
+  -- ---- 5. Αναθέσεις -------------------------------------------------
+  insert into public.project_assignments (project_id, profile_id, role, is_coordinator,
+                                          duties, decision_no, decision_ada, decision_date, legal_ref_id)
+  values
+    (v_project, v_epiv, 'epivlepon', true,
+     'Επίβλεψη του συνόλου των εργασιών, τήρηση ημερολογίου, έλεγχος επιμετρήσεων και λογαριασμών.',
+     '2145/2026', 'ΨΛ8ΤΩΡΤ-Ξ7Φ', date '2026-01-22', 'N4412/136/2'),
+    (v_project, v_proi, 'proistamenos_dy', false,
+     'Άσκηση καθηκόντων Διευθύνουσας Υπηρεσίας.',
+     '2145/2026', 'ΨΛ8ΤΩΡΤ-Ξ7Φ', date '2026-01-22', 'N4412/136')
+  on conflict do nothing;
+
+  insert into public.project_assignments (project_id, contractor_id, role, decision_date, legal_ref_id)
+  values (v_project, v_contractor, 'anadochos', date '2026-01-20', 'N4412/138')
+  on conflict do nothing;
+
+  -- ---- 6. Προϋπολογισμός --------------------------------------------
+  insert into public.budget_versions (id, project_id, version_no, label, is_current, approved_at, total_net)
+  values (v_bver, v_project, 0, 'Αρχική σύμβαση', true, date '2026-01-20', 455496.05)
+  on conflict (id) do nothing;
+
+  insert into public.budget_items (project_id, version_id, line_no, item_code, description, unit, unit_price, quantity)
+  values
+    (v_project, v_bver, 1, 'ΟΔΟ Α-2',   'Γενικές εκσκαφές σε έδαφος γαιώδες–ημιβραχώδες', 'm3',   3.20,  4200.000),
+    (v_project, v_bver, 2, 'ΟΔΟ Γ-1.2', 'Υπόβαση οδοστρωσίας μεταβλητού πάχους',          'm3',  12.50,  1850.000),
+    (v_project, v_bver, 3, 'ΟΔΟ Δ-8.1', 'Ασφαλτική στρώση κυκλοφορίας 5 cm',              'm2',   8.90, 12400.000),
+    (v_project, v_bver, 4, 'ΟΙΚ 38.20', 'Χαλύβδινος οπλισμός σκυροδέματος B500C',         'kg',   1.15, 18600.000),
+    (v_project, v_bver, 5, 'ΟΔΟ Β-51',  'Πρόχυτα κράσπεδα από σκυρόδεμα',                 'm',   11.40,  2350.000),
+    (v_project, v_bver, 6, 'ΟΔΟ Β-52',  'Πλακοστρώσεις πεζοδρομίων με τσιμεντόπλακες',    'm2',  18.70,  3100.000)
+  on conflict do nothing;
+
+  -- ---- 7. Χρονοδιάγραμμα -------------------------------------------
+  insert into public.schedules (id, project_id, version_no, label, method,
+                                submitted_at, approved_at, approved_by, period_granularity)
+  values (v_sched, v_project, 0, 'Αρχικό χρονοδιάγραμμα', 'diktyoti_analysi',
+          date '2026-02-02', date '2026-02-12', v_proi, 'mina')
+  on conflict (id) do nothing;
+
+  -- ---- 8. Πρωτόκολλο αφανών εργασιών (άρθρο 151 παρ. 7) -------------
+  insert into public.hidden_work_notices (id, project_id, serial_no, work_description, location,
+                                          declaration_at, truth_declaration, invitation_sent_at,
+                                          inspected_at, inspected_by, supervisor_report_at,
+                                          photos_count, covered_at, status, legal_ref_id)
+  values (v_hwn, v_project, 1,
+          'Θεμελίωση και εγκιβωτισμός αγωγού ομβρίων Φ600 — εκσκαφή, στρώση έδρασης, οπλισμός και επίχωση',
+          'Οδός Ηρακλειδών, Χ.Θ. 0+120 έως 0+265',
+          date '2026-03-09', true, date '2026-03-09',
+          date '2026-03-11', '00000000-0000-0000-0000-00000000e001', date '2026-03-11',
+          14, date '2026-03-13', 'approved', 'N4412/151/7')
+  on conflict (id) do nothing;
+
+  -- ---- 9. Αναλυτική επιμέτρηση --------------------------------------
+  insert into public.measurements (id, project_id, mtype, serial_no, period_from, period_to,
+                                   work_section, truth_declaration, has_drawings,
+                                   submitted_at, status, contractual_amount, extra_amount)
+  values (v_meas, v_project, 'tmimatiki', 1, date '2026-02-20', date '2026-05-31',
+          'Χωματουργικά – οδοστρωσία – ασφαλτικά (Α΄ τμήμα)',
+          true, true, date '2026-06-05', 'approved', 0, 0)
+  on conflict (id) do nothing;
+
+  for v_bi in
+    select id from public.budget_items where version_id = v_bver order by line_no
+  loop
+    insert into public.measurement_lines (measurement_id, budget_item_id, quantity_period, quantity_cumul, unit_price)
+    select v_meas, bi.id, round(bi.quantity * 0.45, 3), round(bi.quantity * 0.45, 3), bi.unit_price
+      from public.budget_items bi where bi.id = v_bi
+    on conflict do nothing;
+  end loop;
+
+  update public.measurements m
+     set contractual_amount = coalesce((select sum(ml.quantity_cumul * ml.unit_price)
+                                          from public.measurement_lines ml
+                                         where ml.measurement_id = m.id), 0)
+   where m.id = v_meas;
+
+  -- ---- 10. Εγγυητική καλής εκτέλεσης (άρθρο 72) ---------------------
+  insert into public.guarantees (id, project_id, gtype, issuer, guarantee_no, issued_at,
+                                 original_amount, current_amount, pct_of_contract, status, legal_ref_id)
+  values (v_guar, v_project, 'kalis_ektelesis', 'Τράπεζα Πειραιώς Α.Ε.', 'e-ΕΓΓ/2026/884512',
+          date '2026-01-16', 22774.80, 22774.80, 5.00, 'energi', 'N4412/72/4')
+  on conflict (id) do nothing;
+
+  -- ---- 11. Στιγμιότυπο ροής εργασιών --------------------------------
+  perform app.instantiate_workflow(v_project);
+end $$;
+
+
+-- =====================================================================
+-- ΔΕΥΤΕΡΟ ΕΡΓΟ — στη φάση της περαίωσης, ώστε να δοκιμάζονται τα
+-- έγγραφα Βεβαίωσης Περάτωσης και Μείωσης Εγγύησης 70%.
+-- =====================================================================
+do $$
+declare
+  v_org        uuid := '00000000-0000-0000-0000-0000000000d1';
+  v_epiv       uuid := '00000000-0000-0000-0000-00000000e001';
+  v_proi       uuid := '00000000-0000-0000-0000-00000000e002';
+  v_contractor uuid := '00000000-0000-0000-0000-0000000000c2';
+  v_project    uuid := '00000000-0000-0000-0000-0000000000a2';
+  v_contract   uuid := '00000000-0000-0000-0000-0000000000b2';
+  v_bver       uuid := '00000000-0000-0000-0000-0000000000f2';
+  v_meas       uuid := '00000000-0000-0000-0000-000000000102';
+  v_guar       uuid := '00000000-0000-0000-0000-000000000122';
+begin
+  insert into public.contractors (id, org_id, name, legal_form, afm, doy,
+                                  meep_mieedde, categories, legal_rep_name,
+                                  address, email, phone)
+  values (v_contractor, v_org, 'ΔΩΔΕΚΑΝΗΣΟΣ ΚΑΤΑΣΚΕΥΑΣΤΙΚΗ Ο.Ε.', 'Ο.Ε.', '088776655', 'Ρόδου',
+          'ΜΗ.Ε.Ε.Δ.Ε. 30871', array['ΟΙΚΟΔΟΜΙΚΑ','ΗΛΕΚΤΡΟΜΗΧΑΝΟΛΟΓΙΚΑ'],
+          'Ελένη Σαββίδου', 'Αγίων Αποστόλων 45, 85100 Ρόδος',
+          'info@dodekanisos-kat.demo', '2241067890')
+  on conflict (id) do nothing;
+
+  insert into public.projects (id, org_id, code, title, category, cpv, ka_budget_code,
+                               funding_source, study_budget_net, estimated_value_net,
+                               tender_publication_at, award_decision_ada, location, created_by)
+  values (v_project, v_org, 'ΔΡ-2025/007',
+          'Ενεργειακή αναβάθμιση του 3ου Δημοτικού Σχολείου Ρόδου',
+          'oikodomika', '45214210-5', '30.7331.0007',
+          'Πρόγραμμα «ΗΛΕΚΤΡΑ» / Ταμείο Ανάκαμψης',
+          310000.00, 310000.00, date '2024-11-04', 'ΨΓ73ΩΡΤ-Κ2Λ',
+          'Ρόδος, Δ.Ε. Ρόδου', v_proi)
+  on conflict (id) do nothing;
+
+  insert into public.contracts (id, project_id, contractor_id, contract_no, signed_at,
+                                ada_contract, discount_pct, works_value_net, ge_oe_pct,
+                                ge_oe_amount, contingency_pct, contingency_amount,
+                                initial_value_net, total_duration_days, works_start_deadline,
+                                original_end_date, current_end_date, maintenance_months,
+                                diary_mode, diary_penalty_per_day, daily_penalty_basis)
+  values (v_contract, v_project, v_contractor, 'ΔΡ-2025/007-ΣΥΜ', date '2025-03-10',
+          'ΩΞ92ΩΡΤ-Φ5Θ', 28.15, 178300.00, 18.00, 32094.00, 9.00, 18935.46,
+          229329.46, 420, date '2025-04-09',
+          date '2026-05-04', date '2026-06-30', 15,
+          'imerisio', 150.00, 229329.46)
+  on conflict (id) do nothing;
+
+  insert into public.project_assignments (project_id, profile_id, role, is_coordinator,
+                                          decision_no, decision_ada, decision_date, legal_ref_id)
+  values (v_project, v_epiv, 'epivlepon', true, '1180/2025', 'ΨΩ42ΩΡΤ-Δ8Ψ', date '2025-03-12', 'N4412/136/2'),
+         (v_project, v_proi, 'proistamenos_dy', false, '1180/2025', 'ΨΩ42ΩΡΤ-Δ8Ψ', date '2025-03-12', 'N4412/136')
+  on conflict do nothing;
+
+  insert into public.project_assignments (project_id, contractor_id, role, decision_date, legal_ref_id)
+  values (v_project, v_contractor, 'anadochos', date '2025-03-10', 'N4412/138')
+  on conflict do nothing;
+
+  insert into public.budget_versions (id, project_id, version_no, label, is_current, approved_at, total_net)
+  values (v_bver, v_project, 0, 'Αρχική σύμβαση', true, date '2025-03-10', 229329.46)
+  on conflict (id) do nothing;
+
+  insert into public.budget_items (project_id, version_id, line_no, item_code, description, unit, unit_price, quantity)
+  values
+    (v_project, v_bver, 1, 'ΟΙΚ 79.55',  'Θερμομόνωση εξωτερικής τοιχοποιίας με σύστημα ETICS', 'm2',  42.00, 1850.000),
+    (v_project, v_bver, 2, 'ΟΙΚ 65.17',  'Κουφώματα αλουμινίου με ενεργειακούς υαλοπίνακες',    'm2', 265.00,  310.000),
+    (v_project, v_bver, 3, 'ΗΛΜ 60.10',  'Αντλία θερμότητας αέρα–νερού 60 kW',                  'τεμ',9800.00,    2.000),
+    (v_project, v_bver, 4, 'ΗΛΜ 62.15',  'Φωτιστικά σώματα LED οροφής',                         'τεμ',  78.00,  240.000)
+  on conflict do nothing;
+
+  -- Τελική επιμέτρηση (άρθρο 151 §9) — εγκεκριμένη
+  insert into public.measurements (id, project_id, mtype, serial_no, period_from, period_to,
+                                   work_section, truth_declaration, has_drawings,
+                                   submitted_at, approved_at, approved_by, status,
+                                   contractual_amount, extra_amount)
+  values (v_meas, v_project, 'teliki', 1, date '2025-04-09', date '2026-05-04',
+          'Τελική επιμέτρηση του συνόλου των εργασιών', true, true,
+          date '2026-06-02', date '2026-07-28', v_proi, 'approved', 229329.46, 0)
+  on conflict (id) do nothing;
+
+  insert into public.measurement_lines (measurement_id, budget_item_id, quantity_period, quantity_cumul, unit_price)
+  select v_meas, bi.id, bi.quantity, bi.quantity, bi.unit_price
+    from public.budget_items bi where bi.version_id = v_bver
+  on conflict do nothing;
+
+  insert into public.final_measurement (project_id, measurement_id, completion_date,
+                                        submitted_at, supervisor_report_at, approved_at,
+                                        approved_by, approval_ada, prepared_by_service,
+                                        penalty_months, penalty_amount, legal_ref_id)
+  values (v_project, v_meas, date '2026-05-04',
+          date '2026-06-02', date '2026-06-30', date '2026-07-28',
+          v_proi, 'ΨΛ55ΩΡΤ-Τ3Β', false, 0, 0, 'N4412/151/9')
+  on conflict do nothing;
+
+  -- Βεβαίωση περάτωσης (άρθρο 168)
+  insert into public.completions (project_id, approved_completion_date, contractor_declared_at,
+                                  supervisor_report_at, tests_completed, defects_found,
+                                  certificate_issued_at, certificate_issued_by,
+                                  actual_completion_date, legal_ref_id)
+  values (v_project, date '2026-06-30', date '2026-05-04', date '2026-05-20',
+          true, false, date '2026-05-28', v_proi, date '2026-05-04', 'N4412/168/2')
+  on conflict do nothing;
+
+  insert into public.guarantees (id, project_id, gtype, issuer, guarantee_no, issued_at,
+                                 original_amount, current_amount, pct_of_contract, status, legal_ref_id)
+  values (v_guar, v_project, 'kalis_ektelesis', 'Τράπεζα Eurobank Α.Ε.', 'e-ΕΓΓ/2025/551204',
+          date '2025-03-05', 11466.47, 11466.47, 5.00, 'energi', 'N4412/72/4')
+  on conflict (id) do nothing;
+
+  perform app.instantiate_workflow(v_project);
+end $$;

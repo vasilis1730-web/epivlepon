@@ -1,0 +1,20 @@
+# Εξαρτήσεις & προϊόντα build
+node_modules/
+dist/
+dist-single/
+*.tsbuildinfo
+
+# Τοπικές ρυθμίσεις (το .env.production είναι δημόσιο και παρακολουθείται)
+.env
+.env.local
+.env.*.local
+
+# Δοκιμαστικά προϊόντα
+tests/fnharness/out/
+tests/fnharness/bundle.mjs
+tests/fnharness/supabase-stub.mjs
+
+# Συσκευασίες & προσωρινά
+*.zip
+.DS_Store
+*.log

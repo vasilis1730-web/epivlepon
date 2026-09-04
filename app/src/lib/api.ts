@@ -17,6 +17,7 @@ import type {
 } from './types'
 import { daysUntil } from './format'
 import { STAGES } from './catalogue'
+import { derive, type NewProjectInput } from './newProject'
 
 const sb = () => {
   if (!supabase) throw new Error('Δεν υπάρχει σύνδεση Supabase.')
@@ -78,6 +79,112 @@ export async function getProjects(): Promise<Project[]> {
 export async function getProject(id: string): Promise<Project | undefined> {
   const all = await getProjects()
   return all.find(p => p.id === id)
+}
+
+/* ------------------------------------------------------------------ */
+/* Έναρξη επίβλεψης νέου έργου                                         */
+/* ------------------------------------------------------------------ */
+/**
+ * Το έργο το ανοίγει η Διευθύνουσα Υπηρεσία, η οποία ορίζει και τον
+ * επιβλέποντα (άρθρο 136 §2 ν. 4412/2016). Ο έλεγχος επαναλαμβάνεται και
+ * στη βάση· εδώ γίνεται μόνο για να μη δείχνουμε πόρτα που δεν ανοίγει.
+ */
+const SERVICE_WIDE: string[] = ['admin', 'proistamenos_dy', 'proistameni_arxi', 'techniko_symvoulio']
+
+export const canCreateProject = (p: Profile | null | undefined) =>
+  Boolean(p?.roles?.some(r => SERVICE_WIDE.includes(r)))
+
+export interface OrgPerson {
+  id: string
+  full_name: string
+  email: string
+  specialty: string | null
+  grade: string | null
+  registry_no: string | null
+  roles: string[]
+}
+
+export async function getOrgPeople(): Promise<OrgPerson[]> {
+  if (DEMO_MODE) {
+    return [
+      { ...DEMO_PROFILE, grade: 'ΠΕ', registry_no: null, roles: ['epivlepon'] },
+      {
+        id: 'demo-proistamenos', full_name: 'Γεώργιος Παπαδόπουλος',
+        email: 'proistamenos@example.gr', specialty: 'Πολιτικός Μηχανικός',
+        grade: 'ΠΕ', registry_no: null, roles: ['proistamenos_dy'],
+      },
+      {
+        id: 'demo-voithos', full_name: 'Ελένη Σαββάκη',
+        email: 'voithos@example.gr', specialty: 'ΤΕ Πολιτικός Μηχανικός',
+        grade: 'ΤΕ', registry_no: null, roles: [],
+      },
+    ]
+  }
+  return pick<OrgPerson[]>(await sb().rpc('org_people'))
+}
+
+export interface ContractorRow {
+  id: string
+  name: string
+  afm: string
+  doy: string | null
+  email: string | null
+  phone: string | null
+  legal_rep_name: string | null
+}
+
+export async function getContractors(): Promise<ContractorRow[]> {
+  if (DEMO_MODE) {
+    return Object.values(store.state.contracts).map((c, i) => ({
+      id: `demo-contractor-${i}`, name: c.contractor_name, afm: c.contractor_afm,
+      doy: null, email: null, phone: null, legal_rep_name: null,
+    }))
+  }
+  return pick<ContractorRow[]>(
+    await sb().from('contractors')
+      .select('id, name, afm, doy, email, phone, legal_rep_name').order('name'),
+  )
+}
+
+export interface CreateProjectResult {
+  projectId: string
+  stagesCreated: number
+  code: string
+}
+
+export async function createProject(input: NewProjectInput): Promise<CreateProjectResult> {
+  if (DEMO_MODE) {
+    const r = store.createProject(input)
+    return { projectId: r.projectId, stagesCreated: r.stages, code: input.project.code.trim() }
+  }
+
+  const d = derive(input.contract)
+  const { data, error } = await sb().rpc('create_project_full', {
+    payload: {
+      project: {
+        ...input.project,
+        study_budget_net: d.studyBudgetNet,
+        estimated_value_net: d.studyBudgetNet,
+        vat_rate: input.contract.vat_rate,
+      },
+      contractor: input.contractor.id
+        ? { id: input.contractor.id }
+        : { ...input.contractor, id: null },
+      contract: {
+        ...input.contract,
+        works_start_deadline: d.worksStartDue,
+      },
+      assignments: input.assignments,
+      guarantee: input.guarantee.guarantee_no.trim() ? input.guarantee : null,
+    },
+  })
+  if (error) throw new Error(error.message)
+
+  return {
+    projectId: data.project_id as string,
+    stagesCreated: (data.stages_created as number) ?? 0,
+    code: data.code as string,
+  }
 }
 
 export async function getContract(projectId: string): Promise<Contract | undefined> {

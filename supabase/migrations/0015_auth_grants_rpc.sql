@@ -33,10 +33,20 @@ begin
   return new;
 end $$;
 
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
+drop trigger if exists trg_handle_new_user on auth.users;
+create trigger trg_handle_new_user
   after insert on auth.users
   for each row execute function app.handle_new_user();
+
+-- ΚΡΙΣΙΜΟ: η υπηρεσία Auth εκτελείται με τον ρόλο supabase_auth_admin. Για να
+-- μπορεί να πυροδοτήσει το παραπάνω trigger χρειάζεται USAGE στο σχήμα app και
+-- EXECUTE στη συνάρτηση. Χωρίς αυτά, ΚΑΘΕ ενέργεια στον auth.users — ακόμη και
+-- απλή σύνδεση — αποτυγχάνει με «Database error querying schema».
+--
+-- Η συνάρτηση είναι SECURITY DEFINER, οπότε δεν απαιτούνται δικαιώματα στους
+-- πίνακες profiles/organizations: αρκεί να μπορεί να κληθεί.
+grant usage on schema app to supabase_auth_admin;
+grant execute on function app.handle_new_user() to supabase_auth_admin;
 
 -- ---- 2. Views με δικαιώματα του καλούντος ---------------------------
 -- Χωρίς security_invoker τα views εκτελούνται με τα δικαιώματα του
