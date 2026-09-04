@@ -20,7 +20,7 @@ import {
 } from '@/components/ui'
 import { WORK_GROUPS } from '@/lib/catalogue'
 import { APE_TYPE } from '@/lib/labels'
-import { cx, eur, qty, today } from '@/lib/format'
+import { cx, eur, pct, qty, today } from '@/lib/format'
 import { apeTotals, apeViolations } from '@/lib/rules'
 import type { Ape, ApeLineDraft, ApeType, NewApeInput } from '@/lib/types'
 
@@ -72,6 +72,7 @@ export default function NewApe() {
         work_group: l.work_group, unit_price: l.unit_price,
         qty_initial: l.qty_initial, qty_previous: l.qty_new, qty_new: l.qty_new,
         funding_source: l.funding_source, is_new_item: l.is_new_item,
+        is_article_132: Boolean(l.is_article_132),
       })))
     } else if (data.budget?.items.length) {
       // 1ος ΑΠΕ: τα συμβατικά μεγέθη του προϋπολογισμού.
@@ -80,6 +81,7 @@ export default function NewApe() {
         work_group: i.work_group, unit_price: i.unit_price,
         qty_initial: i.quantity, qty_previous: i.quantity, qty_new: i.quantity,
         funding_source: 'symvatiko' as const, is_new_item: false,
+        is_article_132: false,
       })))
     }
     setSeeded(true)
@@ -90,10 +92,15 @@ export default function NewApe() {
     [data?.project?.category],
   )
 
-  const totals = useMemo(
-    () => apeTotals(lines, data?.contract?.initial_value_net ?? 0),
-    [lines, data?.contract?.initial_value_net],
-  )
+  const totals = useMemo(() => {
+    const c = data?.contract
+    return apeTotals(lines, {
+      geOePct: c?.ge_oe_pct ?? 18,
+      contractWorksPlusGeOe:
+        Math.round(((c?.initial_value_net ?? 0) - (c?.contingency_amount ?? 0)) * 100) / 100,
+      contingencyAmount: c?.contingency_amount ?? 0,
+    })
+  }, [lines, data?.contract])
 
   /* --------------------------------------------------------------- */
   /* Ζωντανός έλεγχος ορίων άρθρου 156                                */
@@ -106,7 +113,7 @@ export default function NewApe() {
       id: 'draft', project_id: projectId, serial_no: 0, atype, reason,
       drafted_at: draftedAt,
       initial_contract_value: data.contract.initial_value_net,
-      new_total_value: totals.newTotal,
+      new_total_value: Math.round((totals.subtotal2 + totals.art132Total) * 100) / 100,
       delta_amount: totals.delta,
       contingency_used: totals.contingencyUsed,
       savings_used: totals.savings,
@@ -121,6 +128,7 @@ export default function NewApe() {
         amount_new: Math.round(l.qty_new * l.unit_price * 100) / 100,
         delta_amount: Math.round((l.qty_new - l.qty_initial) * l.unit_price * 100) / 100,
         funding_source: l.funding_source, is_new_item: l.is_new_item,
+        is_article_132: l.is_article_132,
       })),
     }
     const others = (data.apes ?? []).filter(a => a.status === 'approved')
@@ -136,14 +144,23 @@ export default function NewApe() {
   const set = (i: number, patch: Partial<ApeLineDraft>) =>
     setLines(ls => ls.map((l, idx) => (idx === i ? { ...l, ...patch } : l)))
 
-  const addNewItem = () =>
+  const addLine = (art132: boolean) =>
     setLines(ls => [...ls, {
       item_code: '', description: '', unit: '', work_group: '', unit_price: 0,
       qty_initial: 0, qty_previous: 0, qty_new: 0,
-      funding_source: 'apravlepta', is_new_item: true,
+      funding_source: art132 ? 'symplirwmatiki' : 'apravlepta',
+      is_new_item: true, is_article_132: art132,
     }])
 
   const removeLine = (i: number) => setLines(ls => ls.filter((_, idx) => idx !== i))
+
+  // ΣΥΝΟΛΟ 1 της σύμβασης: εργασίες + ΓΕ & ΟΕ, χωρίς απρόβλεπτα.
+  const contractSubtotal1 =
+    Math.round((contract.initial_value_net - contract.contingency_amount) * 100) / 100
+  const geOePct = contract.ge_oe_pct ?? 18
+  const contractWorks = Math.round((contractSubtotal1 / (1 + geOePct / 100)) * 100) / 100
+  const contractGeOe = Math.round((contractSubtotal1 - contractWorks) * 100) / 100
+  const serialNo = (previous?.serial_no ?? 0) + 1
 
   const hard = violations.filter(v => v.severity === 'hard')
   const problems: string[] = []
@@ -309,8 +326,13 @@ export default function NewApe() {
             })}
           </tbody>
         </Table>
-        <div className="border-t border-rule px-4 py-3">
-          <Button variant="secondary" onClick={addNewItem}>+ Νέο άρθρο (Π.Κ.Τ.Μ.Ν.Ε.)</Button>
+        <div className="flex flex-wrap gap-2 border-t border-rule px-4 py-3">
+          <Button variant="secondary" onClick={() => addLine(false)}>
+            + Νέο άρθρο (Π.Κ.Τ.Μ.Ν.Ε.)
+          </Button>
+          <Button variant="secondary" onClick={() => addLine(true)}>
+            + Εργασία άρθρου 132
+          </Button>
         </div>
       </Card>
 
@@ -324,15 +346,58 @@ export default function NewApe() {
             limit={contract.contingency_amount}
             note={`κονδύλιο ${contract.contingency_pct}% — άρθρο 156 §3β`} />
           <Limit label="Επί έλασσον (συνολικά)" value={totals.savings}
-            limit={contract.initial_value_net * 0.1}
-            note="όριο 10% — άρθρο 156 §3γ" />
+            limit={contractSubtotal1 * 0.1}
+            note="όριο 10% επί εργασιών + ΓΕ & ΟΕ — άρθρο 156 §3γ" />
         </div>
-        <dl className="grid gap-x-6 gap-y-2 border-t border-rule px-4 py-3 text-sm sm:grid-cols-4">
-          <Pair k="Δαπάνη εργασιών (αρχική)" v={eur(totals.worksInitial)} />
-          <Pair k="Δαπάνη εργασιών (νέα)" v={eur(totals.worksNew)} />
-          <Pair k="Μεταβολή" v={`${totals.delta >= 0 ? '+' : ''}${eur(totals.delta)}`} />
-          <Pair k="Νέα συνολική δαπάνη" v={eur(totals.newTotal)} />
-        </dl>
+
+        {/* Ο επίσημος πίνακας δαπάνης, όπως τον συντάσσει η Δ/νση. */}
+        <div className="overflow-x-auto border-t border-rule">
+          <table className="w-full min-w-[560px] text-sm">
+            <thead>
+              <tr className="border-b border-rule">
+                <Th />
+                <Th align="end">Κύρια Σύμβαση</Th>
+                <Th align="end">{serialNo}ος ΑΠΕ</Th>
+                {totals.art132Total > 0 && <Th align="end">Άρθρο 132</Th>}
+                {totals.art132Total > 0 && <Th align="end">Δαπάνη έργου</Th>}
+              </tr>
+            </thead>
+            <tbody>
+              <Sum k="Άθροισμα Εργασιών" a={contractWorks} b={totals.worksNew}
+                c={totals.art132Works} d={totals.projectWorks} show132={totals.art132Total > 0} />
+              <Sum k={`Γ.Ε. + Ο.Ε. ${contract.ge_oe_pct ?? 18}%`} a={contractGeOe} b={totals.geOe}
+                c={totals.art132GeOe} d={totals.projectGeOe} show132={totals.art132Total > 0} />
+              <Sum k="ΣΥΝΟΛΟ 1" a={contractSubtotal1} b={totals.subtotal1}
+                c={totals.art132Total} d={totals.projectSubtotal1} show132={totals.art132Total > 0} strong />
+              <Sum k="ΑΠΡΟΒΛΕΠΤΑ" a={contract.contingency_amount} b={totals.contingencyRemaining}
+                c={0} d={totals.contingencyRemaining} show132={totals.art132Total > 0} />
+              <Sum k="ΣΥΝΟΛΟ 2" a={totals.contractSubtotal2} b={totals.subtotal2}
+                c={totals.art132Total} d={totals.projectSubtotal2} show132={totals.art132Total > 0} strong />
+            </tbody>
+          </table>
+        </div>
+
+        <div className="border-t border-rule px-4 py-3 text-xs">
+          {totals.contingencyOverrun ? (
+            <p className="text-oxide">
+              Ο ΑΠΕ <strong>δεν είναι σε ισοζύγιο</strong>: η αύξηση των εργασιών υπερβαίνει τα
+              διαθέσιμα απρόβλεπτα κατά {eur(-totals.contingencyRemaining)}. Η διαφορά πρέπει να
+              περάσει από το άρθρο 132 ή από συμπληρωματική σύμβαση —
+              ποτέ ως σιωπηρή αύξηση της σύμβασης.
+            </p>
+          ) : (
+            <p className="text-ink3">
+              Ο ΑΠΕ βρίσκεται <strong>σε ισοζύγιο</strong> έναντι της σύμβασης: η μεταβολή των
+              εργασιών απορροφάται από τα απρόβλεπτα, που απομένουν{' '}
+              {eur(totals.contingencyRemaining)} από {eur(contract.contingency_amount)}.
+              {totals.art132Total > 0 && (
+                <> Οι εργασίες του άρθρου 132 ({eur(totals.art132Total)}) προσαυξάνουν τη
+                σύμβαση κατά {pct((totals.art132Total / contract.initial_value_net) * 100)},
+                με όριο 15%. <LegalRef id="N4412/132/2" /></>
+              )}
+            </p>
+          )}
+        </div>
       </Card>
 
       {violations.length > 0 && (
@@ -386,12 +451,20 @@ function Limit({ label, value, limit, note }: {
   )
 }
 
-function Pair({ k, v }: { k: string; v: string }) {
+function Sum({ k, a, b, c, d, show132, strong }: {
+  k: string; a: number; b: number; c: number; d: number
+  show132: boolean; strong?: boolean
+}) {
+  const cls = cx('tnum px-3 py-1.5 text-right font-mono text-xs',
+    strong && 'font-semibold text-ink')
   return (
-    <div>
-      <dt className="label-xs">{k}</dt>
-      <dd className="tnum mt-0.5 font-mono text-[13px]">{v}</dd>
-    </div>
+    <tr className={cx('border-b border-rule/60', strong && 'bg-paper')}>
+      <td className={cx('px-3 py-1.5 text-xs', strong ? 'font-semibold text-ink' : 'text-ink2')}>{k}</td>
+      <td className={cls}>{eur(a)}</td>
+      <td className={cls}>{eur(b)}</td>
+      {show132 && <td className={cls}>{eur(c)}</td>}
+      {show132 && <td className={cls}>{eur(d)}</td>}
+    </tr>
   )
 }
 

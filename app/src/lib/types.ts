@@ -99,6 +99,10 @@ export interface Contract {
   signed_at: string
   discount_pct: number
   initial_value_net: number
+  /** Ενιαίο ποσοστό ΓΕ & ΟΕ του έργου (συνήθως 18%). Επανυπολογίζεται σε
+   *  ΚΑΘΕ ΑΠΕ πάνω στο νέο άθροισμα εργασιών. */
+  ge_oe_pct: number
+  ge_oe_amount: number
   contingency_pct: number
   contingency_amount: number
   vat_rate: number
@@ -305,6 +309,10 @@ export interface ApeLine {
   delta_amount: number
   funding_source: 'symvatiko' | 'apravlepta' | 'epi_elasson' | 'symplirwmatiki' | 'apologistika'
   is_new_item: boolean
+  /** Γραμμή της ενότητας «ΕΡΓΑΣΙΕΣ ΣΥΜΦΩΝΑ ΜΕ ΤΟ ΑΡΘΡΟ 132 ΤΟΥ Ν.4412/16».
+   *  Δεν καλύπτεται από απρόβλεπτα — προσαυξάνει τη σύμβαση, με όριο 15%
+   *  της αρχικής αξίας (άρθρο 132 §2). */
+  is_article_132?: boolean
 }
 
 export interface Ape {
@@ -479,6 +487,8 @@ export interface ApeLineDraft {
   qty_new: number
   funding_source: ApeLine['funding_source']
   is_new_item: boolean
+  /** Ανήκει στην ενότητα του άρθρου 132 (υπερσυμβατικές εργασίες). */
+  is_article_132: boolean
 }
 
 export interface NewApeInput {

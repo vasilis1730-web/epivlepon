@@ -539,7 +539,12 @@ export function createApe(input: NewApeInput) {
     .filter(a => a.project_id === input.project_id)
     .reduce((m, a) => Math.max(m, a.serial_no), 0) + 1
 
-  const t = apeTotals(input.lines, contract.initial_value_net)
+  const t = apeTotals(input.lines, {
+    geOePct: contract.ge_oe_pct ?? 18,
+    contractWorksPlusGeOe:
+      Math.round((contract.initial_value_net - contract.contingency_amount) * 100) / 100,
+    contingencyAmount: contract.contingency_amount,
+  })
   const id = `ape-${Date.now().toString(36)}`
 
   const lines: ApeLine[] = input.lines.map((l, i) => ({
@@ -556,6 +561,7 @@ export function createApe(input: NewApeInput) {
     delta_amount: Math.round((l.qty_new - l.qty_initial) * l.unit_price * 100) / 100,
     funding_source: l.funding_source,
     is_new_item: l.is_new_item,
+    is_article_132: l.is_article_132,
   }))
 
   state.apes = [...state.apes, {
@@ -566,7 +572,8 @@ export function createApe(input: NewApeInput) {
     reason: input.reason,
     drafted_at: input.drafted_at,
     initial_contract_value: contract.initial_value_net,
-    new_total_value: t.newTotal,
+    // Νέα συνολική δαπάνη = ΣΥΝΟΛΟ 2 του ΑΠΕ + οι εργασίες του άρθρου 132.
+    new_total_value: Math.round((t.subtotal2 + t.art132Total) * 100) / 100,
     delta_amount: t.delta,
     contingency_used: t.contingencyUsed,
     savings_used: t.savings,
@@ -692,6 +699,8 @@ export function createProject(input: NewProjectInput): { projectId: string; stag
     signed_at: c.signed_at,
     discount_pct: c.discount_pct,
     initial_value_net: d.initialValueNet,
+    ge_oe_pct: c.ge_oe_pct,
+    ge_oe_amount: d.geOe,
     contingency_pct: c.contingency_pct,
     contingency_amount: d.contingency,
     vat_rate: c.vat_rate,

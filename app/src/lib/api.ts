@@ -656,7 +656,12 @@ export async function createApe(input: NewApeInput): Promise<{ apeId: string; se
   )
   const serialNo = (existing[0]?.serial_no ?? 0) + 1
 
-  const t = apeTotals(input.lines, contract.initial_value_net)
+  const t = apeTotals(input.lines, {
+    geOePct: contract.ge_oe_pct ?? 18,
+    contractWorksPlusGeOe:
+      Math.round((contract.initial_value_net - contract.contingency_amount) * 100) / 100,
+    contingencyAmount: contract.contingency_amount,
+  })
 
   const project = await pick<{ category: string }[]>(
     await sb().from('projects').select('category').eq('id', input.project_id),
@@ -670,12 +675,14 @@ export async function createApe(input: NewApeInput): Promise<{ apeId: string; se
     reason: input.reason,
     drafted_at: input.drafted_at,
     initial_contract_value: contract.initial_value_net,
-    previous_ape_value: t.previousValue,
+    previous_ape_value: t.worksPrevious,
+    works_value: t.worksNew,
+    ge_oe_amount: t.geOe,
     contingency_used: t.contingencyUsed,
-    contingency_remaining:
-      Math.round((contract.contingency_amount - t.contingencyUsed) * 100) / 100,
+    contingency_remaining: t.contingencyRemaining,
     savings_used: t.savings,
-    new_total_value: t.newTotal,
+    // Νέα συνολική δαπάνη = ΣΥΝΟΛΟ 2 του ΑΠΕ + οι εργασίες του άρθρου 132.
+    new_total_value: Math.round((t.subtotal2 + t.art132Total) * 100) / 100,
     delta_pct: contract.initial_value_net
       ? Math.round((t.delta / contract.initial_value_net) * 1_000_000) / 10_000
       : null,

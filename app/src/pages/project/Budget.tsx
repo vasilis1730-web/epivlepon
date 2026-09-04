@@ -15,8 +15,18 @@ import {
   Badge, Button, Card, CardHeader, Input, LegalRef, Select, Spinner, Table, Td, Th,
 } from '@/components/ui'
 import { WORK_GROUPS } from '@/lib/catalogue'
-import { eur } from '@/lib/format'
+import { cx, eur } from '@/lib/format'
 import type { BudgetItemDraft } from '@/lib/types'
+
+function Row({ k, v, strong }: { k: string; v: string; strong?: boolean }) {
+  return (
+    <div className="flex items-baseline justify-between gap-3">
+      <span className={cx('text-xs', strong ? 'text-ink' : 'text-ink3')}>{k}</span>
+      <span className={cx('tnum shrink-0 font-mono text-xs',
+        strong ? 'font-semibold text-ink' : 'text-ink2')}>{v}</span>
+    </div>
+  )
+}
 
 const emptyLine = (lineNo: number): BudgetItemDraft => ({
   line_no: lineNo, item_code: '', description: '', unit: '',
@@ -76,8 +86,30 @@ export default function Budget() {
     setLines(ls => ls.filter((_, idx) => idx !== i).map((l, idx) => ({ ...l, line_no: idx + 1 })))
 
   const filled = lines.filter(l => l.item_code.trim() && l.quantity > 0 && l.unit_price > 0)
+
+  // Αντιπαραβολή με τη σύμβαση. Ο προϋπολογισμός είναι η αφετηρία ΚΑΘΕ ΑΠΕ:
+  // αν δεν συμφωνεί με τα συμβατικά μεγέθη, όλα τα ποσά που θα προκύψουν από
+  // αυτόν είναι πλασματικά.
+  const geOePct = contract.ge_oe_pct ?? 18
+  const geOe = Math.round((total * geOePct) / 100 * 100) / 100
+  const subtotal1 = Math.round((total + geOe) * 100) / 100
+  const contractSubtotal1 =
+    Math.round((contract.initial_value_net - contract.contingency_amount) * 100) / 100
+  const diff = Math.round((subtotal1 - contractSubtotal1) * 100) / 100
+  // Ανοχή ενός λεπτού ανά γραμμή, για στρογγυλοποιήσεις τιμών μονάδος.
+  const tolerance = Math.max(0.05, filled.length * 0.01)
+  const reconciles = Math.abs(diff) <= tolerance
+
   const problems: string[] = []
   if (!filled.length) problems.push('Δεν έχει συμπληρωθεί καμία έγκυρη γραμμή.')
+  if (filled.length && !reconciles) {
+    problems.push(
+      `Ο προϋπολογισμός δεν συμφωνεί με τη σύμβαση: εργασίες + ΓΕ & ΟΕ ${eur(subtotal1)} ` +
+      `έναντι ${eur(contractSubtotal1)} — διαφορά ${diff > 0 ? '+' : ''}${eur(diff)}. ` +
+      'Ο ΑΠΕ συγκρίνει τις νέες ποσότητες με ΑΥΤΑ τα μεγέθη· αν αποκλίνουν, ' +
+      'κάθε ποσό του ΑΠΕ και των απροβλέπτων βγαίνει λανθασμένο.',
+    )
+  }
   if (lines.some(l => l.item_code.trim() && !l.work_group)) {
     problems.push(
       'Κάθε άρθρο πρέπει να ενταχθεί σε ομάδα εργασιών — χωρίς αυτήν δεν ελέγχεται ' +
@@ -188,21 +220,33 @@ export default function Budget() {
       </Card>
 
       <Card>
-        <CardHeader title="Αντιπαραβολή με τη σύμβαση" legalRef="N4412/156/1" />
+        <CardHeader
+          title="Αντιπαραβολή με τη σύμβαση"
+          legalRef="N4412/156/1"
+          right={filled.length
+            ? <Badge tone={reconciles ? 'accent' : 'oxide'}>
+                {reconciles ? 'συμφωνεί' : 'απόκλιση'}
+              </Badge>
+            : undefined}
+        />
         <div className="space-y-2 px-4 py-4 text-sm">
-          <div className="flex items-baseline justify-between">
-            <span className="text-ink2">Αξία αρχικής σύμβασης (χωρίς ΦΠΑ)</span>
-            <span className="tnum font-mono">{eur(contract.initial_value_net)}</span>
+          <Row k="Δαπάνη εργασιών (καταχώριση)" v={eur(total)} />
+          <Row k={`Γ.Ε. + Ο.Ε. ${geOePct}%`} v={eur(geOe)} />
+          <Row k="ΣΥΝΟΛΟ 1 (καταχώριση)" v={eur(subtotal1)} strong />
+          <div className="border-t border-rule pt-2">
+            <Row k="ΣΥΝΟΛΟ 1 κατά τη σύμβαση" v={eur(contractSubtotal1)} strong />
+            <Row k={`Κονδύλιο απροβλέπτων ${contract.contingency_pct}%`}
+              v={eur(contract.contingency_amount)} />
+            <Row k="Αξία αρχικής σύμβασης" v={eur(contract.initial_value_net)} />
           </div>
-          <div className="flex items-baseline justify-between">
-            <span className="text-ink2">Κονδύλιο απροβλέπτων {contract.contingency_pct}%</span>
-            <span className="tnum font-mono">{eur(contract.contingency_amount)}</span>
-          </div>
-          <p className="pt-1 text-xs text-ink3">
-            Η δαπάνη εργασιών είναι μικρότερη της συμβατικής αξίας, καθώς η τελευταία
-            περιλαμβάνει ΓΕ &amp; ΟΕ και απρόβλεπτα. Τα κονδύλια αυτά δεν
-            ανακεφαλαιώνονται εκ νέου στον ΑΠΕ. <LegalRef id="N4412/156/3b" />
-          </p>
+          {filled.length > 0 && (
+            <p className={cx('pt-1 text-xs', reconciles ? 'text-ink3' : 'text-oxide')}>
+              {reconciles
+                ? 'Ο προϋπολογισμός συμφωνεί με τα συμβατικά μεγέθη — ο ΑΠΕ θα έχει σωστή αφετηρία σύγκρισης.'
+                : `Απόκλιση ${diff > 0 ? '+' : ''}${eur(diff)} από τα συμβατικά μεγέθη.`}
+              {' '}<LegalRef id="N4412/156/3b" />
+            </p>
+          )}
         </div>
       </Card>
 

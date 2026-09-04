@@ -48,6 +48,19 @@ export function apeViolations(
   const out: Blocker[] = []
   const base = contract.initial_value_net
 
+  // ΣΥΝΟΛΟ 1 της σύμβασης: εργασίες + ΓΕ & ΟΕ, ΧΩΡΙΣ απρόβλεπτα. Είναι η
+  // βάση των ορίων του άρθρου 156 §3γ — όχι η συνολική συμβατική αξία.
+  const contractSubtotal1 = round2(base - contract.contingency_amount)
+
+  const t = apeTotals(
+    ape.lines.map(l => ({ ...l, qty_previous: l.qty_initial })),
+    {
+      geOePct: contract.ge_oe_pct ?? 18,
+      contractWorksPlusGeOe: contractSubtotal1,
+      contingencyAmount: contract.contingency_amount,
+    },
+  )
+
   // (1) Σωρευτικό όριο 50% (άρθρο 156 §1)
   const cumulative =
     otherApprovedApes.filter(a => a.delta_amount > 0).reduce((s, a) => s + a.delta_amount, 0) +
@@ -61,47 +74,82 @@ export function apeViolations(
     })
   }
 
-  // (2) Απρόβλεπτα 9% / 15% (άρθρο 156 §3β)
-  if (ape.contingency_used > contract.contingency_amount + 0.005) {
+  // (2) Ισοζύγιο απροβλέπτων (άρθρο 156 §3β)
+  if (t.contingencyOverrun) {
     out.push({
       code: 'APE_CONTINGENCY',
       severity: 'hard',
       legal_ref: 'N4412/156/3b',
-      message: `Η χρήση απροβλέπτων (${fmt(ape.contingency_used)}) υπερβαίνει το εγκεκριμένο κονδύλιο ${contract.contingency_pct}% (${fmt(contract.contingency_amount)}).`,
+      message:
+        `Η αύξηση των εργασιών (${fmt(t.contingencyUsed)}) εξαντλεί το κονδύλιο ` +
+        `απροβλέπτων ${contract.contingency_pct}% (${fmt(contract.contingency_amount)}) κατά ` +
+        `${fmt(-t.contingencyRemaining)}. Ο ΑΠΕ δεν είναι σε ισοζύγιο: η διαφορά πρέπει να ` +
+        'περάσει από το άρθρο 132 ή από συμπληρωματική σύμβαση.',
     })
   }
 
-  // (3) Επί έλασσον ≤ 20% ανά ομάδα εργασιών (άρθρο 156 §3γ)
-  const byGroup = new Map<string, { savings: number; initial: number }>()
+  /* --- Όρια 20% ανά ομάδα εργασιών (άρθρο 156 §3γ) ----------------- */
+  const byGroup = new Map<string, { savings: number; increase: number; initial: number }>()
   for (const l of ape.lines) {
-    const g = byGroup.get(l.work_group) ?? { savings: 0, initial: 0 }
+    if (l.is_article_132) continue
+    const g = byGroup.get(l.work_group) ?? { savings: 0, increase: 0, initial: 0 }
     if (l.delta_amount < 0) g.savings += -l.delta_amount
+    else g.increase += l.delta_amount
     g.initial += l.amount_initial
     byGroup.set(l.work_group, g)
   }
+
   for (const [group, g] of byGroup) {
-    if (g.initial > 0 && g.savings > g.initial * 0.2) {
+    if (g.initial <= 0) continue
+
+    // (3) Επί έλαττον ≤ 20% της δαπάνης της ομάδας
+    if (g.savings > g.initial * 0.2) {
       out.push({
         code: `APE_SAVINGS_GROUP_20:${group}`,
         severity: 'hard',
         legal_ref: 'N4412/156/3c',
-        message: `Ομάδα «${group}»: οι επί έλασσον δαπάνες (${fmt(g.savings)}) υπερβαίνουν το 20% της συμβατικής δαπάνης της ομάδας (${fmt(g.initial * 0.2)}).`,
+        message: `Ομάδα «${group}»: οι επί έλαττον δαπάνες (${fmt(g.savings)}) υπερβαίνουν το 20% της συμβατικής δαπάνης της ομάδας (${fmt(g.initial * 0.2)}).`,
+      })
+    }
+
+    // (4) Επί ΠΛΕΟΝ καθ' υπέρβαση του 20% της ομάδας. Δεν απαγορεύεται
+    // αυτοτελώς: η υπέρβαση πρέπει να καλύπτεται από τα χρησιμοποιηθέντα
+    // απρόβλεπτα, αλλιώς συνιστά παρέκκλιση (φύλλο ελέγχου, Πίνακας 2).
+    const overFifth = round2(g.increase - g.initial * 0.2)
+    if (overFifth > 0 && overFifth > Math.max(0, t.contingencyUsed)) {
+      out.push({
+        code: `APE_INCREASE_GROUP_20:${group}`,
+        severity: 'hard',
+        legal_ref: 'N4412/156/3c',
+        message:
+          `Ομάδα «${group}»: οι επί πλέον δαπάνες υπερβαίνουν το 20% της ομάδας κατά ` +
+          `${fmt(overFifth)}, ποσό που δεν καλύπτεται από τα χρησιμοποιηθέντα απρόβλεπτα ` +
+          `(${fmt(Math.max(0, t.contingencyUsed))}).`,
       })
     }
   }
 
-  // (4) Επί έλασσον ≤ 10% συνολικά (άρθρο 156 §3γ)
-  const totalSavings = ape.lines.reduce((s, l) => s + (l.delta_amount < 0 ? -l.delta_amount : 0), 0)
-  if (base > 0 && totalSavings > base * 0.1) {
+  // (5) Επί έλαττον ≤ 10% — βάση το ΣΥΝΟΛΟ 1 της σύμβασης (εργασίες + ΓΕ & ΟΕ)
+  if (contractSubtotal1 > 0 && t.savings > contractSubtotal1 * 0.1) {
     out.push({
       code: 'APE_SAVINGS_TOTAL_10',
       severity: 'hard',
       legal_ref: 'N4412/156/3c',
-      message: `Οι επί έλασσον δαπάνες (${fmt(totalSavings)}) υπερβαίνουν το 10% της αξίας της αρχικής σύμβασης (${fmt(base * 0.1)}).`,
+      message: `Οι επί έλαττον δαπάνες (${fmt(t.savings)}) υπερβαίνουν το 10% του συνόλου εργασιών και ΓΕ & ΟΕ της σύμβασης (${fmt(contractSubtotal1 * 0.1)}).`,
     })
   }
 
-  // (5) Απαγόρευση νέων άρθρων από επί έλασσον (άρθρο 156 §3γ)
+  // (6) Εργασίες άρθρου 132 ≤ 15% της αξίας της αρχικής σύμβασης (§2)
+  if (base > 0 && t.art132Total > base * 0.15) {
+    out.push({
+      code: 'APE_ART132_LIMIT_15',
+      severity: 'hard',
+      legal_ref: 'N4412/132/2',
+      message: `Οι εργασίες του άρθρου 132 (${fmt(t.art132Total)}) υπερβαίνουν το 15% της αξίας της αρχικής σύμβασης (${fmt(base * 0.15)}).`,
+    })
+  }
+
+  // (7) Απαγόρευση νέων άρθρων από επί έλασσον (άρθρο 156 §3γ)
   if (ape.lines.some(l => l.is_new_item && l.funding_source === 'epi_elasson')) {
     out.push({
       code: 'APE_NEW_ITEM_FROM_SAVINGS',
@@ -112,18 +160,26 @@ export function apeViolations(
     })
   }
 
-  // (6) Γνωμοδότηση Τεχνικού Συμβουλίου (άρθρο 156 §1ε, §3γ)
-  if ((ape.supplementary_needed || totalSavings > 0) && !ape.tc_opinion_id) {
+  // (8) Γνωμοδότηση Τεχνικού Συμβουλίου.
+  // Απαιτείται όταν γίνεται χρήση επί έλαττον δαπανών, όταν υπάρχει
+  // υπέρβαση του οικονομικού αντικειμένου (εργασίες άρθρου 132), ή όταν
+  // απαιτείται συμπληρωματική σύμβαση.
+  const needsTc = ape.supplementary_needed || t.savings > 0 || t.art132Total > 0
+  if (needsTc && !ape.tc_opinion_id) {
+    const why = ape.supplementary_needed
+      ? 'συμπληρωματική σύμβαση'
+      : t.art132Total > 0
+        ? 'υπέρβαση του οικονομικού αντικειμένου (εργασίες άρθρου 132)'
+        : 'χρήση επί έλαττον δαπανών'
     out.push({
       code: 'APE_TC_OPINION',
       severity: 'hard',
       legal_ref: 'N4412/156/1e',
-      message:
-        'Απαιτείται γνωμοδότηση Τεχνικού Συμβουλίου (συμπληρωματική σύμβαση ή χρήση επί έλασσον δαπανών).',
+      message: `Απαιτείται γνωμοδότηση Τεχνικού Συμβουλίου: ${why}.`,
     })
   }
 
-  // (7) Π.Κ.Τ.Μ.Ν.Ε. όταν υπάρχουν νέα άρθρα (άρθρο 156 §5)
+  // (9) Π.Κ.Τ.Μ.Ν.Ε. όταν υπάρχουν νέα άρθρα (άρθρο 156 §5)
   if (ape.lines.some(l => l.is_new_item) && ape.atype !== 'me_pktmne') {
     out.push({
       code: 'APE_PKTMNE_MISSING',
@@ -133,7 +189,7 @@ export function apeViolations(
     })
   }
 
-  // (8) Υπογραφή / κοινοποίηση στον ανάδοχο (άρθρο 156 §7)
+  // (10) Υπογραφή / κοινοποίηση στον ανάδοχο (άρθρο 156 §7)
   if (!ape.contractor_signature) {
     out.push({
       code: 'APE_SIGNATURE',
@@ -222,48 +278,103 @@ export function computePayment(input: {
 }
 
 /* ------------------------------------------------------------------ */
-/* Σύνολα ΑΠΕ (άρθρο 156 §2)                                           */
+/* Σύνολα ΑΠΕ (άρθρα 156 και 132)                                      */
 /* ------------------------------------------------------------------ */
 /**
- * Μοντέλο: οι γραμμές του ΑΠΕ αποτυπώνουν τη ΔΑΠΑΝΗ ΕΡΓΑΣΙΩΝ. Η νέα
- * συνολική δαπάνη προκύπτει ως η αξία της αρχικής σύμβασης προσαυξημένη
- * κατά την ΚΑΘΑΡΗ μεταβολή των εργασιών· τα κονδύλια ΓΕ & ΟΕ και
- * απροβλέπτων της αρχικής σύμβασης παραμένουν ενσωματωμένα στη βάση
- * `initialContractValue` και δεν ανακεφαλαιώνονται εκ νέου.
+ * Η επίσημη δομή του Ανακεφαλαιωτικού Πίνακα, όπως τη συντάσσει η Δ/νση:
+ *
+ *   Άθροισμα Εργασιών
+ * + Γ.Ε. & Ο.Ε. (ενιαίο ποσοστό, ΕΠΑΝΥΠΟΛΟΓΙΖΕΤΑΙ στο νέο άθροισμα)
+ * = ΣΥΝΟΛΟ 1
+ * + Απρόβλεπτα (το ΥΠΟΛΟΙΠΟ μετά την απορρόφηση)
+ * = ΣΥΝΟΛΟ 2
+ *
+ * Ο ΑΠΕ είναι «σε ισοζύγιο»: το ΣΥΝΟΛΟ 2 παραμένει ίσο με της σύμβασης,
+ * γιατί η αύξηση των εργασιών απορροφάται από τα απρόβλεπτα, τα οποία
+ * συρρικνώνονται ισόποσα. Αν η αύξηση εξαντλήσει τα απρόβλεπτα, η διαφορά
+ * ΔΕΝ βαφτίζεται σιωπηρά αύξηση: πρέπει να περάσει από το άρθρο 132 ή από
+ * συμπληρωματική σύμβαση.
+ *
+ * Οι εργασίες του άρθρου 132 τηρούνται ΧΩΡΙΣΤΑ: δεν καλύπτονται από
+ * απρόβλεπτα, προσαυξάνουν τη σύμβαση και έχουν δικό τους όριο 15% (§2).
  */
-export function apeTotals(
-  lines: Array<{
-    unit_price: number
-    qty_initial: number
-    qty_previous: number
-    qty_new: number
-    funding_source: string
-  }>,
-  initialContractValue: number,
-) {
-  const worksInitial = round2(lines.reduce((s, l) => s + l.unit_price * l.qty_initial, 0))
-  const worksPrevious = round2(lines.reduce((s, l) => s + l.unit_price * l.qty_previous, 0))
-  const worksNew = round2(lines.reduce((s, l) => s + l.unit_price * l.qty_new, 0))
+export interface ApeTotalsBase {
+  /** Ενιαίο ποσοστό ΓΕ & ΟΕ του έργου (π.χ. 18). */
+  geOePct: number
+  /** ΣΥΝΟΛΟ 1 της αρχικής σύμβασης: εργασίες + ΓΕ & ΟΕ. */
+  contractWorksPlusGeOe: number
+  /** Κονδύλιο απροβλέπτων της αρχικής σύμβασης. */
+  contingencyAmount: number
+}
 
-  const delta = round2(worksNew - worksInitial)
-  const newTotal = round2(initialContractValue + delta)
-  const previousValue = round2(initialContractValue + (worksPrevious - worksInitial))
+export interface ApeTotalsLine {
+  unit_price: number
+  qty_initial: number
+  qty_previous: number
+  qty_new: number
+  funding_source: string
+  is_article_132?: boolean
+}
 
-  // Χρήση απροβλέπτων: μόνο οι ΑΥΞΗΣΕΙΣ γραμμών που χρηματοδοτούνται από
-  // το κονδύλιο απροβλέπτων (άρθρο 156 §3β).
-  const contingencyUsed = round2(
-    lines
-      .filter(l => l.funding_source === 'apravlepta')
-      .reduce((s, l) => s + Math.max(0, (l.qty_new - l.qty_initial) * l.unit_price), 0),
-  )
+export function apeTotals(lines: ApeTotalsLine[], base: ApeTotalsBase) {
+  const sum = (ls: ApeTotalsLine[], k: 'qty_initial' | 'qty_previous' | 'qty_new') =>
+    round2(ls.reduce((s, l) => s + l.unit_price * l[k], 0))
 
-  // Επί έλασσον δαπάνες: το άθροισμα των ΜΕΙΩΣΕΩΝ (άρθρο 156 §3γ).
+  const main = lines.filter(l => !l.is_article_132)
+  const art132 = lines.filter(l => l.is_article_132)
+
+  /* --- Κυρίως ΑΠΕ ------------------------------------------------- */
+  const worksInitial = sum(main, 'qty_initial')
+  const worksPrevious = sum(main, 'qty_previous')
+  const worksNew = sum(main, 'qty_new')
+
+  const geOe = round2((worksNew * base.geOePct) / 100)
+  const subtotal1 = round2(worksNew + geOe)
+
+  // Τα απρόβλεπτα απορροφούν τη μεταβολή του ΣΥΝΟΛΟΥ 1.
+  const contingencyUsed = round2(subtotal1 - base.contractWorksPlusGeOe)
+  const contingencyRemaining = round2(base.contingencyAmount - contingencyUsed)
+  const subtotal2 = round2(subtotal1 + contingencyRemaining)
+
+  const contractSubtotal2 = round2(base.contractWorksPlusGeOe + base.contingencyAmount)
+
+  /** Η αύξηση ξεπέρασε τα διαθέσιμα απρόβλεπτα. */
+  const contingencyOverrun = contingencyRemaining < -0.005
+
+  // ΠΡΟΣΟΧΗ: με εξαντλημένα απρόβλεπτα το ΣΥΝΟΛΟ 2 «κλείνει» αριθμητικά,
+  // επειδή προστίθεται αρνητικό υπόλοιπο — κρύβοντας την υπέρβαση. Ισοζύγιο
+  // υπάρχει ΜΟΝΟ όταν τα απρόβλεπτα επαρκούν.
+  const balanced =
+    !contingencyOverrun && Math.abs(subtotal2 - contractSubtotal2) < 0.015
+
+  /* --- Εργασίες άρθρου 132 ---------------------------------------- */
+  const art132Works = sum(art132, 'qty_new')
+  const art132GeOe = round2((art132Works * base.geOePct) / 100)
+  const art132Total = round2(art132Works + art132GeOe)
+
+  /* --- Δαπάνη έργου (ΑΠΕ + άρθρο 132) ----------------------------- */
+  const projectWorks = round2(worksNew + art132Works)
+  const projectGeOe = round2(geOe + art132GeOe)
+  const projectSubtotal1 = round2(subtotal1 + art132Total)
+  const projectSubtotal2 = round2(projectSubtotal1 + contingencyRemaining)
+
+  /* --- Μεταβολές --------------------------------------------------- */
   const savings = round2(
-    lines.reduce(
-      (s, l) => s + Math.max(0, (l.qty_initial - l.qty_new) * l.unit_price), 0),
-  )
+    main.reduce((s, l) => s + Math.max(0, (l.qty_initial - l.qty_new) * l.unit_price), 0))
+  const increases = round2(
+    main.reduce((s, l) => s + Math.max(0, (l.qty_new - l.qty_initial) * l.unit_price), 0))
 
-  return { worksInitial, worksPrevious, worksNew, delta, newTotal, previousValue, contingencyUsed, savings }
+  return {
+    worksInitial, worksPrevious, worksNew,
+    geOe, subtotal1,
+    contingencyUsed, contingencyRemaining, subtotal2,
+    contractSubtotal2, balanced, contingencyOverrun,
+    art132Works, art132GeOe, art132Total,
+    projectWorks, projectGeOe, projectSubtotal1, projectSubtotal2,
+    savings, increases,
+    /** Καθαρή μεταβολή έναντι της σύμβασης (= δαπάνη άρθρου 132). */
+    delta: art132Total,
+  }
 }
 
 /* ------------------------------------------------------------------ */

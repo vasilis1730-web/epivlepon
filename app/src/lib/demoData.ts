@@ -54,7 +54,9 @@ export const DEMO_CONTRACTS: Record<string, Contract> = {
   [P1]: {
     project_id: P1, contractor_name: 'ΟΔΟΤΕΧΝΙΚΗ ΔΩΔΕΚΑΝΗΣΟΥ Α.Ε.', contractor_afm: '094512376',
     contract_no: '4471/2026', signed_at: addDays(T, -210),
-    discount_pct: 38.5, initial_value_net: 381_300, contingency_pct: 15, contingency_amount: 49_735,
+    discount_pct: 38.5, initial_value_net: 381_300,
+    ge_oe_pct: 18, ge_oe_amount: 50_631,
+    contingency_pct: 15, contingency_amount: 49_735,
     vat_rate: 24, total_duration_days: 300,
     original_end_date: addDays(T, 90), current_end_date: addDays(T, 90),
     works_start_deadline: addDays(T, -180), maintenance_months: 15,
@@ -64,7 +66,9 @@ export const DEMO_CONTRACTS: Record<string, Contract> = {
   [P2]: {
     project_id: P2, contractor_name: 'ΕΝΕΡΓΕΙΑΚΗ ΚΑΤΑΣΚΕΥΑΣΤΙΚΗ Ο.Ε.', contractor_afm: '800345612',
     contract_no: '2210/2025', signed_at: addDays(T, -520),
-    discount_pct: 22.0, initial_value_net: 319_800, contingency_pct: 15, contingency_amount: 41_713,
+    discount_pct: 22.0, initial_value_net: 319_800,
+    ge_oe_pct: 18, ge_oe_amount: 42_468,
+    contingency_pct: 15, contingency_amount: 41_713,
     vat_rate: 24, total_duration_days: 270,
     original_end_date: addDays(T, -250), current_end_date: addDays(T, -190),
     works_start_deadline: addDays(T, -495), maintenance_months: 15,
@@ -74,7 +78,9 @@ export const DEMO_CONTRACTS: Record<string, Contract> = {
   [P3]: {
     project_id: P3, contractor_name: 'ΥΔΡΟΔΟΜΗ ΤΕΧΝΙΚΗ Α.Τ.Ε.', contractor_afm: '997654321',
     contract_no: '5902/2026', signed_at: addDays(T, -18),
-    discount_pct: 31.2, initial_value_net: 860_000, contingency_pct: 9, contingency_amount: 77_400,
+    discount_pct: 31.2, initial_value_net: 860_000,
+    ge_oe_pct: 18, ge_oe_amount: 119_380,
+    contingency_pct: 9, contingency_amount: 77_400,
     vat_rate: 24, total_duration_days: 420,
     original_end_date: addDays(T, 402), current_end_date: addDays(T, 402),
     works_start_deadline: addDays(T, 12), maintenance_months: 15,
