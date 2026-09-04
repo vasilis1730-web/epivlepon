@@ -378,6 +378,168 @@ export function apeTotals(lines: ApeTotalsLine[], base: ApeTotalsBase) {
 }
 
 /* ------------------------------------------------------------------ */
+/* ΦΥΛΛΟ ΕΛΕΓΧΟΥ ΕΠΙ ΕΛΑΤΤΟΝ ΔΑΠΑΝΩΝ                                   */
+/* ------------------------------------------------------------------ */
+/**
+ * Αναπαράγει το επίσημο φύλλο ελέγχου που συνοδεύει κάθε ΑΠΕ, κατά τις
+ * εγκυκλίους 20/2006 και 30/2007 και το άρθρο 156 §3γ.
+ *
+ * Η αρίθμηση των στηλών ακολουθεί ΑΥΤΟΥΣΙΑ το έντυπο της Δ/νσης, ώστε ο
+ * μηχανικός να μπορεί να αντιπαραβάλλει γραμμή προς γραμμή:
+ *
+ *   [3]  Πρ/σμός ομάδας αρχικής σύμβασης
+ *   [4]  Πρ/σμός ομάδας με βάση τον ΑΠΕ
+ *   [5]  Δαπάνες νέων εργασιών
+ *   [6]  = [4]-[3] > 0            επί πλέον
+ *   [7]  = [6]/[3]
+ *   [8]  = [4]-[3] < 0            επί έλαττον
+ *   [9]  = [8]/[3]
+ *   [10] = [8]-0,2*[3] > 0        υπέρβαση ορίου 20% (επί έλαττον)
+ *   [11] = [10]/[3]
+ *   [12] = [8]-[10]               αποδεκτά επί έλαττον
+ *   [13] = [12]/[3]
+ *   [14] = [6]-0,2*[3] > 0        υπέρβαση ορίου 20% (επί ΠΛΕΟΝ)
+ *   [15] = [14]/[3]
+ *
+ * Τα αθροίσματα προσαυξάνονται με ΓΕ & ΟΕ, όπως στο έντυπο.
+ */
+export interface CheckSheetGroup {
+  group: string
+  contractAmount: number   // [3]
+  apeAmount: number        // [4]
+  newWorks: number         // [5]
+  over: number             // [6]
+  overPct: number          // [7]
+  under: number            // [8]
+  underPct: number         // [9]
+  underExcess: number      // [10]
+  underExcessPct: number   // [11]
+  underAccepted: number    // [12]
+  underAcceptedPct: number // [13]
+  overExcess: number       // [14]
+  overExcessPct: number    // [15]
+}
+
+export function apeCheckSheet(
+  lines: Array<{
+    work_group: string
+    unit_price: number
+    qty_initial: number
+    qty_new: number
+    is_new_item?: boolean
+    is_article_132?: boolean
+  }>,
+  base: ApeTotalsBase,
+) {
+  const pct = (n: number, d: number) => (d > 0 ? round2((n / d) * 100) : 0)
+
+  const acc = new Map<string, { contract: number; ape: number; neo: number }>()
+  for (const l of lines) {
+    if (l.is_article_132) continue
+    const g = acc.get(l.work_group) ?? { contract: 0, ape: 0, neo: 0 }
+    g.contract += l.unit_price * l.qty_initial
+    g.ape += l.unit_price * l.qty_new
+    if (l.is_new_item) g.neo += l.unit_price * l.qty_new
+    acc.set(l.work_group, g)
+  }
+
+  const groups: CheckSheetGroup[] = [...acc].map(([group, g]) => {
+    const c = round2(g.contract)
+    const a = round2(g.ape)
+    const diff = round2(a - c)
+    const over = diff > 0 ? diff : 0
+    const under = diff < 0 ? -diff : 0
+    const limit = round2(c * 0.2)
+    const underExcess = under > limit ? round2(under - limit) : 0
+    const overExcess = over > limit ? round2(over - limit) : 0
+    const underAccepted = round2(under - underExcess)
+    return {
+      group,
+      contractAmount: c, apeAmount: a, newWorks: round2(g.neo),
+      over, overPct: pct(over, c),
+      under, underPct: pct(under, c),
+      underExcess, underExcessPct: pct(underExcess, c),
+      underAccepted, underAcceptedPct: pct(underAccepted, c),
+      overExcess, overExcessPct: pct(overExcess, c),
+    }
+  })
+
+  const sum = (k: keyof CheckSheetGroup) =>
+    round2(groups.reduce((s, g) => s + (g[k] as number), 0))
+
+  const geOe = (n: number) => round2((n * base.geOePct) / 100)
+
+  /* Αθροίσματα με ΓΕ & ΟΕ, όπως τα εμφανίζει το έντυπο στη γραμμή Σ2. */
+  const worksContract = sum('contractAmount')
+  const worksApe = sum('apeAmount')
+  const totalOver = sum('over')
+  const totalUnder = sum('under')
+  const totalOverExcess = sum('overExcess')
+  const totalUnderExcess = sum('underExcess')
+
+  const s2Contract = round2(worksContract + geOe(worksContract))
+  const s2Ape = round2(worksApe + geOe(worksApe))
+  const s2Over = round2(totalOver + geOe(totalOver))            // Σ2(6)
+  const s2Under = round2(totalUnder + geOe(totalUnder))         // Σ2(8)
+  const s2OverExcess = round2(totalOverExcess + geOe(totalOverExcess))   // Σ2(14)
+  const s2UnderExcess = round2(totalUnderExcess + geOe(totalUnderExcess)) // Σ2(10)
+
+  // Απορρόφηση που ΑΠΑΙΤΕΙΤΑΙ για να κλείσει το ισοζύγιο.
+  const contingencyUsed = round2(s2Ape - s2Contract)
+  // Απορρόφηση που ΕΠΙΤΡΕΠΕΤΑΙ: δεν μπορεί να ξεπεράσει το κονδύλιο. Ό,τι
+  // απαιτείται πέραν αυτού δεν είναι «χρήση απροβλέπτων» — είναι υπέρβαση
+  // της σύμβασης και το πιάνει το apeTotals (contingencyOverrun).
+  const contingencyApplied = round2(
+    Math.min(Math.max(0, contingencyUsed), base.contingencyAmount))
+
+  /* ---- ΠΙΝΑΚΑΣ 1: έλεγχος με βάση τα ΕΠΙ ΕΛΑΤΤΟΝ ------------------ */
+  const t1_1 = round2(s2Contract * 0.1)   // [1.1] μέγιστο ποσό χρήσης επί έλαττον
+  // [1.4] = Σ2(10) + Σ2(16): αφορά ΜΟΝΟ τα επί έλαττον. Η υπέρβαση των επί
+  // πλέον ελέγχεται χωριστά, στον Πίνακα 2.
+  const t1_4 = s2UnderExcess
+  const t1_6 = s2Under
+  const t1_7 = round2(t1_6 - t1_4)
+  const t1_8 = t1_7 > t1_1 ? round2(t1_7 - t1_1) : 0  // απόκλιση από το 10%
+
+  /* ---- ΠΙΝΑΚΑΣ 2: έλεγχος με βάση τα επί πλέον -------------------- */
+  const t2_2 = s2OverExcess
+  // Η υπέρβαση του 20% επιτρέπεται εφόσον καλύπτεται από τα
+  // χρησιμοποιηθέντα απρόβλεπτα· ό,τι περισσεύει είναι παρέκκλιση.
+  const t2_5 = round2(t2_2 - contingencyApplied)
+  const overrunBeyondContingency = t2_5 > 0 ? t2_5 : 0
+
+  /* ---- ΠΙΝΑΚΑΣ 3: ανακεφαλαίωση ----------------------------------- */
+  const t3_1 = round2(t1_4 + t1_8)
+  const t3_2 = overrunBeyondContingency
+  const t3_3 = Math.max(t3_1, t3_2)
+
+  return {
+    groups,
+    worksContract, worksApe,
+    geOeContract: geOe(worksContract), geOeApe: geOe(worksApe),
+    s2Contract, s2Ape,
+    totalOver, totalUnder, totalOverExcess, totalUnderExcess,
+    s2Over, s2Under, s2OverExcess, s2UnderExcess,
+    contingencyAmount: base.contingencyAmount,
+    contingencyUsed,
+    contingencyApplied,
+    contingencyRemaining: round2(base.contingencyAmount - contingencyUsed),
+    /** [1.1] Μέγιστο επιτρεπτό ποσό χρήσης επί έλαττον (10% του Σ2). */
+    maxSavings: t1_1,
+    /** [1.4] Παράβαση του κανόνα του 20%. */
+    rule20Breach: t1_4,
+    /** [1.8] Απόκλιση από το όριο του 10%. */
+    rule10Breach: t1_8,
+    /** [2.5] Επί πλέον καθ' υπέρβαση, ΜΗ καλυπτόμενο από απρόβλεπτα. */
+    overBeyondContingency: overrunBeyondContingency,
+    /** [3.3] Σφάλμα παράβασης του κανόνα — το μεγαλύτερο των δύο. */
+    ruleBreach: t3_3,
+    /** Το φύλλο «περνά» όταν δεν υπάρχει καμία παράβαση. */
+    passes: t3_3 <= 0.005,
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /* Σύνολα λογαριασμού (άρθρο 152)                                      */
 /* ------------------------------------------------------------------ */
 export function paymentTotals(

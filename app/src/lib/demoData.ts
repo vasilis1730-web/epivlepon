@@ -314,7 +314,8 @@ export const DEMO_APES: Ape[] = [
       'Μείωση ποσοτήτων χωματουργικών λόγω ευνοϊκότερων εδαφικών συνθηκών και ενίσχυση ασφαλτικών στρώσεων.',
     drafted_at: addDays(T, -15),
     initial_contract_value: 381_300, new_total_value: 381_300, delta_amount: 0,
-    contingency_used: 0, savings_used: 62_000, supplementary_needed: false,
+    contingency_used: 0, savings_used: 61_992, supplementary_needed: false,
+    revision_amount: 0, accounting_error: 0,
     tc_opinion_id: null, contractor_signature: null, status: 'draft', approved_at: null,
     lines: [
       {
@@ -323,6 +324,7 @@ export const DEMO_APES: Ape[] = [
         unit_price: 4.2, qty_initial: 22_000, qty_new: 7_240,
         amount_initial: 92_400, amount_new: 30_408, delta_amount: -61_992,
         funding_source: 'epi_elasson', is_new_item: false,
+        revision_code: 'ΟΙΚ 2113',
       },
       {
         id: 'al2', work_group: 'Ασφαλτικά', item_code: 'ΝΕΤ ΟΔΟ Δ-8',
@@ -330,6 +332,18 @@ export const DEMO_APES: Ape[] = [
         unit_price: 8.9, qty_initial: 14_000, qty_new: 20_965,
         amount_initial: 124_600, amount_new: 186_589, delta_amount: 61_989,
         funding_source: 'epi_elasson', is_new_item: false,
+        revision_code: 'ΟΔΟ 4521Β',
+      },
+      {
+        // Αμετάβλητη γραμμή: υπάρχει ώστε το άθροισμα των συμβατικών
+        // ποσοτήτων να ΣΥΜΦΩΝΕΙ με το ΣΥΝΟΛΟ 1 της σύμβασης. Χωρίς αυτό
+        // ο ΑΠΕ θα σύγκρινε με λάθος αφετηρία.
+        id: 'al1b', work_group: 'Τεχνικά έργα', item_code: '3',
+        description: 'Τεχνικά έργα ανοικτής οδοποιίας, κατ’ αποκοπή',
+        unit: 'κατ. απ.', unit_price: 63_987.29, qty_initial: 1, qty_new: 1,
+        amount_initial: 63_987.29, amount_new: 63_987.29, delta_amount: 0,
+        funding_source: 'symvatiko', is_new_item: false,
+        revision_code: 'ΟΔΟ 2151',
       },
     ],
   },

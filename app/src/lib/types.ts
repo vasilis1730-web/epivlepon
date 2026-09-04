@@ -345,6 +345,12 @@ export interface Ape {
   contingency_used: number
   savings_used: number
   supplementary_needed: boolean
+  /** Πρόβλεψη αναθεώρησης — δική της γραμμή στον πίνακα δαπάνης. */
+  revision_amount?: number
+  /** Λογιστικό λάθος (διαφορά στρογγυλοποίησης από τη σύμβαση). */
+  accounting_error?: number
+  /** Συνολική δαπάνη εργασιών άρθρου 132 (εργασίες + ΓΕ & ΟΕ). */
+  article_132_value?: number
   tc_opinion_id: string | null
   contractor_signature: string | null
   status: ApeStatus

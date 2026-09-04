@@ -96,6 +96,10 @@ export default function ApePage() {
                     {APE_STATUS[a.status]}
                   </Badge>
                   <Badge tone="muted">{APE_TYPE[a.atype]}</Badge>
+                  <Button variant="secondary"
+                    onClick={() => nav(`/erga/${projectId}/ape/${a.id}/eggrafa`)}>
+                    Έγγραφα
+                  </Button>
                 </>
               }
             />

@@ -17,6 +17,7 @@ import Measurements from './pages/project/Measurements'
 import Payments from './pages/project/Payments'
 import ApePage from './pages/project/Ape'
 import NewApe from './pages/project/NewApe'
+import ApeDocuments from './pages/project/ApeDocuments'
 import Budget from './pages/project/Budget'
 import NewPayment from './pages/project/NewPayment'
 import Guarantees from './pages/project/Guarantees'
@@ -59,6 +60,7 @@ export default function App() {
         <Route path="/erga/:projectId/logariasmoi/neos" element={<Shell><NewPayment /></Shell>} />
         <Route path="/erga/:projectId/ape" element={<Shell><ApePage /></Shell>} />
         <Route path="/erga/:projectId/ape/neos" element={<Shell><NewApe /></Shell>} />
+        <Route path="/erga/:projectId/ape/:apeId/eggrafa" element={<Shell><ApeDocuments /></Shell>} />
         <Route path="/erga/:projectId/proypologismos" element={<Shell><Budget /></Shell>} />
         <Route path="/erga/:projectId/eggyiseis" element={<Shell><Guarantees /></Shell>} />
         <Route path="/erga/:projectId/peraiosi" element={<Shell><CompletionPage /></Shell>} />

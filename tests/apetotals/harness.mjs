@@ -29,7 +29,7 @@ await build({
   logLevel: 'silent',
 })
 
-const { apeTotals } = await import(resolve(OUT, 'rules.mjs'))
+const { apeTotals, apeCheckSheet } = await import(resolve(OUT, 'rules.mjs'))
 
 /* ------------------------------------------------------------------ */
 /* Βοηθοί                                                             */
@@ -158,6 +158,67 @@ console.log('\n═══ Έλεγχος υπέρβασης απροβλέπτω�
   const ok = t.contingencyOverrun && !t.balanced
   if (!ok) failures++
   console.log(`   ${ok ? '✓' : '✗'} η υπέρβαση εντοπίζεται (υπόλοιπο ${eur(t.contingencyRemaining)})`)
+}
+
+/* ================================================================== */
+/* 5. ΦΥΛΛΟ ΕΛΕΓΧΟΥ ΕΠΙ ΕΛΑΤΤΟΝ — ΚΟΣΚΙΝΟΥ, 1ος ΑΠΕ                    */
+/*    Αντιπαραβολή με το επίσημο έντυπο («Έλεγχος των επί έλαττον      */
+/*    δαπανών 1ου ΑΠΕ»), στήλη προς στήλη.                             */
+/* ================================================================== */
+console.log('\n═══ ΦΥΛΛΟ ΕΛΕΓΧΟΥ — ΚΟΣΚΙΝΟΥ 1ος ΑΠΕ ═══')
+{
+  const cs = apeCheckSheet(
+    [
+      { work_group: 'ΧΩΜΑΤΟΥΡΓΙΚΑ', unit_price: 1, qty_initial: 66_668.39, qty_new: 92_502.82 },
+      { work_group: 'ΣΚΥΡΟΔΕΜΑΤΑ', unit_price: 1, qty_initial: 117_289.09, qty_new: 119_047.73 },
+    ],
+    { geOePct: 18, contractWorksPlusGeOe: 217_069.83, contingencyAmount: 32_560.47 },
+  )
+
+  const x = cs.groups.find(g => g.group === 'ΧΩΜΑΤΟΥΡΓΙΚΑ')
+  const y = cs.groups.find(g => g.group === 'ΣΚΥΡΟΔΕΜΑΤΑ')
+
+  check('[3] Χωματ. σύμβαση', x.contractAmount, 66_668.39)
+  check('[4] Χωματ. ΑΠΕ', x.apeAmount, 92_502.82)
+  check('[6] Χωματ. επί πλέον', x.over, 25_834.43)
+  check('[7] Χωματ. % ', x.overPct, 38.75)
+  check('[14] Χωματ. υπέρβ. 20%', x.overExcess, 12_500.75)
+  check('[15] Χωματ. %', x.overExcessPct, 18.75)
+  check('[6] Σκυροδ. επί πλέον', y.over, 1_758.64)
+  check('[7] Σκυροδ. %', y.overPct, 1.50)
+  check('[14] Σκυροδ. υπέρβ.', y.overExcess, 0)
+
+  check('Άθροισμα εργασιών σύμβ.', cs.worksContract, 183_957.48)
+  check('Άθροισμα εργασιών ΑΠΕ', cs.worksApe, 211_550.55)
+  check('ΓΕ & ΟΕ σύμβασης', cs.geOeContract, 33_112.35)
+  check('ΓΕ & ΟΕ ΑΠΕ', cs.geOeApe, 38_079.10)
+  check('Σ2 σύμβασης', cs.s2Contract, 217_069.83)
+  check('Σ2 ΑΠΕ', cs.s2Ape, 249_629.65)
+  check('Σ2(6) επί πλέον', cs.s2Over, 32_559.82)
+  check('Σ2(14) υπέρβ. 20%', cs.s2OverExcess, 14_750.89)
+  check('Χρησιμοποιηθέντα απρόβλ.', cs.contingencyUsed, 32_559.82)
+  check('[1.1] μέγιστο επί έλαττον', cs.maxSavings, 21_706.98)
+  check('[1.6] επί έλαττον', cs.s2Under, 0)
+
+  // Το έντυπο: 14.750,89 - 32.559,82 = -17.808,93 → καμία παρέκκλιση
+  const noBreach = cs.overBeyondContingency === 0 && cs.passes
+  if (!noBreach) failures++
+  console.log(`   ${noBreach ? '✓' : '✗'} καμία παρέκκλιση ` +
+    `(υπέρβαση 20% ${eur(cs.s2OverExcess)} καλύπτεται από απρόβλεπτα ${eur(cs.contingencyUsed)})`)
+}
+
+/* ================================================================== */
+/* 6. Παρέκκλιση όταν η υπέρβαση ΔΕΝ καλύπτεται από απρόβλεπτα        */
+/* ================================================================== */
+console.log('\n═══ Φύλλο ελέγχου — παρέκκλιση ═══')
+{
+  const cs = apeCheckSheet(
+    [{ work_group: 'Α', unit_price: 1, qty_initial: 100_000, qty_new: 160_000 }],
+    { geOePct: 18, contractWorksPlusGeOe: 118_000, contingencyAmount: 1_000 },
+  )
+  const ok = !cs.passes && cs.overBeyondContingency > 0
+  if (!ok) failures++
+  console.log(`   ${ok ? '✓' : '✗'} εντοπίζεται παρέκκλιση ${eur(cs.overBeyondContingency)}`)
 }
 
 /* ------------------------------------------------------------------ */
