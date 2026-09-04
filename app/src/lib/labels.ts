@@ -1,4 +1,4 @@
-import type {
+import type { AwardBody,
   PartyType, RoleType, StagePhase, StageStatus, RecurrenceType,
   MeasurementStatus, PaymentStatus, ApeStatus, ApeType,
   GuaranteeType, GuaranteeStatus, DiaryStatus, ProjectCategory,
@@ -168,4 +168,12 @@ export function formatLegalRef(ref: string | null | undefined): string {
 export function shortLegalRef(ref: string | null | undefined): string {
   const full = formatLegalRef(ref)
   return full.replace('ν. 4412/2016 ', '').replace('Υ.Α. ΔΝΣγ/οικ.38107/ΦΝ 466/2017', 'Υ.Α. 38107/2017')
+}
+
+export const AWARD_BODY: Record<AwardBody, string> = {
+  dimotiki_epitropi: 'Δημοτική Επιτροπή',
+  oikonomiki_epitropi: 'Οικονομική Επιτροπή',
+  dimotiko_symvoulio: 'Δημοτικό Συμβούλιο',
+  dioikitiko_symvoulio: 'Διοικητικό Συμβούλιο',
+  allo: 'Άλλο όργανο',
 }

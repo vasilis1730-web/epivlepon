@@ -517,6 +517,7 @@ export function saveBudget(projectId: string, lines: BudgetItemDraft[]) {
       description: l.description,
       unit: l.unit,
       work_group: l.work_group,
+      revision_code: l.revision_code.trim() || null,
       unit_price: l.unit_price,
       quantity: l.quantity,
       amount: Math.round(l.unit_price * l.quantity * 100) / 100,
@@ -553,6 +554,7 @@ export function createApe(input: NewApeInput) {
     item_code: l.item_code,
     description: l.description,
     unit: l.unit,
+    revision_code: l.revision_code.trim() || null,
     unit_price: l.unit_price,
     qty_initial: l.qty_initial,
     qty_new: l.qty_new,
@@ -712,6 +714,12 @@ export function createProject(input: NewProjectInput): { projectId: string; stag
     supervision_mode: c.supervision_mode,
     diary_mode: c.diary_mode,
     diary_penalty_per_day: c.diary_penalty_per_day,
+    award_body: c.award_body,
+    award_decision_no: c.award_decision_no.trim() || null,
+    award_decision_date: c.award_decision_date || null,
+    legalization_doc_no: c.legalization_doc_no.trim() || null,
+    legalization_doc_date: c.legalization_doc_date || null,
+    legalization_authority: c.legalization_authority.trim() || null,
     status: 'active',
   }
 

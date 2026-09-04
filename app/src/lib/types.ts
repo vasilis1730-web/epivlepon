@@ -115,7 +115,22 @@ export interface Contract {
   diary_mode: 'imerisio' | 'evdomadiaio' | 'apallagi'
   diary_penalty_per_day: number
   status: string
+  /* Στοιχεία ανάθεσης — τροφοδοτούν το «Α. ΙΣΤΟΡΙΚΟ» της αιτιολογικής
+     έκθεσης: «Με την <no>/<date> απόφαση της <body> ... που νομιμοποιήθηκε
+     με το αρ. <doc_no>/<doc_date> έγγραφο της <authority> ...» */
+  award_body?: AwardBody | null
+  award_decision_no?: string | null
+  award_decision_date?: string | null
+  legalization_doc_no?: string | null
+  legalization_doc_date?: string | null
+  legalization_authority?: string | null
 }
+
+/** Το όργανο που ενέκρινε την ανάθεση. Μέχρι τον ν. 5056/2023 ήταν η
+ *  Οικονομική Επιτροπή· έκτοτε η Δημοτική Επιτροπή. */
+export type AwardBody =
+  | 'dimotiki_epitropi' | 'oikonomiki_epitropi'
+  | 'dimotiko_symvoulio' | 'dioikitiko_symvoulio' | 'allo'
 
 /** Γραμμή της όψης v_project_financials */
 export interface ProjectFinancials {
@@ -299,6 +314,8 @@ export interface ApeLine {
   work_group: string
   work_group_id?: number | null
   item_code: string
+  /** Κωδικός αναθεώρησης — δική του στήλη στον επίσημο πίνακα ΑΠΕ. */
+  revision_code?: string | null
   description: string
   unit: string
   unit_price: number
@@ -449,6 +466,8 @@ export interface BudgetItem {
   unit: string
   /** Τίτλος ομάδας εργασιών (work_groups.title). */
   work_group: string
+  /** Κωδικός αναθεώρησης (ΟΙΚ 2113, ΥΔΡ 6068, ΟΔΟ-1123Α ...). */
+  revision_code: string | null
   unit_price: number
   quantity: number
   amount: number
@@ -459,10 +478,12 @@ export interface BudgetItem {
 /** Μία γραμμή όπως την επεξεργάζεται ο χρήστης στη φόρμα προϋπολογισμού. */
 export interface BudgetItemDraft {
   line_no: number
+  /** Α.Τ. — αριθμός άρθρου τιμολογίου (1, 2.1, 5.1 ...). */
   item_code: string
   description: string
   unit: string
   work_group: string
+  revision_code: string
   unit_price: number
   quantity: number
 }
@@ -474,10 +495,12 @@ export interface BudgetItemDraft {
 /** Γραμμή ΑΠΕ υπό σύνταξη. Τα ποσά ΔΕΝ αποθηκεύονται: είναι παραγόμενες
  *  στήλες στη βάση (amount_initial/amount_new/delta_amount). */
 export interface ApeLineDraft {
+  /** Α.Τ. — αριθμός άρθρου τιμολογίου. */
   item_code: string
   description: string
   unit: string
   work_group: string
+  revision_code: string
   unit_price: number
   /** Ποσότητα αρχικής σύμβασης (από τον προϋπολογισμό). */
   qty_initial: number
@@ -497,6 +520,11 @@ export interface NewApeInput {
   reason: string
   drafted_at: string
   supplementary_needed: boolean
+  /** Πρόβλεψη αναθεώρησης — δική της γραμμή στον πίνακα δαπάνης. */
+  revision_amount: number
+  /** Λογιστικό λάθος: διαφορά στρογγυλοποίησης που μεταφέρεται από τη
+   *  σύμβαση και τηρείται ρητά, αντί να εξαφανίζεται σιωπηλά. */
+  accounting_error: number
   lines: ApeLineDraft[]
 }
 

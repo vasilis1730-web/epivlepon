@@ -50,6 +50,8 @@ export default function NewApe() {
   const [reason, setReason] = useState('')
   const [draftedAt, setDraftedAt] = useState(today())
   const [supplementary, setSupplementary] = useState(false)
+  const [revisionAmount, setRevisionAmount] = useState(0)
+  const [accountingError, setAccountingError] = useState(0)
   const [busy, setBusy] = useState(false)
   const [seeded, setSeeded] = useState(false)
 
@@ -69,7 +71,8 @@ export default function NewApe() {
       // και αφετηρία της νέας πρότασης.
       setLines(previous.lines.map(l => ({
         item_code: l.item_code, description: l.description, unit: l.unit,
-        work_group: l.work_group, unit_price: l.unit_price,
+        work_group: l.work_group, revision_code: l.revision_code ?? '',
+        unit_price: l.unit_price,
         qty_initial: l.qty_initial, qty_previous: l.qty_new, qty_new: l.qty_new,
         funding_source: l.funding_source, is_new_item: l.is_new_item,
         is_article_132: Boolean(l.is_article_132),
@@ -78,7 +81,8 @@ export default function NewApe() {
       // 1ος ΑΠΕ: τα συμβατικά μεγέθη του προϋπολογισμού.
       setLines(data.budget.items.map(i => ({
         item_code: i.item_code, description: i.description, unit: i.unit,
-        work_group: i.work_group, unit_price: i.unit_price,
+        work_group: i.work_group, revision_code: i.revision_code ?? '',
+        unit_price: i.unit_price,
         qty_initial: i.quantity, qty_previous: i.quantity, qty_new: i.quantity,
         funding_source: 'symvatiko' as const, is_new_item: false,
         is_article_132: false,
@@ -122,7 +126,8 @@ export default function NewApe() {
       status: 'draft', approved_at: null,
       lines: lines.map((l, i) => ({
         id: `d${i}`, work_group: l.work_group, item_code: l.item_code,
-        description: l.description, unit: l.unit, unit_price: l.unit_price,
+        description: l.description, unit: l.unit,
+        revision_code: l.revision_code, unit_price: l.unit_price,
         qty_initial: l.qty_initial, qty_new: l.qty_new,
         amount_initial: Math.round(l.qty_initial * l.unit_price * 100) / 100,
         amount_new: Math.round(l.qty_new * l.unit_price * 100) / 100,
@@ -146,7 +151,8 @@ export default function NewApe() {
 
   const addLine = (art132: boolean) =>
     setLines(ls => [...ls, {
-      item_code: '', description: '', unit: '', work_group: '', unit_price: 0,
+      item_code: '', description: '', unit: '', work_group: '',
+      revision_code: '', unit_price: 0,
       qty_initial: 0, qty_previous: 0, qty_new: 0,
       funding_source: art132 ? 'symplirwmatiki' : 'apravlepta',
       is_new_item: true, is_article_132: art132,
@@ -161,6 +167,10 @@ export default function NewApe() {
   const contractWorks = Math.round((contractSubtotal1 / (1 + geOePct / 100)) * 100) / 100
   const contractGeOe = Math.round((contractSubtotal1 - contractWorks) * 100) / 100
   const serialNo = (previous?.serial_no ?? 0) + 1
+
+  const r2 = (n: number) => Math.round(n * 100) / 100
+  const vat = (n: number) => r2((n * contract.vat_rate) / 100)
+  const withVat = (n: number) => r2(n + vat(n))
 
   const hard = violations.filter(v => v.severity === 'hard')
   const problems: string[] = []
@@ -178,7 +188,9 @@ export default function NewApe() {
     try {
       const input: NewApeInput = {
         project_id: projectId, atype, reason: reason.trim(),
-        drafted_at: draftedAt, supplementary_needed: supplementary, lines,
+        drafted_at: draftedAt, supplementary_needed: supplementary,
+        revision_amount: revisionAmount, accounting_error: accountingError,
+        lines,
       }
       const r = await api.createApe(input)
       push('success', `Καταχωρήθηκε ο ${r.serialNo}ος ΑΠΕ`,
@@ -227,6 +239,16 @@ export default function NewApe() {
           <Field label="Αξία αρχικής σύμβασης">
             <div className="tnum px-1 py-1.5 font-mono text-sm">{eur(contract.initial_value_net)}</div>
           </Field>
+          <Field label="Πρόβλεψη αναθεώρησης"
+            hint="Δική της γραμμή στον πίνακα δαπάνης, μετά το ΣΥΝΟΛΟ 3.">
+            <Input type="number" step="0.01" value={revisionAmount || ''} className="text-right"
+              onChange={e => setRevisionAmount(Number(e.target.value) || 0)} />
+          </Field>
+          <Field label="Λογιστικό λάθος"
+            hint="Διαφορά στρογγυλοποίησης που μεταφέρεται από τη σύμβαση.">
+            <Input type="number" step="0.01" value={accountingError || ''} className="text-right"
+              onChange={e => setAccountingError(Number(e.target.value) || 0)} />
+          </Field>
           <div className="sm:col-span-2 lg:col-span-4">
             <Field label="Αιτιολόγηση αναγκαιότητας" legalRef="N4412/156/2">
               <Textarea value={reason} onChange={e => setReason(e.target.value)}
@@ -242,10 +264,10 @@ export default function NewApe() {
           subtitle="Η στήλη «Νέα ποσότητα» είναι η μόνη που μεταβάλλεται ελεύθερα"
           right={<Badge tone="muted">{lines.length} γραμμές</Badge>}
         />
-        <Table minWidth={1240}>
+        <Table minWidth={1360}>
           <thead>
             <tr>
-              <Th>Άρθρο</Th><Th>Περιγραφή</Th><Th>Ομάδα</Th><Th>Μον.</Th>
+              <Th>Α.Τ.</Th><Th>Περιγραφή</Th><Th>Ομάδα</Th><Th>Κωδ. αναθ.</Th><Th>Μον.</Th>
               <Th align="end">Τιμή</Th>
               <Th align="end">Ποσ. αρχική</Th><Th align="end">Ποσ. προηγ.</Th>
               <Th align="end">Ποσ. νέα</Th>
@@ -279,6 +301,12 @@ export default function NewApe() {
                           ))}
                         </Select>
                       : <span className="text-xs text-ink2">{l.work_group}</span>}
+                  </Td>
+                  <Td>
+                    {l.is_new_item
+                      ? <Input value={l.revision_code} placeholder="ΟΙΚ 2113" className="w-24"
+                          onChange={e => set(i, { revision_code: e.target.value })} />
+                      : <span className="font-mono text-2xs text-ink3">{l.revision_code || '—'}</span>}
                   </Td>
                   <Td>
                     {l.is_new_item
@@ -373,6 +401,40 @@ export default function NewApe() {
                 c={0} d={totals.contingencyRemaining} show132={totals.art132Total > 0} />
               <Sum k="ΣΥΝΟΛΟ 2" a={totals.contractSubtotal2} b={totals.subtotal2}
                 c={totals.art132Total} d={totals.projectSubtotal2} show132={totals.art132Total > 0} strong />
+              {accountingError !== 0 && (
+                <>
+                  <Sum k="ΛΟΓΙΣΤΙΚΟ ΛΑΘΟΣ" a={accountingError} b={accountingError}
+                    c={0} d={accountingError} show132={totals.art132Total > 0} />
+                  <Sum k="ΣΥΝΟΛΟ 3"
+                    a={r2(totals.contractSubtotal2 + accountingError)}
+                    b={r2(totals.subtotal2 + accountingError)}
+                    c={totals.art132Total}
+                    d={r2(totals.projectSubtotal2 + accountingError)}
+                    show132={totals.art132Total > 0} strong />
+                </>
+              )}
+              {revisionAmount !== 0 && (
+                <Sum k="ΑΝΑΘΕΩΡΗΣΗ" a={revisionAmount} b={revisionAmount}
+                  c={0} d={revisionAmount} show132={totals.art132Total > 0} />
+              )}
+              <Sum k="ΔΑΠΑΝΗ ΕΡΓΟΥ ΧΩΡΙΣ Φ.Π.Α."
+                a={r2(totals.contractSubtotal2 + accountingError + revisionAmount)}
+                b={r2(totals.subtotal2 + accountingError + revisionAmount)}
+                c={totals.art132Total}
+                d={r2(totals.projectSubtotal2 + accountingError + revisionAmount)}
+                show132={totals.art132Total > 0} strong />
+              <Sum k={`Φ.Π.Α. ${contract.vat_rate}%`}
+                a={vat(totals.contractSubtotal2 + accountingError + revisionAmount)}
+                b={vat(totals.subtotal2 + accountingError + revisionAmount)}
+                c={vat(totals.art132Total)}
+                d={vat(totals.projectSubtotal2 + accountingError + revisionAmount)}
+                show132={totals.art132Total > 0} />
+              <Sum k="ΣΥΝΟΛΙΚΗ ΔΑΠΑΝΗ ΕΡΓΟΥ"
+                a={withVat(totals.contractSubtotal2 + accountingError + revisionAmount)}
+                b={withVat(totals.subtotal2 + accountingError + revisionAmount)}
+                c={withVat(totals.art132Total)}
+                d={withVat(totals.projectSubtotal2 + accountingError + revisionAmount)}
+                show132={totals.art132Total > 0} strong />
             </tbody>
           </table>
         </div>

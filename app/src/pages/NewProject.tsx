@@ -15,10 +15,10 @@ import { useToast } from '@/hooks/useToast'
 import {
   Badge, Button, Card, CardHeader, Field, Input, LegalRef, Select, Spinner, Textarea,
 } from '@/components/ui'
-import { CATEGORY, ROLE } from '@/lib/labels'
+import { AWARD_BODY, CATEGORY, ROLE } from '@/lib/labels'
 import { cx, date, eur, pct } from '@/lib/format'
 import { derive, emptyInput, validate, type NewProjectInput } from '@/lib/newProject'
-import type { ProjectCategory } from '@/lib/types'
+import type { AwardBody, ProjectCategory } from '@/lib/types'
 
 export default function NewProject() {
   const nav = useNavigate()
@@ -249,6 +249,47 @@ export default function NewProject() {
               <Field label="ΑΔΑΜ σύμβασης">
                 <Input value={v.contract.adam_contract} onChange={e => setC('adam_contract', e.target.value)} />
               </Field>
+
+              {/* Η αιτιολογική έκθεση κάθε ΑΠΕ ανοίγει με αυτά τα στοιχεία:
+                  «Με την <αρ>/<ημ> απόφαση της <οργάνου> ... που νομιμοποιήθηκε
+                  με το αρ. <αρ>/<ημ> έγγραφο της <αρχής> ...» */}
+              <div className="sm:col-span-2 border-t border-rule pt-4">
+                <div className="label-xs mb-1">Ανάθεση &amp; νομιμοποίηση</div>
+                <p className="mb-3 text-xs text-ink3">
+                  Συντίθεται αυτόματα το «Α. ΙΣΤΟΡΙΚΟ» κάθε αιτιολογικής έκθεσης ΑΠΕ.
+                </p>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <Field label="Όργανο ανάθεσης"
+                    hint="Μέχρι τον ν. 5056/2023 ήταν η Οικονομική Επιτροπή.">
+                    <Select value={v.contract.award_body}
+                      onChange={e => setC('award_body', e.target.value as AwardBody)}>
+                      {Object.entries(AWARD_BODY).map(([k, label]) => (
+                        <option key={k} value={k}>{label}</option>
+                      ))}
+                    </Select>
+                  </Field>
+                  <Field label="Αριθμός απόφασης">
+                    <Input value={v.contract.award_decision_no} placeholder="960"
+                      onChange={e => setC('award_decision_no', e.target.value)} />
+                  </Field>
+                  <Field label="Ημ/νία απόφασης">
+                    <Input type="date" value={v.contract.award_decision_date}
+                      onChange={e => setC('award_decision_date', e.target.value)} />
+                  </Field>
+                  <Field label="Αρχή νομιμοποίησης">
+                    <Input value={v.contract.legalization_authority}
+                      onChange={e => setC('legalization_authority', e.target.value)} />
+                  </Field>
+                  <Field label="Αρ. εγγράφου νομιμοποίησης">
+                    <Input value={v.contract.legalization_doc_no} placeholder="4419"
+                      onChange={e => setC('legalization_doc_no', e.target.value)} />
+                  </Field>
+                  <Field label="Ημ/νία εγγράφου">
+                    <Input type="date" value={v.contract.legalization_doc_date}
+                      onChange={e => setC('legalization_doc_date', e.target.value)} />
+                  </Field>
+                </div>
+              </div>
 
               <div className="sm:col-span-2 border-t border-rule pt-4">
                 <div className="label-xs mb-3">Οικονομικά μεγέθη</div>

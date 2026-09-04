@@ -632,6 +632,7 @@ export async function saveBudget(
       description: l.description,
       unit: l.unit,
       work_group_id: groups.get(l.work_group) ?? null,
+      revision_code: l.revision_code.trim() || null,
       unit_price: l.unit_price,
       quantity: l.quantity,
     })),
@@ -681,6 +682,9 @@ export async function createApe(input: NewApeInput): Promise<{ apeId: string; se
     contingency_used: t.contingencyUsed,
     contingency_remaining: t.contingencyRemaining,
     savings_used: t.savings,
+    revision_amount: input.revision_amount,
+    accounting_error: input.accounting_error,
+    article_132_value: t.art132Total,
     // Νέα συνολική δαπάνη = ΣΥΝΟΛΟ 2 του ΑΠΕ + οι εργασίες του άρθρου 132.
     new_total_value: Math.round((t.subtotal2 + t.art132Total) * 100) / 100,
     delta_pct: contract.initial_value_net
@@ -702,12 +706,14 @@ export async function createApe(input: NewApeInput): Promise<{ apeId: string; se
       item_code: l.item_code,
       description: l.description,
       unit: l.unit,
+      revision_code: l.revision_code.trim() || null,
       unit_price: l.unit_price,
       qty_initial: l.qty_initial,
       qty_previous: l.qty_previous,
       qty_new: l.qty_new,
       funding_source: l.funding_source,
       is_new_item: l.is_new_item,
+      is_article_132: l.is_article_132,
     })),
   )
   if (linesErr) throw new Error(linesErr.message)

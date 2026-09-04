@@ -30,7 +30,7 @@ function Row({ k, v, strong }: { k: string; v: string; strong?: boolean }) {
 
 const emptyLine = (lineNo: number): BudgetItemDraft => ({
   line_no: lineNo, item_code: '', description: '', unit: '',
-  work_group: '', unit_price: 0, quantity: 0,
+  work_group: '', revision_code: '', unit_price: 0, quantity: 0,
 })
 
 export default function Budget() {
@@ -57,7 +57,8 @@ export default function Budget() {
       existing.length
         ? existing.map(i => ({
             line_no: i.line_no, item_code: i.item_code, description: i.description,
-            unit: i.unit, work_group: i.work_group, unit_price: i.unit_price,
+            unit: i.unit, work_group: i.work_group,
+            revision_code: i.revision_code ?? '', unit_price: i.unit_price,
             quantity: i.quantity,
           }))
         : [emptyLine(1)],
@@ -150,13 +151,14 @@ export default function Budget() {
           legalRef="N4412/53/7"
           right={<Badge tone="muted">{filled.length} άρθρα</Badge>}
         />
-        <Table minWidth={1080}>
+        <Table minWidth={1200}>
           <thead>
             <tr>
               <Th className="w-10">Α/Α</Th>
-              <Th>Κωδ. άρθρου</Th>
+              <Th>Α.Τ.</Th>
               <Th>Περιγραφή</Th>
               <Th>Ομάδα εργασιών</Th>
+              <Th>Κωδ. αναθ.</Th>
               <Th>Μον.</Th>
               <Th align="end">Τιμή μονάδος</Th>
               <Th align="end">Ποσότητα</Th>
@@ -169,7 +171,7 @@ export default function Budget() {
               <tr key={i}>
                 <Td className="tnum font-mono text-xs text-ink3">{l.line_no}</Td>
                 <Td>
-                  <Input value={l.item_code} placeholder="ΝΕΤ ΟΔΟ Α-2"
+                  <Input value={l.item_code} placeholder="1"
                     onChange={e => set(i, { item_code: e.target.value })} />
                 </Td>
                 <Td>
@@ -184,6 +186,10 @@ export default function Budget() {
                       <option key={g.code} value={g.title}>{g.code} · {g.title}</option>
                     ))}
                   </Select>
+                </Td>
+                <Td>
+                  <Input value={l.revision_code} placeholder="ΟΙΚ 2113" className="w-28"
+                    onChange={e => set(i, { revision_code: e.target.value })} />
                 </Td>
                 <Td>
                   <Input value={l.unit} placeholder="m³" className="w-20"

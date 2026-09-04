@@ -5,7 +5,7 @@
  * Εδώ υπάρχουν ώστε η φόρμα να δείχνει ζωντανά τι θα καταχωριστεί — η βάση
  * παραμένει η αυθεντία, το UI απλώς προεπισκοπεί.
  */
-import type { ProjectCategory } from './types'
+import type { AwardBody, ProjectCategory } from './types'
 import { addDays } from './format'
 
 export interface NewProjectInput {
@@ -38,6 +38,14 @@ export interface NewProjectInput {
     signed_at: string
     ada_contract: string
     adam_contract: string
+    /* Ανάθεση & νομιμοποίηση — τροφοδοτούν το «Α. ΙΣΤΟΡΙΚΟ» της
+       αιτιολογικής έκθεσης κάθε ΑΠΕ. */
+    award_body: AwardBody
+    award_decision_no: string
+    award_decision_date: string
+    legalization_doc_no: string
+    legalization_doc_date: string
+    legalization_authority: string
     regime: 'n4412_meta_n4782' | 'n4412_pro_n4782'
     supervision_mode: 'ypiresiaki' | 'ife' | 'mikti'
     budget_works_net: number
@@ -190,6 +198,9 @@ export function emptyInput(): NewProjectInput {
     },
     contract: {
       contract_no: '', signed_at: t, ada_contract: '', adam_contract: '',
+      award_body: 'dimotiki_epitropi', award_decision_no: '', award_decision_date: '',
+      legalization_doc_no: '', legalization_doc_date: '',
+      legalization_authority: 'Αποκεντρωμένη Διοίκηση Αιγαίου',
       regime: 'n4412_meta_n4782', supervision_mode: 'ypiresiaki',
       budget_works_net: 0, discount_pct: 0, ge_oe_pct: 18, contingency_pct: 15,
       revision_amount: 0, vat_rate: 24, total_duration_days: 365,
