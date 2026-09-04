@@ -1,35 +1,75 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@/hooks/useQuery'
 import { useToast } from '@/hooks/useToast'
 import * as api from '@/lib/api'
 import { RuleViolation } from '@/lib/store'
 import {
-  Badge, Button, Card, CardHeader, Field, Input, LegalRef, Modal, Spinner,
+  Badge, Button, Card, CardHeader, LegalRef, Modal, Spinner,
   Table, Td, Th,
 } from '@/components/ui'
 import { hiddenWorkAlert } from '@/lib/rules'
 import { cx, date, daysUntil, relativeDays } from '@/lib/format'
-import type { HiddenWorkNotice } from '@/lib/types'
+import type { HiddenWorkNotice, HiddenWorkPhoto } from '@/lib/types'
 
 export default function HiddenWorks() {
   const { projectId = '' } = useParams()
   const toast = useToast()
   const [inspecting, setInspecting] = useState<HiddenWorkNotice | null>(null)
-  const [photos, setPhotos] = useState(0)
+  const [photos, setPhotos] = useState<HiddenWorkPhoto[]>([])
+  const [uploading, setUploading] = useState(false)
+  const fileRef = useRef<HTMLInputElement>(null)
 
   const { data, loading } = useQuery(() => api.getHiddenWorks(projectId), [projectId])
+
+  // Οι ήδη ανεβασμένες φωτογραφίες της συγκεκριμένης δήλωσης.
+  useEffect(() => {
+    let live = true
+    if (!inspecting) { setPhotos([]); return }
+    api.getHiddenWorkPhotos(inspecting.id)
+      .then(p => { if (live) setPhotos(p) })
+      .catch(() => { if (live) setPhotos([]) })
+    return () => { live = false }
+  }, [inspecting])
+
   if (loading || !data) return <Spinner />
 
   const overdue = data.filter(h => !h.inspected_at && (daysUntil(h.inspection_due) ?? 0) < 0)
 
+  async function addPhotos(files: FileList | null) {
+    if (!inspecting || !files?.length) return
+    setUploading(true)
+    try {
+      const n = await api.uploadHiddenWorkPhotos(projectId, inspecting.id, Array.from(files))
+      setPhotos(await api.getHiddenWorkPhotos(inspecting.id))
+      toast.push('success', n === 1 ? 'Ανέβηκε 1 φωτογραφία' : `Ανέβηκαν ${n} φωτογραφίες`)
+    } catch (e) {
+      toast.push('error', 'Το ανέβασμα απέτυχε',
+        e instanceof Error ? e.message : undefined)
+    } finally {
+      setUploading(false)
+      if (fileRef.current) fileRef.current.value = ''
+    }
+  }
+
+  async function removePhoto(photo: HiddenWorkPhoto) {
+    try {
+      await api.deleteHiddenWorkPhoto(photo)
+      setPhotos(ps => ps.filter(p => p.id !== photo.id))
+    } catch (e) {
+      toast.push('error', 'Η διαγραφή απέτυχε', e instanceof Error ? e.message : undefined)
+    }
+  }
+
   async function submitInspection() {
     if (!inspecting) return
     try {
-      await api.inspectHiddenWork(inspecting.id, photos)
+      await api.inspectHiddenWork(inspecting.id)
       toast.push('success', 'Καταχωρήθηκε ο έλεγχος',
-        `${photos} ψηφιακές φωτογραφίες εντάχθηκαν στο Μητρώο του Έργου.`)
-      setInspecting(null); setPhotos(0)
+        photos.length === 1
+          ? 'Μία ψηφιακή φωτογραφία εντάχθηκε στο Μητρώο του Έργου.'
+          : `${photos.length} ψηφιακές φωτογραφίες εντάχθηκαν στο Μητρώο του Έργου.`)
+      setInspecting(null); setPhotos([])
     } catch (e) {
       toast.push('error', 'Η καταχώριση απορρίφθηκε',
         e instanceof RuleViolation ? e.blockers.map(b => b.message).join('\n')
@@ -110,7 +150,7 @@ export default function HiddenWorks() {
                     </Td>
                     <Td align="end">
                       {!h.inspected_at && (
-                        <Button onClick={() => { setInspecting(h); setPhotos(0) }}>Έλεγχος</Button>
+                        <Button onClick={() => setInspecting(h)}>Έλεγχος</Button>
                       )}
                       {h.inspected_at && !h.approved_at && (
                         <Button
@@ -139,7 +179,10 @@ export default function HiddenWorks() {
         footer={
           <>
             <Button onClick={() => setInspecting(null)}>Άκυρο</Button>
-            <Button variant="primary" onClick={submitInspection}>Καταχώριση ελέγχου</Button>
+            <Button variant="primary" disabled={photos.length === 0 || uploading}
+              onClick={submitInspection}>
+              Καταχώριση ελέγχου
+            </Button>
           </>
         }
       >
@@ -147,19 +190,57 @@ export default function HiddenWorks() {
         <p className="mt-0.5 text-xs text-ink3">{inspecting?.location}</p>
 
         <div className="mt-4">
-          <Field
-            label="Αριθμός ψηφιακών φωτογραφιών"
-            legalRef="N4412/151/7"
-            hint="Η έκθεση συνοδεύεται απαραίτητα από επαρκή αριθμό φωτογραφιών, οι οποίες εντάσσονται στο Μητρώο του Έργου. Το σύστημα απορρίπτει καταχώριση χωρίς τεκμηρίωση."
-          >
-            <Input type="number" min={0} value={photos} onChange={e => setPhotos(Number(e.target.value))} />
-          </Field>
+          <div className="label-xs mb-1 flex items-center gap-2">
+            Ψηφιακές φωτογραφίες
+            <LegalRef id="N4412/151/7" />
+          </div>
+          <p className="mb-2 text-xs text-ink3">
+            Η έκθεση συνοδεύεται απαραίτητα από επαρκή αριθμό φωτογραφιών, οι οποίες
+            εντάσσονται στο Μητρώο του Έργου. Ο αριθμός δεν δηλώνεται — προκύπτει από
+            τα αρχεία που ανεβαίνουν.
+          </p>
+
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            disabled={uploading}
+            onChange={e => addPhotos(e.target.files)}
+            className="block w-full text-xs text-ink2 file:mr-3 file:rounded file:border file:border-rule2 file:bg-paper file:px-3 file:py-1.5 file:text-xs file:text-ink"
+          />
+          {uploading && <p className="mt-2 text-xs text-ink3">Ανέβασμα…</p>}
+
+          {photos.length > 0 && (
+            <ul className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4">
+              {photos.map(p => (
+                <li key={p.id} className="group relative">
+                  <img src={p.url} alt={p.caption ?? 'Φωτογραφία αφανούς εργασίας'}
+                    className="h-24 w-full rounded border border-rule2 object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removePhoto(p)}
+                    aria-label={`Διαγραφή ${p.caption ?? 'φωτογραφίας'}`}
+                    className="absolute right-1 top-1 rounded bg-ink/70 px-1.5 text-xs text-paper opacity-0 transition group-hover:opacity-100 focus:opacity-100"
+                  >
+                    ✕
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
-        {photos === 0 && (
+        {photos.length === 0 ? (
           <p className="mt-3 rounded border border-oxide bg-oxide-soft px-3 py-2 text-xs text-ink">
-            Με μηδέν φωτογραφίες η καταχώριση θα απορριφθεί από τον έλεγχο ακεραιότητας
-            (check constraint <span className="font-mono">hwn_photos_chk</span>).
+            Χωρίς φωτογραφία η καταχώριση απορρίπτεται από τον έλεγχο ακεραιότητας της
+            βάσης (check constraint <span className="font-mono">hwn_photos_chk</span>).
+          </p>
+        ) : (
+          <p className="mt-3 text-xs text-ink3">
+            {photos.length === 1
+              ? 'Μία φωτογραφία στον φάκελο της δήλωσης.'
+              : `${photos.length} φωτογραφίες στον φάκελο της δήλωσης.`}
           </p>
         )}
       </Modal>

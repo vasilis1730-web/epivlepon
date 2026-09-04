@@ -13,7 +13,7 @@ import { DEMO_ORG, DEMO_PROFILE } from './demoData'
 import type {
   Ape, Blocker, BudgetItem, BudgetItemDraft, BudgetVersion, Completion, Contract,
   DiaryEntry, DocumentRow, FinalMeasurement, Guarantee, HiddenWorkNotice,
-  Measurement, NewApeInput, NewPaymentInput, PaymentCertificate, Profile,
+  HiddenWorkPhoto, Measurement, NewApeInput, NewPaymentInput, PaymentCertificate, Profile,
   Project, ProjectFinancials, ProjectStage, ProjectStageTask,
 } from './types'
 import { addMonths, daysUntil } from './format'
@@ -347,16 +347,91 @@ export async function getHiddenWorks(projectId: string): Promise<HiddenWorkNotic
   )
 }
 
-export async function inspectHiddenWork(id: string, photos: number) {
-  if (DEMO_MODE) return store.inspectHiddenWork(id, photos)
+/* ------------------------------------------------------------------ */
+/* Φωτογραφική τεκμηρίωση (άρθρο 151 §7)                               */
+/* ------------------------------------------------------------------ */
+export async function getHiddenWorkPhotos(noticeId: string): Promise<HiddenWorkPhoto[]> {
+  if (DEMO_MODE) return store.getHiddenWorkPhotos(noticeId)
+
+  const rows = await pick<Omit<HiddenWorkPhoto, 'url'>[]>(
+    await sb().from('hidden_work_photos').select('*')
+      .eq('notice_id', noticeId).order('created_at'),
+  )
+  if (!rows.length) return []
+
+  // Ο κάδος `photos` είναι ιδιωτικός: η προβολή γίνεται με προσωρινούς
+  // υπογεγραμμένους συνδέσμους, όχι με δημόσια διεύθυνση.
+  const { data } = await sb().storage.from('photos')
+    .createSignedUrls(rows.map(r => r.storage_path), 3600)
+
+  return rows.map((r, i) => ({ ...r, url: data?.[i]?.signedUrl ?? '' }))
+}
+
+export async function uploadHiddenWorkPhotos(
+  projectId: string,
+  noticeId: string,
+  files: File[],
+): Promise<number> {
+  if (DEMO_MODE) return store.uploadHiddenWorkPhotos(noticeId, files)
+
+  const { data: auth } = await sb().auth.getUser()
+  let uploaded = 0
+
+  for (const file of files) {
+    const ext = file.name.split('.').pop()?.toLowerCase() ?? 'jpg'
+    const path = `${projectId}/${noticeId}/${crypto.randomUUID()}.${ext}`
+
+    const up = await sb().storage.from('photos')
+      .upload(path, file, { contentType: file.type, upsert: false })
+    if (up.error) throw new Error(`«${file.name}»: ${up.error.message}`)
+
+    const ins = await sb().from('hidden_work_photos').insert({
+      notice_id: noticeId,
+      storage_path: path,
+      caption: file.name,
+      uploaded_by: auth.user?.id ?? null,
+    })
+    if (ins.error) {
+      // Το αρχείο ανέβηκε αλλά η εγγραφή απέτυχε: καθαρίζεται, ώστε να μη
+      // μείνει ορφανό αντικείμενο που δεν μετριέται πουθενά.
+      await sb().storage.from('photos').remove([path])
+      throw new Error(ins.error.message)
+    }
+    uploaded++
+  }
+  return uploaded
+}
+
+export async function deleteHiddenWorkPhoto(photo: HiddenWorkPhoto) {
+  if (DEMO_MODE) return store.deleteHiddenWorkPhoto(photo.id)
+  const { error } = await sb().from('hidden_work_photos').delete().eq('id', photo.id)
+  if (error) throw new Error(error.message)
+  await sb().storage.from('photos').remove([photo.storage_path])
+}
+
+/**
+ * Καταχώριση ελέγχου. Το `photos_count` ΔΕΝ αποστέλλεται: το συντηρεί
+ * trigger της βάσης από τις πραγματικές φωτογραφίες. Ο έλεγχος εδώ απλώς
+ * αποτρέπει μια κλήση που ούτως ή άλλως θα απέρριπτε το `hwn_photos_chk`.
+ */
+export async function inspectHiddenWork(id: string) {
+  if (DEMO_MODE) return store.inspectHiddenWork(id)
+
+  const photos = await pick<{ id: string }[]>(
+    await sb().from('hidden_work_photos').select('id').eq('notice_id', id).limit(1),
+  )
+  if (!photos.length) throw new Error(HW_NO_PHOTOS_MESSAGE)
+
+  const day = new Date().toISOString().slice(0, 10)
   const { error } = await sb().from('hidden_work_notices')
-    .update({
-      inspected_at: new Date().toISOString().slice(0, 10),
-      supervisor_report_at: new Date().toISOString().slice(0, 10),
-      photos_count: photos, status: 'reported',
-    }).eq('id', id)
+    .update({ inspected_at: day, supervisor_report_at: day, status: 'reported' })
+    .eq('id', id)
   if (error) throw new Error(error.message)
 }
+
+export const HW_NO_PHOTOS_MESSAGE =
+  'Δεν επιτρέπεται καταχώριση ελέγχου αφανών εργασιών χωρίς ψηφιακές φωτογραφίες — ' +
+  'η φωτογραφική τεκμηρίωση εντάσσεται στο Μητρώο του Έργου (άρθρο 151 §7).'
 
 export async function approveHiddenWork(id: string) {
   if (DEMO_MODE) return store.approveHiddenWork(id)

@@ -14,7 +14,7 @@ import { computeStageDue, DOCS_BY_STAGE, STAGES, TASKS_BY_STAGE } from './catalo
 import type {
   Ape, ApeLine, Blocker, BudgetItem, BudgetItemDraft, BudgetVersion, Completion,
   Contract, DiaryEntry, DocumentRow, FinalMeasurement, Guarantee, HiddenWorkNotice,
-  Measurement, NewApeInput, NewPaymentInput, PaymentCertificate, Project,
+  HiddenWorkPhoto, Measurement, NewApeInput, NewPaymentInput, PaymentCertificate, Project,
   ProjectStage, ProjectStageTask, StageStatus,
 } from './types'
 import { addDays, addMonths, daysUntil, today } from './format'
@@ -42,6 +42,7 @@ export interface DemoState {
   documents: DocumentRow[]
   budgetVersions: BudgetVersion[]
   budgetItems: BudgetItem[]
+  hiddenPhotos: HiddenWorkPhoto[]
 }
 
 let version = 0
@@ -136,6 +137,7 @@ export const state: DemoState = {
   documents: DEMO_DOCUMENTS,
   budgetVersions: [],
   budgetItems: [],
+  hiddenPhotos: [],
 }
 
 /* ------------------------------------------------------------------ */
@@ -301,10 +303,58 @@ export function markNotApplicable(stageId: string, reason: string) {
   notify()
 }
 
-export function inspectHiddenWork(id: string, photos: number) {
+/* ------------------------------------------------------------------ */
+/* Φωτογραφική τεκμηρίωση (άρθρο 151 §7)                               */
+/* ------------------------------------------------------------------ */
+export function getHiddenWorkPhotos(noticeId: string) {
+  return state.hiddenPhotos.filter(p => p.notice_id === noticeId)
+}
+
+/** Στην επίδειξη τα αρχεία μένουν στη μνήμη ως data: URL — χωρίς δίκτυο. */
+export async function uploadHiddenWorkPhotos(noticeId: string, files: File[]) {
+  const added: HiddenWorkPhoto[] = []
+  for (const file of files) {
+    const url: string = await new Promise((resolve, reject) => {
+      const fr = new FileReader()
+      fr.onload = () => resolve(String(fr.result))
+      fr.onerror = () => reject(new Error(`Αδύνατη η ανάγνωση του «${file.name}».`))
+      fr.readAsDataURL(file)
+    })
+    added.push({
+      id: `hwp-${Date.now().toString(36)}-${added.length}`,
+      notice_id: noticeId,
+      storage_path: `demo/${noticeId}/${file.name}`,
+      caption: file.name,
+      taken_at: null,
+      created_at: today(),
+      url,
+    })
+  }
+  state.hiddenPhotos = [...state.hiddenPhotos, ...added]
+  syncPhotoCount(noticeId)
+  notify()
+  return added.length
+}
+
+export function deleteHiddenWorkPhoto(photoId: string) {
+  const photo = state.hiddenPhotos.find(p => p.id === photoId)
+  state.hiddenPhotos = state.hiddenPhotos.filter(p => p.id !== photoId)
+  if (photo) syncPhotoCount(photo.notice_id)
+  notify()
+}
+
+/** Αντίστοιχο του trigger app.sync_hidden_photos_count. */
+function syncPhotoCount(noticeId: string) {
+  const h = state.hidden.find(x => x.id === noticeId)
+  if (h) h.photos_count = state.hiddenPhotos.filter(p => p.notice_id === noticeId).length
+}
+
+export function inspectHiddenWork(id: string) {
   const h = state.hidden.find(x => x.id === id)
   if (!h) return
-  if (photos <= 0) {
+  // Αντίστοιχο του constraint hwn_photos_chk: έλεγχος χωρίς φωτογραφίες
+  // δεν καταχωρίζεται.
+  if (h.photos_count <= 0) {
     throw new RuleViolation([{
       code: 'HW_NO_PHOTOS', severity: 'hard', legal_ref: 'N4412/151/7',
       message: 'Δεν επιτρέπεται καταχώριση ελέγχου αφανών εργασιών χωρίς ψηφιακές φωτογραφίες (εντάσσονται στο Μητρώο του Έργου).',
@@ -312,7 +362,6 @@ export function inspectHiddenWork(id: string, photos: number) {
   }
   h.inspected_at = today()
   h.supervisor_report_at = today()
-  h.photos_count = photos
   h.approval_due = addDays(today(), 30)
   h.status = 'reported'
   notify()

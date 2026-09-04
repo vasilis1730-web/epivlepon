@@ -510,3 +510,24 @@ export interface NewPaymentInput {
   has_summary_table: boolean
   has_revision_calc: boolean
 }
+
+/* ==================================================================== */
+/* Φωτογραφική τεκμηρίωση αφανών εργασιών (άρθρο 151 §7)                */
+/* ==================================================================== */
+
+/**
+ * Ψηφιακή φωτογραφία Π.Π.Α.Ε. Το `photos_count` του `hidden_work_notices`
+ * ΔΕΝ γράφεται από την εφαρμογή: το συγχρονίζει trigger της βάσης
+ * (`app.sync_hidden_photos_count`) από τις πραγματικές εγγραφές αυτού του
+ * πίνακα. Χωρίς αρχείο δεν υπάρχει τεκμηρίωση — ούτε αριθμός.
+ */
+export interface HiddenWorkPhoto {
+  id: string
+  notice_id: string
+  storage_path: string
+  caption: string | null
+  taken_at: string | null
+  created_at: string
+  /** Προσωρινός σύνδεσμος προβολής (signed URL ή data: URL στην επίδειξη). */
+  url: string
+}
