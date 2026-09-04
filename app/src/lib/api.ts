@@ -14,7 +14,7 @@ import type {
   Ape, Blocker, BudgetItem, BudgetItemDraft, BudgetVersion, Completion, Contract,
   DiaryEntry, DocumentRow, FinalMeasurement, Guarantee, HiddenWorkNotice,
   HiddenWorkPhoto, Measurement, NewApeInput, NewPaymentInput, PaymentCertificate, Profile,
-  Project, ProjectFinancials, ProjectStage, ProjectStageTask,
+  Project, ProjectFinancials, ProjectStage, ProjectStageTask, WorkGroup,
 } from './types'
 import { addMonths, daysUntil } from './format'
 import { STAGES } from './catalogue'
@@ -545,21 +545,109 @@ export async function signApe(apeId: string, kind: 'anepifylakta' | 'me_epifylax
 /* Προϋπολογισμός μελέτης                                              */
 /* ================================================================== */
 
+/* ------------------------------------------------------------------ */
+/* Ομάδες εργασιών                                                     */
+/* ------------------------------------------------------------------ */
+
 /**
- * Αντιστοίχιση ομάδας εργασιών → id της βάσης, ανά κατηγορία έργου.
- * Το front-end μεταφέρει τον ΤΙΤΛΟ της ομάδας (ώστε ο έλεγχος του ορίου 20%
- * ανά ομάδα να διαβάζεται από άνθρωπο), αλλά ο χάρτης δέχεται και τον κωδικό
- * — μια γραμμή που προσυμπληρώθηκε από παλαιότερη εγγραφή μπορεί να φέρει
- * οποιοδήποτε από τα δύο.
+ * Οι ομάδες εργασιών του ΕΡΓΟΥ. Τις ορίζει η μελέτη και αριθμούνται 1..N —
+ * «1 ΧΩΜΑΤΟΥΡΓΙΚΑ», «2 ΣΚΥΡΟΔΕΜΑΤΑ», «1 ΔΑΣΟΤΕΧΝΙΚΑ» κ.ο.κ. Αν το έργο δεν
+ * έχει ορίσει δικές του, επιστρέφεται ο ενδεικτικός κατάλογος της κατηγορίας
+ * (Υ.Α. ΔΝΣγ/οικ.38107/ΦΝ 466/2017) ως ΠΡΟΤΑΣΗ — όχι ως δέσμευση.
  */
-async function workGroupIds(category: string): Promise<Map<string, number>> {
-  const rows = await pick<{ id: number; code: string; title: string }[]>(
-    await sb().from('work_groups').select('id, code, title').eq('category', category),
+export async function getWorkGroups(projectId: string): Promise<WorkGroup[]> {
+  if (DEMO_MODE) return store.getWorkGroups(projectId)
+  const own = await pick<WorkGroup[]>(
+    await sb().from('work_groups').select('id, code, title, category, project_id')
+      .eq('project_id', projectId).order('code'),
   )
-  const m = new Map<string, number>()
-  for (const r of rows) {
-    m.set(r.code, r.id)
-    m.set(r.title, r.id)
+  if (own.length) return own
+  const project = await pick<{ category: string }[]>(
+    await sb().from('projects').select('category').eq('id', projectId),
+  )
+  return pick<WorkGroup[]>(
+    await sb().from('work_groups').select('id, code, title, category, project_id')
+      .is('project_id', null).eq('category', project[0]?.category ?? '').order('code'),
+  )
+}
+
+/**
+ * Καταχώριση των ομάδων του έργου. Οι ομάδες που εξακολουθούν να
+ * χρησιμοποιούνται διατηρούν το id τους (ενημερώνεται μόνο ο τίτλος), ώστε
+ * να μη χαθεί η σύνδεση των ήδη καταχωρημένων άρθρων.
+ */
+export async function saveWorkGroups(
+  projectId: string, groups: { code: string; title: string }[],
+): Promise<WorkGroup[]> {
+  if (DEMO_MODE) return store.saveWorkGroups(projectId, groups)
+
+  const project = await pick<{ category: string }[]>(
+    await sb().from('projects').select('category').eq('id', projectId),
+  )
+  const category = project[0]?.category ?? ''
+  const existing = await pick<WorkGroup[]>(
+    await sb().from('work_groups').select('id, code, title, category, project_id')
+      .eq('project_id', projectId),
+  )
+  const byCode = new Map(existing.map(g => [g.code, g]))
+  const keep = new Set(groups.map(g => g.code))
+
+  for (const g of groups) {
+    const prev = byCode.get(g.code)
+    if (prev) {
+      if (prev.title !== g.title) {
+        const { error } = await sb().from('work_groups')
+          .update({ title: g.title }).eq('id', prev.id)
+        if (error) throw new Error(error.message)
+      }
+    } else {
+      const { error } = await sb().from('work_groups').insert({
+        project_id: projectId, category, code: g.code, title: g.title,
+        legal_ref_id: 'YA38107/2017',
+      })
+      if (error) throw new Error(error.message)
+    }
+  }
+  // Ό,τι δεν κρατήθηκε διαγράφεται μόνο αν δεν το δείχνει καμία γραμμή:
+  // το FK θα το εμποδίσει, οπότε η αποτυχία είναι σιωπηλή και ασφαλής.
+  for (const g of existing) {
+    if (!keep.has(g.code)) {
+      await sb().from('work_groups').delete().eq('id', g.id)
+    }
+  }
+  return getWorkGroups(projectId)
+}
+
+/**
+ * Αντιστοίχιση ομάδας εργασιών → id της βάσης, για ένα έργο.
+ * Το front-end μεταφέρει τον ΤΙΤΛΟ της ομάδας (ώστε ο έλεγχος του ορίου 20%
+ * ανά ομάδα να διαβάζεται από άνθρωπο), αλλά ο χάρτης δέχεται και τον κωδικό.
+ * Τίτλος που δεν αντιστοιχεί σε καμία ομάδα του έργου καταχωρίζεται ως νέα
+ * ομάδα: γραμμή χωρίς ομάδα δεν ελέγχεται από το όριο 20% (άρθρο 156 §3γ),
+ * οπότε το `null` δεν είναι αποδεκτή έκβαση.
+ */
+async function workGroupIds(
+  projectId: string, titles: string[],
+): Promise<Map<string, number>> {
+  const wanted = [...new Set(titles.map(t => t.trim()).filter(Boolean))]
+  let groups = await getWorkGroups(projectId)
+  const known = (gs: WorkGroup[]) => {
+    const m = new Map<string, number>()
+    for (const g of gs) { m.set(g.code, g.id); m.set(g.title, g.id) }
+    return m
+  }
+  let m = known(groups.filter(g => g.project_id === projectId))
+  const missing = wanted.filter(t => !m.has(t))
+  if (missing.length) {
+    // Οι ομάδες του έργου δεν έχουν οριστεί ακόμη (ή λείπουν κάποιες):
+    // υιοθετούνται όσες χρησιμοποιούνται, με τη σειρά που εμφανίζονται.
+    const own = groups.filter(g => g.project_id === projectId)
+    const next = own.map(g => Number(g.code)).filter(n => Number.isFinite(n))
+    let seq = next.length ? Math.max(...next) : 0
+    const add = missing.map(title => ({ code: String(++seq), title }))
+    groups = await saveWorkGroups(projectId,
+      [...own.map(g => ({ code: g.code, title: g.title })), ...add])
+    m = known(groups.filter(g => g.project_id === projectId))
   }
   return m
 }
@@ -595,10 +683,7 @@ export async function saveBudget(
   const totalNet =
     Math.round(lines.reduce((s, l) => s + l.unit_price * l.quantity, 0) * 100) / 100
 
-  const project = await pick<{ category: string }[]>(
-    await sb().from('projects').select('category').eq('id', projectId),
-  )
-  const groups = await workGroupIds(project[0]?.category ?? '')
+  const groups = await workGroupIds(projectId, lines.map(l => l.work_group))
 
   // Μία έκδοση 0 ανά έργο: αν υπάρχει, αντικαθίστανται οι γραμμές της.
   const existing = await pick<BudgetVersion[]>(
@@ -664,10 +749,7 @@ export async function createApe(input: NewApeInput): Promise<{ apeId: string; se
     contingencyAmount: contract.contingency_amount,
   })
 
-  const project = await pick<{ category: string }[]>(
-    await sb().from('projects').select('category').eq('id', input.project_id),
-  )
-  const groups = await workGroupIds(project[0]?.category ?? '')
+  const groups = await workGroupIds(input.project_id, input.lines.map(l => l.work_group))
 
   const { data, error } = await sb().from('ape').insert({
     project_id: input.project_id,

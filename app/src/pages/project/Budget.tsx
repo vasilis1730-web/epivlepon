@@ -14,7 +14,6 @@ import { useToast } from '@/hooks/useToast'
 import {
   Badge, Button, Card, CardHeader, Input, LegalRef, Select, Spinner, Table, Td, Th,
 } from '@/components/ui'
-import { WORK_GROUPS } from '@/lib/catalogue'
 import { cx, eur } from '@/lib/format'
 import type { BudgetItemDraft } from '@/lib/types'
 
@@ -39,13 +38,15 @@ export default function Budget() {
   const { push } = useToast()
 
   const { data, loading } = useQuery(async () => {
-    const [project, contract, budget] = await Promise.all([
+    const [project, contract, budget, workGroups] = await Promise.all([
       api.getProject(projectId), api.getContract(projectId), api.getBudget(projectId),
+      api.getWorkGroups(projectId),
     ])
-    return { project, contract, budget }
+    return { project, contract, budget, workGroups }
   }, [projectId])
 
   const [lines, setLines] = useState<BudgetItemDraft[]>([])
+  const [groups, setGroups] = useState<{ code: string; title: string }[]>([])
   const [busy, setBusy] = useState(false)
   const [seeded, setSeeded] = useState(false)
 
@@ -63,13 +64,10 @@ export default function Budget() {
           }))
         : [emptyLine(1)],
     )
+    setGroups((data.workGroups ?? []).map(g => ({ code: g.code, title: g.title })))
     setSeeded(true)
   }, [data, seeded])
 
-  const groups = useMemo(
-    () => WORK_GROUPS.filter(g => g.category === data?.project?.category),
-    [data?.project?.category],
-  )
 
   const total = useMemo(
     () => Math.round(lines.reduce((s, l) => s + l.unit_price * l.quantity, 0) * 100) / 100,
@@ -81,6 +79,16 @@ export default function Budget() {
 
   const set = (i: number, patch: Partial<BudgetItemDraft>) =>
     setLines(ls => ls.map((l, idx) => (idx === i ? { ...l, ...patch } : l)))
+
+  const setGroup = (i: number, title: string) =>
+    setGroups(gs => gs.map((g, idx) => (idx === i ? { ...g, title } : g)))
+  const addGroup = () =>
+    setGroups(gs => [...gs, { code: String(gs.length + 1), title: '' }])
+  const removeGroup = (i: number) =>
+    setGroups(gs => gs.filter((_, idx) => idx !== i)
+      .map((g, idx) => ({ ...g, code: String(idx + 1) })))
+
+  const namedGroups = groups.filter(g => g.title.trim())
 
   const addLine = () => setLines(ls => [...ls, emptyLine(ls.length + 1)])
   const removeLine = (i: number) =>
@@ -111,6 +119,16 @@ export default function Budget() {
       'κάθε ποσό του ΑΠΕ και των απροβλέπτων βγαίνει λανθασμένο.',
     )
   }
+  if (!namedGroups.length) {
+    problems.push(
+      'Δεν έχει οριστεί καμία ομάδα εργασιών. Τις ομάδες τις ορίζει η μελέτη του '
+      + 'έργου και πάνω τους υπολογίζεται το όριο 20% των επί έλασσον δαπανών '
+      + '(άρθρο 156 §3γ).',
+    )
+  }
+  if (new Set(namedGroups.map(g => g.title.trim())).size !== namedGroups.length) {
+    problems.push('Δύο ομάδες εργασιών έχουν τον ίδιο τίτλο.')
+  }
   if (lines.some(l => l.item_code.trim() && !l.work_group)) {
     problems.push(
       'Κάθε άρθρο πρέπει να ενταχθεί σε ομάδα εργασιών — χωρίς αυτήν δεν ελέγχεται ' +
@@ -121,6 +139,8 @@ export default function Budget() {
   async function save() {
     setBusy(true)
     try {
+      await api.saveWorkGroups(projectId,
+        namedGroups.map((g, i) => ({ code: String(i + 1), title: g.title.trim() })))
       const r = await api.saveBudget(projectId, filled)
       push('success', 'Ο προϋπολογισμός καταχωρήθηκε',
         `${r.itemCount} άρθρα · σύνολο ${eur(r.totalNet)}`)
@@ -146,8 +166,41 @@ export default function Budget() {
 
       <Card>
         <CardHeader
+          title="Ομάδες εργασιών του έργου"
+          subtitle="Όπως τις ορίζει η μελέτη — αριθμούνται 1, 2, 3 ... και ο τίτλος τους περιγράφει το αντικείμενο"
+          legalRef="N4412/156/3c"
+          right={<Badge tone="muted">{namedGroups.length} ομάδες</Badge>}
+        />
+        <div className="px-4 py-4">
+          <p className="max-w-3xl text-xs text-ink2">
+            Ο κατάλογος ξεκινά με πρόταση για την κατηγορία «{data.project?.category ?? '—'}»
+            κατά την Υ.Α. ΔΝΣγ/οικ.38107/ΦΝ 466/2017. Διορθώστε τον ώστε να αποδίδει
+            <strong> τον προϋπολογισμό της μελέτης</strong>: πάνω σε αυτές τις ομάδες
+            υπολογίζεται το όριο 20% των επί έλασσον δαπανών.
+          </p>
+          <div className="mt-3 space-y-2">
+            {groups.map((g, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <span className="tnum w-6 shrink-0 text-right font-mono text-xs text-ink3">
+                  {i + 1}
+                </span>
+                <Input value={g.title} placeholder="ΧΩΜΑΤΟΥΡΓΙΚΑ"
+                  onChange={e => setGroup(i, e.target.value)} />
+                <Button variant="ghost" onClick={() => removeGroup(i)}
+                  aria-label={`Διαγραφή ομάδας ${i + 1}`}>✕</Button>
+              </div>
+            ))}
+          </div>
+          <div className="pt-3">
+            <Button variant="secondary" onClick={addGroup}>+ Προσθήκη ομάδας</Button>
+          </div>
+        </div>
+      </Card>
+
+      <Card>
+        <CardHeader
           title="Άρθρα τιμολογίου"
-          subtitle={`Ομάδες εργασιών κατηγορίας «${data.project?.category ?? '—'}»`}
+          subtitle="Κάθε άρθρο εντάσσεται σε μία από τις ομάδες που ορίστηκαν παραπάνω"
           legalRef="N4412/53/7"
           right={<Badge tone="muted">{filled.length} άρθρα</Badge>}
         />
@@ -182,7 +235,7 @@ export default function Budget() {
                   <Select value={l.work_group}
                     onChange={e => set(i, { work_group: e.target.value })}>
                     <option value="">— επιλογή —</option>
-                    {groups.map(g => (
+                    {namedGroups.map(g => (
                       <option key={g.code} value={g.title}>{g.code} · {g.title}</option>
                     ))}
                   </Select>

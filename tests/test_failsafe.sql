@@ -158,11 +158,24 @@ values ('99999999-9999-9999-9999-999999999999','55555555-5555-5555-5555-55555555
 insert into ape_lines (ape_id, work_group_id, item_code, description, unit,
                        unit_price, qty_initial, qty_new, funding_source)
 values ('99999999-9999-9999-9999-999999999999',
-        (select id from work_groups where category='odopoiia' and code='A'),
+        (select id from work_groups where category='odopoiia' and code='1'),
         'ΝΕΤ ΟΔΟ-1','Μείωση ποσοτήτων','m3', 10.0, 5000, 1000, 'epi_elasson');
 
 select b.code, b.legal_ref, left(b.message,110) as message
 from app.ape_validation('99999999-9999-9999-9999-999999999999') b;
+
+\echo '--- 5γ. Γραμμή ΑΠΕ ΧΩΡΙΣ ομάδα εργασιών ---'
+\echo '--- Χωρίς ομάδα το όριο 20% δεν ελέγχεται· η γραμμή δεν περνά αθόρυβα ---'
+savepoint sp_nogroup;
+insert into ape_lines (ape_id, work_group_id, item_code, description, unit,
+                       unit_price, qty_initial, qty_new, funding_source)
+values ('99999999-9999-9999-9999-999999999999', null,
+        'ΝΕΤ ΟΔΟ-9','Γραμμή χωρίς ομάδα','m3', 10.0, 100, 50, 'epi_elasson');
+
+select b.code, b.legal_ref, left(b.message,110) as message
+from app.ape_validation('99999999-9999-9999-9999-999999999999') b
+where b.code = 'APE_LINE_NO_GROUP';
+rollback to savepoint sp_nogroup;
 
 \echo '=============================================================='
 \echo 'ΔΟΚΗ 6 — ΑΦΑΝΕΙΣ ΕΡΓΑΣΙΕΣ: 3ήμερη προθεσμία & φωτογραφίες'

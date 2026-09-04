@@ -10,12 +10,12 @@ import {
   DEMO_INPROGRESS_STAGES, DEMO_MEASUREMENTS, DEMO_NA_STAGES, DEMO_PAYMENTS,
   DEMO_PROJECTS, DEMO_SCHEDULES,
 } from './demoData'
-import { computeStageDue, DOCS_BY_STAGE, STAGES, TASKS_BY_STAGE } from './catalogue'
+import { computeStageDue, DOCS_BY_STAGE, STAGES, TASKS_BY_STAGE, WORK_GROUPS } from './catalogue'
 import type {
   Ape, ApeLine, Blocker, BudgetItem, BudgetItemDraft, BudgetVersion, Completion,
   Contract, DiaryEntry, DocumentRow, FinalMeasurement, Guarantee, HiddenWorkNotice,
   HiddenWorkPhoto, Measurement, NewApeInput, NewPaymentInput, PaymentCertificate, Project,
-  ProjectStage, ProjectStageTask, StageStatus,
+  ProjectStage, ProjectStageTask, StageStatus, WorkGroup,
 } from './types'
 import { addDays, addMonths, daysUntil, today } from './format'
 import {
@@ -43,6 +43,7 @@ export interface DemoState {
   budgetVersions: BudgetVersion[]
   budgetItems: BudgetItem[]
   hiddenPhotos: HiddenWorkPhoto[]
+  workGroups: WorkGroup[]
 }
 
 let version = 0
@@ -138,6 +139,7 @@ export const state: DemoState = {
   budgetVersions: [],
   budgetItems: [],
   hiddenPhotos: [],
+  workGroups: [],
 }
 
 /* ------------------------------------------------------------------ */
@@ -471,6 +473,63 @@ export function releaseGuarantee(guaranteeId: string) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Ομάδες εργασιών                                                     */
+/* ------------------------------------------------------------------ */
+export function getWorkGroups(projectId: string): WorkGroup[] {
+  const own = state.workGroups.filter(g => g.project_id === projectId)
+  if (own.length) return [...own].sort((a, b) => a.code.localeCompare(b.code, 'el'))
+  const project = state.projects.find(p => p.id === projectId)
+  return WORK_GROUPS
+    .filter(g => g.category === project?.category)
+    .map((g, i) => ({
+      id: -(i + 1), code: g.code, title: g.title,
+      category: g.category, project_id: null,
+    }))
+}
+
+export function saveWorkGroups(
+  projectId: string, groups: { code: string; title: string }[],
+): WorkGroup[] {
+  const project = state.projects.find(p => p.id === projectId)
+  const existing = state.workGroups.filter(g => g.project_id === projectId)
+  const byCode = new Map(existing.map(g => [g.code, g]))
+  let seq = state.workGroups.reduce((m, g) => Math.max(m, g.id), 0)
+  const next = groups.map(g => {
+    const prev = byCode.get(g.code)
+    return prev
+      ? { ...prev, title: g.title }
+      : {
+          id: ++seq, code: g.code, title: g.title,
+          category: project?.category ?? '', project_id: projectId,
+        }
+  })
+  state.workGroups = [
+    ...state.workGroups.filter(g => g.project_id !== projectId),
+    ...next,
+  ]
+  notify()
+  return getWorkGroups(projectId)
+}
+
+/**
+ * Μια γραμμή χωρίς ομάδα δεν ελέγχεται από το όριο 20% (άρθρο 156 §3γ):
+ * ό,τι δηλωθεί υιοθετείται ως ομάδα του έργου, όπως και στη βάση.
+ */
+function adoptWorkGroups(projectId: string, titles: string[]) {
+  const wanted = [...new Set(titles.map(t => t.trim()).filter(Boolean))]
+  const own = getWorkGroups(projectId).filter(g => g.project_id === projectId)
+  const known = new Set(own.map(g => g.title))
+  const missing = wanted.filter(t => !known.has(t))
+  if (!missing.length) return
+  let seq = own.map(g => Number(g.code)).filter(n => Number.isFinite(n))
+    .reduce((m, n) => Math.max(m, n), 0)
+  saveWorkGroups(projectId, [
+    ...own.map(g => ({ code: g.code, title: g.title })),
+    ...missing.map(title => ({ code: String(++seq), title })),
+  ])
+}
+
+/* ------------------------------------------------------------------ */
 /* Προϋπολογισμός μελέτης                                              */
 /* ------------------------------------------------------------------ */
 export function getBudget(projectId: string) {
@@ -485,6 +544,7 @@ export function getBudget(projectId: string) {
 }
 
 export function saveBudget(projectId: string, lines: BudgetItemDraft[]) {
+  adoptWorkGroups(projectId, lines.map(l => l.work_group))
   const totalNet =
     Math.round(lines.reduce((s, l) => s + l.unit_price * l.quantity, 0) * 100) / 100
 
@@ -533,6 +593,7 @@ export function saveBudget(projectId: string, lines: BudgetItemDraft[]) {
 /* Σύνταξη ΑΠΕ (άρθρο 156 §2)                                          */
 /* ------------------------------------------------------------------ */
 export function createApe(input: NewApeInput) {
+  adoptWorkGroups(input.project_id, input.lines.map(l => l.work_group))
   const contract = state.contracts[input.project_id]
   if (!contract) throw new Error('Δεν βρέθηκε σύμβαση για το έργο.')
 

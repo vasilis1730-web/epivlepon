@@ -18,7 +18,6 @@ import {
   Badge, BlockerList, Button, Card, CardHeader, Field, Input, LegalRef,
   Meter, Select, Spinner, Table, Td, Textarea, Th,
 } from '@/components/ui'
-import { WORK_GROUPS } from '@/lib/catalogue'
 import { APE_TYPE } from '@/lib/labels'
 import { cx, eur, pct, qty, today } from '@/lib/format'
 import { apeTotals, apeViolations } from '@/lib/rules'
@@ -38,11 +37,11 @@ export default function NewApe() {
   const { push } = useToast()
 
   const { data, loading } = useQuery(async () => {
-    const [project, contract, apes, budget] = await Promise.all([
+    const [project, contract, apes, budget, workGroups] = await Promise.all([
       api.getProject(projectId), api.getContract(projectId),
-      api.getApes(projectId), api.getBudget(projectId),
+      api.getApes(projectId), api.getBudget(projectId), api.getWorkGroups(projectId),
     ])
-    return { project, contract, apes, budget }
+    return { project, contract, apes, budget, workGroups }
   }, [projectId])
 
   const [lines, setLines] = useState<ApeLineDraft[]>([])
@@ -91,10 +90,9 @@ export default function NewApe() {
     setSeeded(true)
   }, [data, previous, seeded])
 
-  const groups = useMemo(
-    () => WORK_GROUPS.filter(g => g.category === data?.project?.category),
-    [data?.project?.category],
-  )
+  // Οι ομάδες του έργου, όπως τις όρισε η μελέτη. Στον ΑΠΕ ΔΕΝ ορίζονται νέες:
+  // η ομαδοποίηση είναι συμβατική και η σύγκριση γίνεται πάνω της (156 §3γ).
+  const groups = useMemo(() => data?.workGroups ?? [], [data?.workGroups])
 
   const totals = useMemo(() => {
     const c = data?.contract

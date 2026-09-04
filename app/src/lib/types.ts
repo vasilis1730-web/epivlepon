@@ -463,6 +463,20 @@ export interface BudgetVersion {
   created_at: string
 }
 
+/**
+ * Ομάδα εργασιών. Τις ορίζει η ΜΕΛΕΤΗ του έργου και αριθμούνται 1..N με
+ * τίτλους του συγκεκριμένου αντικειμένου («1 ΧΩΜΑΤΟΥΡΓΙΚΑ», «2 ΣΚΥΡΟΔΕΜΑΤΑ»).
+ * `project_id === null` σημαίνει ενδεικτικός κατάλογος της κατηγορίας
+ * (Υ.Α. ΔΝΣγ/οικ.38107/ΦΝ 466/2017) — πρόταση, όχι δέσμευση.
+ */
+export interface WorkGroup {
+  id: number
+  code: string
+  title: string
+  category: string
+  project_id: string | null
+}
+
 export interface BudgetItem {
   id: string
   version_id: string

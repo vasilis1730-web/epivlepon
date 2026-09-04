@@ -2908,114 +2908,239 @@
   ],
   "workGroups": [
     {
-      "category": "hlektromichanologika",
-      "code": "A",
-      "title": "Ηλεκτρικές εγκαταστάσεις ισχυρών ρευμάτων"
-    },
-    {
-      "category": "hlektromichanologika",
-      "code": "B",
-      "title": "Ηλεκτρικές εγκαταστάσεις ασθενών ρευμάτων"
-    },
-    {
-      "category": "hlektromichanologika",
-      "code": "C",
-      "title": "Εγκαταστάσεις θέρμανσης - κλιματισμού - αερισμού"
-    },
-    {
-      "category": "hlektromichanologika",
-      "code": "D",
-      "title": "Υδραυλικές εγκαταστάσεις κτιρίων"
-    },
-    {
-      "category": "hlektromichanologika",
-      "code": "E",
-      "title": "Πυρόσβεση - Πυρανίχνευση"
+      "category": "odopoiia",
+      "code": "1",
+      "title": "ΧΩΜΑΤΟΥΡΓΙΚΑ"
     },
     {
       "category": "odopoiia",
-      "code": "A",
-      "title": "Χωματουργικά - Καθαιρέσεις"
+      "code": "2",
+      "title": "ΤΕΧΝΙΚΑ ΕΡΓΑ"
     },
     {
       "category": "odopoiia",
-      "code": "B",
-      "title": "Τεχνικά έργα"
+      "code": "3",
+      "title": "ΟΔΟΣΤΡΩΣΙΑ"
     },
     {
       "category": "odopoiia",
-      "code": "C",
-      "title": "Ασφαλτικά"
+      "code": "4",
+      "title": "ΑΣΦΑΛΤΙΚΑ"
     },
     {
       "category": "odopoiia",
-      "code": "D",
-      "title": "Σήμανση - Ασφάλιση"
+      "code": "5",
+      "title": "ΣΗΜΑΝΣΗ - ΑΣΦΑΛΙΣΗ"
     },
     {
       "category": "oikodomika",
-      "code": "A",
-      "title": "Χωματουργικά - Καθαιρέσεις"
+      "code": "1",
+      "title": "ΧΩΜΑΤΟΥΡΓΙΚΑ - ΚΑΘΑΙΡΕΣΕΙΣ"
     },
     {
       "category": "oikodomika",
-      "code": "B",
-      "title": "Σκυροδέματα"
+      "code": "2",
+      "title": "ΣΚΥΡΟΔΕΜΑΤΑ - ΟΠΛΙΣΜΟΙ"
     },
     {
       "category": "oikodomika",
-      "code": "C",
-      "title": "Τοιχοποιίες - Επιχρίσματα"
+      "code": "3",
+      "title": "ΤΟΙΧΟΠΟΙΙΕΣ - ΕΠΙΧΡΙΣΜΑΤΑ"
     },
     {
       "category": "oikodomika",
-      "code": "D",
-      "title": "Επενδύσεις - Επιστρώσεις"
+      "code": "4",
+      "title": "ΕΠΕΝΔΥΣΕΙΣ - ΕΠΙΣΤΡΩΣΕΙΣ"
     },
     {
       "category": "oikodomika",
-      "code": "E",
-      "title": "Κουφώματα - Υαλουργικά"
+      "code": "5",
+      "title": "ΚΟΥΦΩΜΑΤΑ - ΥΑΛΟΥΡΓΙΚΑ"
     },
     {
       "category": "oikodomika",
-      "code": "F",
-      "title": "Χρωματισμοί - Λοιπές τελειώσεις"
+      "code": "6",
+      "title": "ΧΡΩΜΑΤΙΣΜΟΙ - ΛΟΙΠΕΣ ΤΕΛΕΙΩΣΕΙΣ"
+    },
+    {
+      "category": "ydraulika",
+      "code": "1",
+      "title": "ΧΩΜΑΤΟΥΡΓΙΚΑ"
+    },
+    {
+      "category": "ydraulika",
+      "code": "2",
+      "title": "ΣΩΛΗΝΩΣΕΙΣ - ΔΙΚΤΥΑ"
+    },
+    {
+      "category": "ydraulika",
+      "code": "3",
+      "title": "ΤΕΧΝΙΚΑ ΕΡΓΑ - ΦΡΕΑΤΙΑ"
+    },
+    {
+      "category": "ydraulika",
+      "code": "4",
+      "title": "ΗΛΕΚΤΡΟΜΗΧΑΝΟΛΟΓΙΚΑ"
+    },
+    {
+      "category": "hlektromichanologika",
+      "code": "1",
+      "title": "ΗΛΕΚΤΡΙΚΕΣ ΕΓΚΑΤΑΣΤΑΣΕΙΣ ΙΣΧΥΡΩΝ ΡΕΥΜΑΤΩΝ"
+    },
+    {
+      "category": "hlektromichanologika",
+      "code": "2",
+      "title": "ΗΛΕΚΤΡΙΚΕΣ ΕΓΚΑΤΑΣΤΑΣΕΙΣ ΑΣΘΕΝΩΝ ΡΕΥΜΑΤΩΝ"
+    },
+    {
+      "category": "hlektromichanologika",
+      "code": "3",
+      "title": "ΕΓΚΑΤΑΣΤΑΣΕΙΣ ΘΕΡΜΑΝΣΗΣ - ΚΛΙΜΑΤΙΣΜΟΥ - ΑΕΡΙΣΜΟΥ"
+    },
+    {
+      "category": "hlektromichanologika",
+      "code": "4",
+      "title": "ΥΔΡΑΥΛΙΚΕΣ ΕΓΚΑΤΑΣΤΑΣΕΙΣ ΚΤΙΡΙΩΝ"
+    },
+    {
+      "category": "hlektromichanologika",
+      "code": "5",
+      "title": "ΠΥΡΟΣΒΕΣΗ - ΠΥΡΑΝΙΧΝΕΥΣΗ"
     },
     {
       "category": "prasino",
-      "code": "A",
-      "title": "Χωματουργικά - Προετοιμασία εδάφους"
+      "code": "1",
+      "title": "ΔΑΣΟΤΕΧΝΙΚΑ"
     },
     {
       "category": "prasino",
-      "code": "B",
-      "title": "Φυτεύσεις"
+      "code": "2",
+      "title": "ΕΡΓΑ ΑΠΟΚΑΤΑΣΤΑΣΕΩΝ ΚΑΙ ΠΡΟΣΤΑΣΙΑΣ"
     },
     {
       "category": "prasino",
-      "code": "C",
-      "title": "Άρδευση"
+      "code": "3",
+      "title": "ΦΥΤΕΥΣΕΙΣ"
     },
     {
-      "category": "ydraulika",
-      "code": "A",
-      "title": "Χωματουργικά"
+      "category": "prasino",
+      "code": "4",
+      "title": "ΑΡΔΕΥΣΗ"
     },
     {
-      "category": "ydraulika",
-      "code": "B",
-      "title": "Σωληνώσεις - Δίκτυα"
+      "category": "limenika",
+      "code": "1",
+      "title": "ΚΑΘΑΙΡΕΣΕΙΣ - ΒΥΘΟΚΟΡΗΣΕΙΣ - ΕΠΙΧΩΣΕΙΣ"
     },
     {
-      "category": "ydraulika",
-      "code": "C",
-      "title": "Τεχνικά έργα - Φρεάτια"
+      "category": "limenika",
+      "code": "2",
+      "title": "ΛΙΘΟΡΡΙΠΕΣ - ΦΥΣΙΚΟΙ ΟΓΚΟΛΙΘΟΙ"
     },
     {
-      "category": "ydraulika",
-      "code": "D",
-      "title": "Ηλεκτρομηχανολογικά"
+      "category": "limenika",
+      "code": "3",
+      "title": "ΣΚΥΡΟΔΕΜΑΤΑ"
+    },
+    {
+      "category": "limenika",
+      "code": "4",
+      "title": "ΤΕΧΝΙΚΑ ΕΡΓΑ - ΕΞΟΠΛΙΣΜΟΣ"
+    },
+    {
+      "category": "limenika",
+      "code": "5",
+      "title": "ΗΛΕΚΤΡΟΜΗΧΑΝΟΛΟΓΙΚΑ"
+    },
+    {
+      "category": "viomichanika_energeiaka",
+      "code": "1",
+      "title": "ΧΩΜΑΤΟΥΡΓΙΚΑ - ΚΑΘΑΙΡΕΣΕΙΣ"
+    },
+    {
+      "category": "viomichanika_energeiaka",
+      "code": "2",
+      "title": "ΔΟΜΙΚΑ ΕΡΓΑ"
+    },
+    {
+      "category": "viomichanika_energeiaka",
+      "code": "3",
+      "title": "ΜΗΧΑΝΟΛΟΓΙΚΟΣ ΕΞΟΠΛΙΣΜΟΣ"
+    },
+    {
+      "category": "viomichanika_energeiaka",
+      "code": "4",
+      "title": "ΗΛΕΚΤΡΟΛΟΓΙΚΟΣ ΕΞΟΠΛΙΣΜΟΣ - ΑΥΤΟΜΑΤΙΣΜΟΙ"
+    },
+    {
+      "category": "viomichanika_energeiaka",
+      "code": "5",
+      "title": "ΔΙΚΤΥΑ - ΣΩΛΗΝΩΣΕΙΣ"
+    },
+    {
+      "category": "katharismos_epexergasia",
+      "code": "1",
+      "title": "ΧΩΜΑΤΟΥΡΓΙΚΑ"
+    },
+    {
+      "category": "katharismos_epexergasia",
+      "code": "2",
+      "title": "ΔΟΜΙΚΑ ΕΡΓΑ - ΔΕΞΑΜΕΝΕΣ"
+    },
+    {
+      "category": "katharismos_epexergasia",
+      "code": "3",
+      "title": "ΔΙΚΤΥΑ - ΣΩΛΗΝΩΣΕΙΣ"
+    },
+    {
+      "category": "katharismos_epexergasia",
+      "code": "4",
+      "title": "ΜΗΧΑΝΟΛΟΓΙΚΟΣ ΕΞΟΠΛΙΣΜΟΣ"
+    },
+    {
+      "category": "katharismos_epexergasia",
+      "code": "5",
+      "title": "ΗΛΕΚΤΡΟΛΟΓΙΚΑ - ΑΥΤΟΜΑΤΙΣΜΟΙ"
+    },
+    {
+      "category": "geotrhseis",
+      "code": "1",
+      "title": "ΔΙΑΤΡΗΣΕΙΣ"
+    },
+    {
+      "category": "geotrhseis",
+      "code": "2",
+      "title": "ΣΩΛΗΝΩΣΕΙΣ - ΦΙΛΤΡΑ"
+    },
+    {
+      "category": "geotrhseis",
+      "code": "3",
+      "title": "ΑΝΑΠΤΥΞΗ - ΔΟΚΙΜΑΣΤΙΚΕΣ ΑΝΤΛΗΣΕΙΣ"
+    },
+    {
+      "category": "geotrhseis",
+      "code": "4",
+      "title": "ΗΛΕΚΤΡΟΜΗΧΑΝΟΛΟΓΙΚΑ"
+    },
+    {
+      "category": "loipa",
+      "code": "1",
+      "title": "ΧΩΜΑΤΟΥΡΓΙΚΑ"
+    },
+    {
+      "category": "loipa",
+      "code": "2",
+      "title": "ΔΟΜΙΚΑ ΕΡΓΑ"
+    },
+    {
+      "category": "loipa",
+      "code": "3",
+      "title": "ΗΛΕΚΤΡΟΜΗΧΑΝΟΛΟΓΙΚΑ"
+    },
+    {
+      "category": "loipa",
+      "code": "4",
+      "title": "ΛΟΙΠΕΣ ΕΡΓΑΣΙΕΣ"
     }
   ]
 }
