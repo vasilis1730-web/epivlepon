@@ -6,6 +6,7 @@ import * as api from './lib/api'
 import { Spinner } from './components/ui'
 
 import Dashboard from './pages/Dashboard'
+import Alerts from '@/pages/Alerts'
 import NewProject from './pages/NewProject'
 import Login from './pages/Login'
 import Overview from './pages/project/Overview'
@@ -50,6 +51,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Shell><Dashboard /></Shell>} />
         <Route path="/neo-ergo" element={<Shell><NewProject /></Shell>} />
+        <Route path="/eidopoiiseis" element={<Shell><Alerts /></Shell>} />
         <Route path="/erga/:projectId" element={<Shell><Overview /></Shell>} />
         <Route path="/erga/:projectId/odigos" element={<Shell><Guide /></Shell>} />
         <Route path="/erga/:projectId/prothesmies" element={<Shell><Deadlines /></Shell>} />

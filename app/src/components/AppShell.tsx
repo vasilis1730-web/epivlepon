@@ -2,6 +2,8 @@ import { NavLink, useParams } from 'react-router-dom'
 import { useState, type ReactNode } from 'react'
 import { cx } from '@/lib/format'
 import { DEMO_MODE } from '@/lib/supabase'
+import { useQuery } from '@/hooks/useQuery'
+import { getAlerts } from '@/lib/alerts'
 import { Badge } from './ui'
 
 const NAV = [
@@ -52,6 +54,7 @@ export function AppShell({
           )}
           <div className="ml-auto flex items-center gap-2">
             {DEMO_MODE && <Badge tone="brass">λειτουργία επίδειξης</Badge>}
+            <AlertBell />
             {user && (
               <span className="hidden text-xs text-ink2 sm:inline">
                 {user.full_name}
@@ -127,5 +130,29 @@ export function AppShell({
         μετά τον ν. 4782/2021.
       </footer>
     </div>
+  )
+}
+
+/**
+ * Ο μετρητής δείχνει μόνο εκπρόθεσμα και κρίσιμα (≤5 ημέρες): ένας αριθμός
+ * που ανάβει για κάθε προθεσμία δεκαπενθημέρου παύει γρήγορα να διαβάζεται.
+ */
+function AlertBell() {
+  const { data } = useQuery(() => getAlerts().catch(() => []), [])
+  const urgent = (data ?? []).filter(a => a.level !== 'warning').length
+  return (
+    <NavLink
+      to="/eidopoiiseis"
+      className="relative rounded border border-rule2 px-2 py-1 text-xs text-ink2 hover:text-accent"
+      aria-label={urgent ? `Ειδοποιήσεις: ${urgent} επείγουσες` : 'Ειδοποιήσεις'}
+      title="Ειδοποιήσεις"
+    >
+      ⚑
+      {urgent > 0 && (
+        <span className="tnum absolute -right-1.5 -top-1.5 min-w-[1.1rem] rounded-full bg-oxide px-1 text-center font-mono text-[10px] font-bold leading-4 text-white">
+          {urgent > 99 ? '99+' : urgent}
+        </span>
+      )}
+    </NavLink>
   )
 }

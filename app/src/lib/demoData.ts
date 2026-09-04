@@ -237,7 +237,7 @@ export const DEMO_MEASUREMENTS: Measurement[] = [
   ...Array.from({ length: 6 }, (_, i) => ({
     id: `m${i + 1}`, project_id: P1, mtype: 'tmimatiki' as const, serial_no: i + 1,
     period_from: addDays(T, -180 + i * 28), period_to: addDays(T, -153 + i * 28),
-    work_section: ['Χωματουργικά', 'Τεχνικά έργα', 'Οδοστρωσία'][i % 3],
+    work_section: ['Χωματουργικά', 'ΤΕΧΝΙΚΑ ΕΡΓΑ', 'Οδοστρωσία'][i % 3],
     submitted_at: addDays(T, -150 + i * 28), truth_declaration: true,
     status: (i < 5 ? 'approved' : 'submitted') as Measurement['status'],
     selected_for_audit: i < 3, audited: i < 3,
@@ -319,7 +319,7 @@ export const DEMO_APES: Ape[] = [
     tc_opinion_id: null, contractor_signature: null, status: 'draft', approved_at: null,
     lines: [
       {
-        id: 'al1', work_group: 'Χωματουργικά - Καθαιρέσεις', item_code: 'ΝΕΤ ΟΔΟ Α-2',
+        id: 'al1', work_group: 'ΧΩΜΑΤΟΥΡΓΙΚΑ', item_code: 'ΝΕΤ ΟΔΟ Α-2',
         description: 'Γενικές εκσκαφές σε έδαφος γαιώδες', unit: 'm³',
         unit_price: 4.2, qty_initial: 22_000, qty_new: 7_240,
         amount_initial: 92_400, amount_new: 30_408, delta_amount: -61_992,
@@ -327,7 +327,7 @@ export const DEMO_APES: Ape[] = [
         revision_code: 'ΟΙΚ 2113',
       },
       {
-        id: 'al2', work_group: 'Ασφαλτικά', item_code: 'ΝΕΤ ΟΔΟ Δ-8',
+        id: 'al2', work_group: 'ΑΣΦΑΛΤΙΚΑ', item_code: 'ΝΕΤ ΟΔΟ Δ-8',
         description: 'Ασφαλτική στρώση κυκλοφορίας 5 cm', unit: 'm²',
         unit_price: 8.9, qty_initial: 14_000, qty_new: 20_965,
         amount_initial: 124_600, amount_new: 186_589, delta_amount: 61_989,
@@ -338,7 +338,7 @@ export const DEMO_APES: Ape[] = [
         // Αμετάβλητη γραμμή: υπάρχει ώστε το άθροισμα των συμβατικών
         // ποσοτήτων να ΣΥΜΦΩΝΕΙ με το ΣΥΝΟΛΟ 1 της σύμβασης. Χωρίς αυτό
         // ο ΑΠΕ θα σύγκρινε με λάθος αφετηρία.
-        id: 'al1b', work_group: 'Τεχνικά έργα', item_code: '3',
+        id: 'al1b', work_group: 'ΤΕΧΝΙΚΑ ΕΡΓΑ', item_code: '3',
         description: 'Τεχνικά έργα ανοικτής οδοποιίας, κατ’ αποκοπή',
         unit: 'κατ. απ.', unit_price: 63_987.29, qty_initial: 1, qty_new: 1,
         amount_initial: 63_987.29, amount_new: 63_987.29, delta_amount: 0,
@@ -357,7 +357,7 @@ export const DEMO_APES: Ape[] = [
     status: 'approved', approved_at: addDays(T, -310),
     lines: [
       {
-        id: 'al3', work_group: 'Ηλεκτρικές εγκαταστάσεις ισχυρών ρευμάτων',
+        id: 'al3', work_group: 'ΗΛΕΚΤΡΙΚΕΣ ΕΓΚΑΤΑΣΤΑΣΕΙΣ ΙΣΧΥΡΩΝ ΡΕΥΜΑΤΩΝ',
         item_code: 'ΑΤΗΕ 8840.2', description: 'Ηλεκτρικός πίνακας διανομής',
         unit: 'τεμ.', unit_price: 2_180, qty_initial: 0, qty_new: 10,
         amount_initial: 0, amount_new: 21_800, delta_amount: 21_800,

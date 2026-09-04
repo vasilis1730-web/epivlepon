@@ -589,3 +589,38 @@ export interface HiddenWorkPhoto {
   /** Προσωρινός σύνδεσμος προβολής (signed URL ή data: URL στην επίδειξη). */
   url: string
 }
+
+/* ==================================================================== */
+/* Ειδοποιήσεις                                                         */
+/* ==================================================================== */
+
+export type AlertLevel = 'overdue' | 'critical' | 'warning'
+
+export type AlertKind =
+  | 'stage_deadline'      // προθεσμία σταδίου (v_deadline_watch)
+  | 'tacit_approval'      // η σιωπή γεννά έγκριση — προθεσμία που ΔΕΝ σβήνει
+  | 'hidden_work'         // αφανείς εργασίες (άρθρο 151 §7)
+  | 'ape_violation'       // παράβαση ορίων ΑΠΕ (άρθρο 156)
+  | 'contract_deadline'   // λήξη συνολικής προθεσμίας (άρθρο 147)
+
+/**
+ * Μία ειδοποίηση. ΔΕΝ αποθηκεύεται και δεν σημειώνεται «διαβασμένη»:
+ * παράγεται κάθε φορά από την κατάσταση του έργου. Μια εκπρόθεσμη προθεσμία
+ * δεν παύει να είναι εκπρόθεσμη επειδή την είδε κάποιος.
+ */
+export interface Alert {
+  id: string
+  level: AlertLevel
+  kind: AlertKind
+  project_id: string
+  project_code: string
+  project_title: string
+  title: string
+  detail: string
+  /** Ημέρες μέχρι (θετικό) ή από (αρνητικό) την προθεσμία· null όταν δεν υπάρχει. */
+  days_left: number | null
+  due_date: string | null
+  legal_ref: string | null
+  /** Πού πηγαίνει ο χρήστης για να την τακτοποιήσει. */
+  href: string
+}
